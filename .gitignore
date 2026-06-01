@@ -1,0 +1,56 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Jupyter
+.ipynb_checkpoints/
+# *.ipynb
+
+# Distribution / packaging
+*.whl
+*.tar.gz
+
+# Logs & output
+# *.log
+# runs/
+
+# ML / HuggingFace cache
+adapter_*/
+unsloth_compiled_cache/
+.cache/
+wandb/
+lightning_logs/
+outputs/
+checkpoints/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+data/
+*.swp
+*.swo
+ENV*/
+*.pt
+# Misc
+# tmp.py
+# tmp/
+# pics/
+
+
+# *.txt
+# *.json
+# *.csv
+# *.png
+# *.pdf
