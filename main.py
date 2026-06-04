@@ -18,7 +18,7 @@ def main():
     parser.add_argument('--ipc', type=int, default=10, help='image(s) per class')
     parser.add_argument('--eval_mode', type=str, default='S', help='eval_mode') # S: the same to training model, M: multi architectures,  W: net width, D: net depth, A: activation function, P: pooling layer, N: normalization layer,
     parser.add_argument('--num_exp', type=int, default=1, help='the number of experiments')
-    parser.add_argument('--num_eval', type=int, default=5, help='the number of evaluating randomly initialized models')
+    parser.add_argument('--num_eval', type=int, default=4, help='the number of evaluating randomly initialized models')
     parser.add_argument('--epoch_eval_train', type=int, default=500, help='epochs to train a model with synthetic data')
     parser.add_argument('--Iteration', type=int, default=601, help='training iterations')
     parser.add_argument('--lr_img', type=float, default=0.1, help='learning rate for updating synthetic images')

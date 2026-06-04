@@ -1,47 +1,46 @@
 """
 select_targets.py
 
-Pick non-random target points for the RDM-DC attack pipeline.
+Pick non-random attack targets that are CONSISTENT across every distillation
+setting for a dataset.
 
-Idea: instead of choosing each target image x_t at random from the test set,
-choose targets that a model trained on the *clean* distilled data classifies
-correctly. Those are the meaningful targets to attack (flipping a point the
-clean distilled model already gets right is a real success).
+For one dataset we have (methods x ipcs) distilled sets, e.g.
+DC/DM x {10, 50, 100} = 6 combinations, each saved by the DM/DC code as
+    res_<method>_<dataset>_<model>_<ipc>ipc.pt
+with format torch.save({'data': data_save, 'accs_all_exps': ...}, ...) and
+data_save[exp_index] = [image_syn, label_syn].
 
-Given (dataset, method, ipc) this script:
-  1. builds the distilled-set filename  res_<method>_<dataset>_<model>_<ipc>ipc.pt
-     and loads it (the format saved by the DM/DC code:
-     torch.save({'data': data_save, 'accs_all_exps': ...}, ...), where
-     data_save[exp_index] = [image_syn, label_syn]);
-  2. trains `num_nets` ConvNets from scratch on that synthetic set, each with a
-     fixed per-net seed so the run is reproducible;
-  3. evaluates all nets on the test set and marks every test point that is
-     correctly classified by at least `agreement` of them (default: all of them);
-  4. for each CIFAR10 Fig.2 seed (orig, adv), selects the top
-     `targets_per_class` correctly-classified test points of the original class,
-     ranked by mean true-class confidence across the nets (deterministic);
-  5. writes everything to a JSON file in APPEND manner, keyed by the distilled
-     filename, so running ipc 10 / 50 / 100 accumulates three entries in one
-     file. Re-running the same config overwrites its own entry with identical
-     content (the seeds make it deterministic).
+This script, for the given dataset:
+  1. for every combination, trains `num_nets` ConvNets from scratch on its
+     distilled set (each net with a fixed seed -> reproducible);
+  2. evaluates all nets on the test set and, per combination, marks a test point
+     "reliably correct" if at least `per_combo_agreement` of that combo's nets
+     classify it correctly (default: all of them);
+  3. keeps a test point as a candidate only if it is reliably correct in at
+     least `min_combos` combinations (default: all of them) -> these are the
+     points that ALL methods and ipcs agree on;
+  4. for each target (orig, adv) from targets.py, selects the top
+     `targets_per_class` candidates of the source class, ranked by mean
+     true-class confidence across all nets (deterministic);
+  5. writes the result to a JSON file in APPEND manner, keyed by DATASET, so
+     running it for CIFAR10, then SVHN, ... accumulates one entry per dataset.
 
-The saved "ids" are indices into the torchvision test set in its default
-(unshuffled) order, which is stable across runs, so they can be fed straight
-back into the attack code as the chosen x_t indices.
+The saved ids are indices into the torchvision test set in default order
+(stable across runs) and are shared by all method/ipc combinations, so the
+attack uses the same x_t targets regardless of which distilled set it attacks.
 
 Place this file in the DD-attack repo root so it imports that repo's `utils`
-(get_dataset / get_network / evaluate_synset / TensorDataset / ParamDiffAug),
-i.e. the exact pipeline the distilled .pt files were produced with.
+(the pipeline that produced the .pt files). targets.py must be alongside it.
 
 Examples
 --------
-    python select_targets.py --dataset CIFAR10 --method DM --ipc 10
-    python select_targets.py --dataset CIFAR10 --method DM --ipc 50
-    python select_targets.py --dataset CIFAR10 --method DM --ipc 100
-    python select_targets.py --dataset CIFAR10 --method DC --ipc 10 \
-        --num_nets 5 --agreement 5 --targets_per_class 10 --epoch_eval_train 1000
+    python select_targets.py --dataset CIFAR10
+    python select_targets.py --dataset SVHN --methods DC DM --ipcs 10 50 100
+    # relax if a class has fewer than 10 unanimous points:
+    python select_targets.py --dataset STL10 --per_combo_agreement 4 --min_combos 5
 """
 import argparse
+import itertools
 import json
 import os
 from types import SimpleNamespace
@@ -50,14 +49,10 @@ import numpy as np
 import torch
 import torch.nn.functional as F
 
-# These come from the DD-attack / DatasetCondensation repo this script lives in.
+# From the DD-attack / DatasetCondensation repo this script lives in.
 from utils import (get_dataset, get_network, evaluate_synset, TensorDataset,
-                   ParamDiffAug, get_time)
-
-
-# Fig. 2 targets for CIFAR10: seed -> (original_label, adversary_label).
-CIFAR10_TARGETS = {0: (7, 5), 1: (0, 9), 2: (5, 9), 3: (4, 9), 4: (2, 8)}
-TARGETS = {'CIFAR10': CIFAR10_TARGETS}
+                   ParamDiffAug, get_time, get_daparam)
+from targets import TARGETS, make_targets, TARGET_SEED
 
 
 def set_all_seeds(seed):
@@ -65,19 +60,16 @@ def set_all_seeds(seed):
     torch.manual_seed(seed)
     if torch.cuda.is_available():
         torch.cuda.manual_seed_all(seed)
-    # Best-effort determinism. Exact bitwise determinism on GPU may also need
-    # CUBLAS_WORKSPACE_CONFIG=:4096:8 in the environment; the agreement filter
-    # below makes the selected ids robust to small residual nondeterminism.
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
 
 
 def reinit_net_(net, seed):
-    """Re-initialise all parameters deterministically.
+    """Deterministically re-initialise all parameters.
 
     The repo's get_network seeds itself from wall-clock time, so we overwrite
-    that here: seed the global RNG, then reset every layer's parameters. This
-    yields `num_nets` distinct but reproducible networks (seed -> seed+1 ...).
+    that: seed the RNG, then reset every layer. Gives distinct but reproducible
+    nets across runs.
     """
     torch.manual_seed(seed)
     if torch.cuda.is_available():
@@ -103,7 +95,7 @@ def build_args(device, epoch_eval_train, lr_net, batch_train, dsa,
 
 @torch.no_grad()
 def predict_test(net, testloader, device):
-    """Return (pred [N], true_class_prob [N]) over the test set in order."""
+    """Return (pred [N], true_class_prob [N], labels [N]) over the test set."""
     net.eval()
     preds, true_probs, labels = [], [], []
     for x, y in testloader:
@@ -113,150 +105,184 @@ def predict_test(net, testloader, device):
         preds.append(out.argmax(dim=1).cpu())
         true_probs.append(prob.gather(1, y.view(-1, 1)).squeeze(1))
         labels.append(y)
-    return (torch.cat(preds), torch.cat(true_probs), torch.cat(labels))
+    return torch.cat(preds), torch.cat(true_probs), torch.cat(labels)
 
 
 def main():
-    ap = argparse.ArgumentParser(description='Select non-random attack targets.')
-    ap.add_argument('--dataset', type=str, default='CIFAR10')
-    ap.add_argument('--method', type=str, default='DM', choices=['DM', 'DC'])
-    ap.add_argument('--ipc', type=int, required=True)
+    ap = argparse.ArgumentParser(description='Select consistent attack targets.')
+    ap.add_argument('--dataset', type=str, required=True)
+    ap.add_argument('--methods', nargs='+', default=['DC', 'DM'])
+    ap.add_argument('--ipcs', nargs='+', type=int, default=[10, 50, 100])
     ap.add_argument('--model', type=str, default='ConvNet')
     ap.add_argument('--result_dir', type=str,
                     default='/home/mmoslem3/scratch/DD-attack/result')
     ap.add_argument('--data_path', type=str,
                     default='/home/mmoslem3/scratch/DD-attack/data')
-    ap.add_argument('--exp_index', type=int, default=0,
-                    help="which distilled set in data_save to use")
+    ap.add_argument('--exp_index', type=int, default=-1)
     ap.add_argument('--num_nets', type=int, default=5)
-    ap.add_argument('--agreement', type=int, default=-1,
-                    help="#nets that must be correct; -1 means all of them")
+    ap.add_argument('--per_combo_agreement', type=int, default=-1,
+                    help="#nets per combo that must be correct; -1 = all")
+    ap.add_argument('--min_combos', type=int, default=-1,
+                    help="#combos a point must be reliable in; -1 = all present")
+    ap.add_argument('--num_targets', type=int, default=10)
     ap.add_argument('--targets_per_class', type=int, default=10)
-    ap.add_argument('--epoch_eval_train', type=int, default=1000)
+    ap.add_argument('--epoch_eval_train', type=int, default=300)
     ap.add_argument('--lr_net', type=float, default=0.01)
     ap.add_argument('--batch_train', type=int, default=256)
-    ap.add_argument('--dsa', action='store_true', default=True)
+    ap.add_argument('--dsa', action='store_true', default=False)
     ap.add_argument('--no_dsa', dest='dsa', action='store_false')
     ap.add_argument('--dsa_strategy', type=str,
                     default='color_crop_cutout_flip_scale_rotate')
     ap.add_argument('--seed', type=int, default=0)
+    ap.add_argument('--skip_missing', action='store_true',
+                    help="skip combos whose .pt file is absent instead of error")
     ap.add_argument('--device', type=str, default=None)
-    ap.add_argument('--out_json', type=str, default=None,
-                    help="defaults to <result_dir>/target_ids.json")
+    ap.add_argument('--out_json', type=str, default=None)
     args = ap.parse_args()
 
     device = args.device or ('cuda' if torch.cuda.is_available() else 'cpu')
-    agreement = args.num_nets if args.agreement < 0 else args.agreement
+    per_combo_agreement = args.num_nets if args.per_combo_agreement < 0 \
+        else args.per_combo_agreement
     out_json = args.out_json or os.path.join(args.result_dir, 'target_ids.json')
 
     set_all_seeds(args.seed)
 
-    # ----- locate and load the distilled set --------------------------------
-    fname = 'res_%s_%s_%s_%dipc.pt' % (args.method, args.dataset, args.model,
-                                       args.ipc)
-    pt_path = os.path.join(args.result_dir, fname)
-    if not os.path.isfile(pt_path):
-        raise FileNotFoundError(pt_path)
-    print('%s loading %s' % (get_time(), pt_path))
-    blob = torch.load(pt_path, map_location='cpu')
-    data_save = blob['data']
-    if args.exp_index >= len(data_save):
-        raise IndexError('exp_index %d but data_save has %d entries'
-                         % (args.exp_index, len(data_save)))
-    image_syn, label_syn = data_save[args.exp_index]
-    image_syn = image_syn.detach().float()
-    label_syn = label_syn.detach().long()
-    print('%s synthetic set: images %s labels %s'
-          % (get_time(), tuple(image_syn.shape), tuple(label_syn.shape)))
-
-    # ----- dataset + ordered test loader ------------------------------------
+    # ----- dataset + ordered test loader (loaded once) ----------------------
     channel, im_size, num_classes, class_names, mean, std, dst_train, \
         dst_test, _ = get_dataset(args.dataset, args.data_path)
     testloader = torch.utils.data.DataLoader(
         dst_test, batch_size=256, shuffle=False, num_workers=0)
-
+    n_test = len(dst_test)
     eval_args = build_args(device, args.epoch_eval_train, args.lr_net,
                            args.batch_train, args.dsa, args.dsa_strategy)
 
-    # ----- train num_nets nets, collect predictions -------------------------
-    n_test = len(dst_test)
-    correct = torch.zeros(args.num_nets, n_test, dtype=torch.bool)
-    true_prob = torch.zeros(args.num_nets, n_test, dtype=torch.float)
+    combos = list(itertools.product(args.methods, args.ipcs))
+    print('%s dataset=%s  combos=%s  num_nets=%d'
+          % (get_time(), args.dataset,
+             ['%s_%dipc' % (m, i) for m, i in combos], args.num_nets))
+
+    # ----- train all combos, gather correctness + confidence ----------------
+    combo_info = []                       # per present combo: name, accs
+    reliable_masks = []                   # per present combo: bool [N]
+    total_true_prob = np.zeros(n_test, dtype=np.float64)
+    total_nets = 0
     true_labels = None
-    per_net_acc = []
 
-    for i in range(args.num_nets):
-        net_seed = 1000 * args.seed + i
-        net = get_network(args.model, channel, num_classes, im_size).to(device)
-        net = reinit_net_(net, net_seed).to(device)
-        torch.manual_seed(net_seed)  # make training (shuffle+aug) deterministic
-        if torch.cuda.is_available():
-            torch.cuda.manual_seed_all(net_seed)
+    for combo_idx, (method, ipc) in enumerate(combos):
+        fname = 'res_%s_%s_%s_%dipc.pt' % (method, args.dataset, args.model, ipc)
+        pt_path = os.path.join(args.result_dir, fname)
+        cname = '%s_%dipc' % (method, ipc)
+        if not os.path.isfile(pt_path):
+            msg = 'missing distilled file: %s' % pt_path
+            if args.skip_missing:
+                print('%s SKIP %s (%s)' % (get_time(), cname, msg))
+                continue
+            raise FileNotFoundError(msg)
+        
+        print()
+        blob = torch.load(pt_path, map_location='cpu', weights_only=False )
+        image_syn, label_syn = blob['data'][args.exp_index]
+        image_syn = image_syn.detach().float()
+        label_syn = label_syn.detach().long()
 
-        print('%s training net %d/%d (seed=%d) on synthetic set'
-              % (get_time(), i + 1, args.num_nets, net_seed))
-        net, _, acc_test = evaluate_synset(
-            i, net, image_syn.clone(), label_syn.clone(), testloader, eval_args)
-        per_net_acc.append(float(acc_test))
+        eval_args.dsa = (method == 'DSA')
+        eval_args.dc_aug_param = None if eval_args.dsa else get_daparam(
+            args.dataset, args.model, args.model, ipc)
+        aug_active = eval_args.dsa or (
+            eval_args.dc_aug_param is not None and
+            eval_args.dc_aug_param['strategy'] != 'none')
+        eval_args.epoch_eval_train = 1000 if aug_active else args.epoch_eval_train
 
-        pred, tprob, labels = predict_test(net, testloader, device)
-        correct[i] = pred.eq(labels)
-        true_prob[i] = tprob
-        if true_labels is None:
-            true_labels = labels
-        del net
-        if torch.cuda.is_available():
-            torch.cuda.empty_cache()
+        correct_combo = torch.zeros(args.num_nets, n_test, dtype=torch.bool)
+        accs = []
+        for i in range(args.num_nets):
+            net_seed = 1000 * args.seed + 100 * combo_idx + i
+            net = get_network(args.model, channel, num_classes, im_size).to(device)
+            net = reinit_net_(net, net_seed).to(device)
+            torch.manual_seed(net_seed)
+            if torch.cuda.is_available():
+                torch.cuda.manual_seed_all(net_seed)
 
-    true_labels = true_labels.numpy()
-    correct_count = correct.sum(dim=0)                  # [N]
-    correct_mask = (correct_count >= agreement).numpy()  # [N] bool
-    mean_true_prob = true_prob.mean(dim=0).numpy()       # [N]
-    print('%s test points correct by >=%d/%d nets: %d / %d'
-          % (get_time(), agreement, args.num_nets, int(correct_mask.sum()),
+            # print('%s [%s] training net %d/%d (seed=%d)'
+                #   % (get_time(), cname, i + 1, args.num_nets, net_seed))
+            net, _, acc_test = evaluate_synset(
+                i, net, image_syn.clone(), label_syn.clone(), testloader,
+                eval_args)
+            accs.append(float(acc_test))
+
+            pred, tprob, labels = predict_test(net, testloader, device)
+            correct_combo[i] = pred.eq(labels)
+            total_true_prob += tprob.numpy()
+            total_nets += 1
+            if true_labels is None:
+                true_labels = labels.numpy()
+            del net
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
+
+        reliable = (correct_combo.sum(dim=0) >= per_combo_agreement).numpy()
+        reliable_masks.append(reliable)
+        combo_info.append({'name': cname, 'per_net_test_acc': accs,
+                           'num_reliable': int(reliable.sum())})
+        print('%s [%s] reliable (>=%d/%d nets): %d / %d'
+              % (get_time(), cname, per_combo_agreement, args.num_nets,
+                 int(reliable.sum()), n_test))
+
+    if not reliable_masks:
+        raise RuntimeError('no distilled files found for dataset %s' % args.dataset)
+
+    n_present = len(reliable_masks)
+    min_combos = n_present if args.min_combos < 0 else args.min_combos
+    stack = np.stack(reliable_masks, axis=0)          # [n_present, N]
+    reliable_combo_count = stack.sum(axis=0)          # [N]
+    candidate_mask = reliable_combo_count >= min_combos
+    mean_true_prob = total_true_prob / max(total_nets, 1)
+    print('%s candidates reliable in >=%d/%d combos: %d / %d'
+          % (get_time(), min_combos, n_present, int(candidate_mask.sum()),
              n_test))
 
     # ----- per-class candidate pool -----------------------------------------
     correct_ids_per_class = {}
     for c in range(num_classes):
-        ids = np.where((true_labels == c) & correct_mask)[0]
+        ids = np.where((true_labels == c) & candidate_mask)[0]
         correct_ids_per_class[str(c)] = [int(j) for j in ids]
 
-    # ----- target selection per Fig.2 seed (CIFAR10) ------------------------
-    targets_per_seed = {}
-    target_map = TARGETS.get(args.dataset)
-    if target_map is None:
-        print('%s no Fig.2 target map for %s; saving candidate pool only'
-              % (get_time(), args.dataset))
+    # ----- targets (fixed protocol, independent of --seed) ------------------
+    if args.dataset in TARGETS and args.num_targets == len(TARGETS[args.dataset]):
+        target_map = TARGETS[args.dataset]
     else:
-        for seed, (orig, adv) in target_map.items():
-            cand = np.where((true_labels == orig) & correct_mask)[0]
-            # rank by mean true-class confidence, descending (deterministic).
-            order = cand[np.argsort(-mean_true_prob[cand], kind='stable')]
-            chosen = order[:args.targets_per_class]
-            if len(chosen) < args.targets_per_class:
-                print('%s WARNING seed %d (orig=%d): only %d correct candidates'
-                      % (get_time(), seed, orig, len(chosen)))
-            targets_per_seed[str(seed)] = {
-                'orig': int(orig), 'adv': int(adv),
-                'target_ids': [int(j) for j in chosen],
-                'target_true_prob': [float(mean_true_prob[j]) for j in chosen],
-            }
+        target_map = make_targets(num_classes, args.num_targets, seed=TARGET_SEED)
 
-    # ----- write JSON in append manner --------------------------------------
+    targets_per_seed = {}
+    for seed, (orig, adv) in target_map.items():
+        cand = np.where((true_labels == orig) & candidate_mask)[0]
+        order = cand[np.argsort(-mean_true_prob[cand], kind='stable')]
+        chosen = order[:args.targets_per_class]
+        if len(chosen) < args.targets_per_class:
+            print('%s WARNING target %d (orig=%d): only %d consistent candidates'
+                  % (get_time(), seed, orig, len(chosen)))
+        targets_per_seed[str(seed)] = {
+            'orig': int(orig), 'adv': int(adv),
+            'target_ids': [int(j) for j in chosen],
+            'target_true_prob': [float(mean_true_prob[j]) for j in chosen],
+        }
+
+    # ----- write JSON in append manner (keyed by dataset) -------------------
     entry = {
-        'pt_file': pt_path,
-        'dataset': args.dataset, 'method': args.method, 'model': args.model,
-        'ipc': args.ipc, 'exp_index': args.exp_index,
-        'num_nets': args.num_nets, 'agreement': agreement,
+        'dataset': args.dataset, 'model': args.model,
+        'combos': [c['name'] for c in combo_info],
+        'num_nets': args.num_nets,
+        'per_combo_agreement': per_combo_agreement,
+        'min_combos': min_combos, 'exp_index': args.exp_index,
+        'num_targets': args.num_targets,
         'targets_per_class': args.targets_per_class,
         'epoch_eval_train': args.epoch_eval_train, 'seed': args.seed,
-        'per_net_test_acc': per_net_acc,
-        'num_correct_total': int(correct_mask.sum()),
+        'target_seed': TARGET_SEED,
+        'combo_test_acc': {c['name']: c['per_net_test_acc'] for c in combo_info},
+        'num_candidates_total': int(candidate_mask.sum()),
         'targets_per_seed': targets_per_seed,
         'correct_ids_per_class': correct_ids_per_class,
     }
-    key = os.path.splitext(fname)[0]  # e.g. res_DM_CIFAR10_ConvNet_10ipc
 
     db = {}
     if os.path.isfile(out_json):
@@ -265,16 +291,15 @@ def main():
                 db = json.load(f)
             except json.JSONDecodeError:
                 db = {}
-    db[key] = entry
+    db[args.dataset] = entry
     os.makedirs(os.path.dirname(out_json), exist_ok=True)
     with open(out_json, 'w') as f:
         json.dump(db, f, indent=2)
 
-    print('%s wrote entry "%s" to %s' % (get_time(), key, out_json))
-    if targets_per_seed:
-        for s, t in targets_per_seed.items():
-            print('  seed %s  orig=%d adv=%d  ids=%s'
-                  % (s, t['orig'], t['adv'], t['target_ids']))
+    print('%s wrote entry "%s" to %s' % (get_time(), args.dataset, out_json))
+    for s, t in targets_per_seed.items():
+        print('  target %s  orig=%d adv=%d  ids=%s'
+              % (s, t['orig'], t['adv'], t['target_ids']))
 
 
 if __name__ == '__main__':

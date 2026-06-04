@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SCRIPTS=(main_DM.py main.py)
-DATASETS=(SVHN FashionMNIST STL10 MNIST)
+DATASETS=(CIFAR10 SVHN FashionMNIST STL10 MNIST)
 IPCS=(10 50 100)
 
 declare -A METHOD_MAP
