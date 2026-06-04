@@ -42,7 +42,7 @@ data/
 *.swp
 *.swo
 ENV*/
-*.pt
+# *.pt
 # Misc
 # tmp.py
 # tmp/
