@@ -1,0 +1,59 @@
+# Faithful CIFAR-10 configuration (paper Section 5.1 defaults).
+#
+# Reproduce a table cell by overriding experiment.attack / experiment.defense,
+# e.g.:
+#   python run_experiment.py --config configs/cifar10.yaml \
+#       --override experiment.attack=dmpoison experiment.defense=none
+#
+# Table 1 (eps=64/255): attack in {gradmatch, dmpoison}, defense=none
+#   eps=128/255 -> --override poison.eps=0.501961
+# Table 2 (defenses vs DM poison): attack=dmpoison,
+#   defense in {none, median, trimmed, truncated, rdmdc}
+# Table 3: attack=gradmatch, defense in {none, rdmdc}
+# Table 5 (direct attack): attack=direct, defense in {none, rdmdc}
+
+experiment:
+  dataset: CIFAR10
+  data_path: /home/mmoslem3/scratch/DD-attack/data
+  save_path: /home/mmoslem3/scratch/DD-attack/result
+  device: auto                     # auto | cpu | cuda
+  seed_list: [0, 1, 2, 3, 4]       # five targets (Fig. 2)
+  condense_runs_per_seed: 5        # 5 x 5 = 25 measurements per the paper
+  eval_models_per_condense: 1
+  attack: dmpoison                 # gradmatch | dmpoison | direct
+  defense: none                   # none | rdmdc | truncated | trimmed | median
+
+model:
+  arch: ConvNet
+
+condensation:                      # Algorithm 3 / DM defaults
+  ipc: 50
+  iterations: 20000
+  lr_img: 1.0
+  momentum_img: 0.5
+  batch_real: 256
+  init: noise                      # paper: Gaussian noise N(0, I)
+  dsa: true
+  dsa_strategy: color_crop_cutout_flip_scale_rotate
+
+poison:
+  rate: 0.01                       # 1% poisoning rate -> P = 500
+  eps: 0.250980392                 # 64/255 (use 0.501960784 for 128/255)
+  step_size: 0.003921569           # 1/255 signed-Adam step
+  restarts: 8                      # R (not pinned by the paper; Witches'-Brew-style)
+  iterations: 250                  # T per restart (not pinned by the paper)
+  optimizer: signed_adam
+  momentum: 0.9
+  num_pretrain_models: 16          # gradient matching only
+  pretrain_epochs: 40              # max epochs across the ensemble
+  pretrain_min_epochs: 5           # min epochs across the ensemble
+  round_to_255: true               # snap final poisons to the 8-bit grid
+
+defense:
+  eps_per_class: auto              # auto = rate * num_classes (single-class poison)
+  power_iters: 10                  # power-method iterations (Algorithm 5)
+
+evaluation:
+  epoch_eval_train: 1000
+  lr_net: 0.01
+  batch_train: 256

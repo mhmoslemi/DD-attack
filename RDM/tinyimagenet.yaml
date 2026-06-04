@@ -1,0 +1,65 @@
+# TinyImageNet configuration.
+#
+# UNTESTED in the build environment (no dataset access here). It expects a
+# preprocessed tensor file at `<data_path>/tinyimagenet.pt` with keys:
+#   images_train [N,3,64,64] uint8, labels_train [N],
+#   images_val   [M,3,64,64] uint8, labels_val   [M],
+#   classes      (list of 200 names)
+# (See data.get_raw_dataset's TinyImageNet branch.)
+#
+# ipc is set to 10 rather than 50: with 200 classes, ipc=50 means 10k synthetic
+# 64x64 images and is very memory/compute heavy. The paper does not pin ipc for
+# TinyImageNet; raise it if you have the budget.
+
+experiment:
+  dataset: TinyImageNet
+  data_path: ./data
+  save_path: ./result_tin
+  device: auto
+  seed_list: [0, 1, 2, 3, 4]
+  condense_runs_per_seed: 5
+  eval_models_per_condense: 1
+  attack: dmpoison
+  defense: rdmdc
+
+model:
+  arch: ConvNet
+
+condensation:
+  ipc: 10
+  iterations: 20000
+  lr_img: 1.0
+  momentum_img: 0.5
+  batch_real: 256
+  init: noise
+  dsa: true
+  dsa_strategy: color_crop_cutout_flip_scale_rotate
+
+poison:
+  rate: 0.01
+  eps: 0.250980392                 # 64/255
+  step_size: 0.003921569           # 1/255
+  restarts: 8
+  iterations: 250
+  optimizer: signed_adam
+  momentum: 0.9
+  num_pretrain_models: 16
+  pretrain_epochs: 40
+  pretrain_min_epochs: 5
+  round_to_255: true
+
+defense:
+  eps_per_class: auto              # 0.01 * 200 = 2.0 -> clipped effect; see note below
+  power_iters: 10
+
+evaluation:
+  epoch_eval_train: 1000
+  lr_net: 0.01
+  batch_train: 256
+
+# NOTE on eps_per_class for 200 classes: rate * num_classes = 0.01 * 200 = 2.0,
+# which would make drop_count exceed the batch (3*2.0*256 >> 256). With 200
+# balanced classes a 1% global rate concentrated in one class means that class
+# is ~entirely poison, which is not a realistic single-target setting at this
+# scale. For a sensible run, set poison.rate so that rate*num_classes < ~0.33,
+# or set defense.eps_per_class to an explicit number (e.g. 0.10).

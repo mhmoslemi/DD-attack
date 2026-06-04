@@ -1,0 +1,56 @@
+# Tiny smoke-test configuration. Uses the synthetic 'debug' dataset (random
+# tensors, 4 classes, 3x16x16) so it needs no torchvision download and runs on
+# CPU in seconds. This is for checking that the full pipeline wires together,
+# NOT for any meaningful numbers.
+#
+#   python run_experiment.py --config configs/debug.yaml
+#   python run_experiment.py --config configs/debug.yaml \
+#       --override experiment.attack=gradmatch
+#   python run_experiment.py --config configs/debug.yaml \
+#       --override experiment.attack=direct experiment.defense=truncated
+
+experiment:
+  dataset: debug
+  data_path: ./data
+  save_path: ./result_debug
+  device: cpu
+  seed_list: [0]
+  condense_runs_per_seed: 1
+  eval_models_per_condense: 1
+  attack: dmpoison                 # gradmatch | dmpoison | direct
+  defense: rdmdc                   # none | rdmdc | truncated | trimmed | median
+
+model:
+  arch: ConvNet
+
+condensation:
+  ipc: 2
+  iterations: 3
+  lr_img: 1.0
+  momentum_img: 0.5
+  batch_real: 8
+  init: noise
+  dsa: true
+  dsa_strategy: color_crop_cutout_flip_scale_rotate
+
+poison:
+  rate: 0.05                       # P = round(0.05 * 400) = 20
+  eps: 0.250980392                 # 64/255
+  step_size: 0.003921569           # 1/255
+  restarts: 1
+  iterations: 2
+  optimizer: signed_adam
+  momentum: 0.9
+  num_pretrain_models: 1
+  pretrain_epochs: 1
+  pretrain_min_epochs: 1
+  round_to_255: true
+
+defense:
+  eps_per_class: auto              # 0.05 * 4 = 0.2 -> drop_count = floor(3*0.2*8) = 4
+  power_iters: 3
+
+evaluation:
+  epoch_eval_train: 2
+  lr_net: 0.01
+  batch_train: 8
