@@ -65,6 +65,17 @@ def get_dataset(dataset, data_path):
         dst_test = datasets.CIFAR100(data_path, train=False, download=True, transform=transform)
         class_names = dst_train.classes
 
+    elif dataset == 'STL10':
+        channel = 3
+        im_size = (96, 96)
+        num_classes = 10
+        mean = [0.4467, 0.4398, 0.4066]
+        std = [0.2603, 0.2566, 0.2713]
+        transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize(mean=mean, std=std)])
+        dst_train = datasets.STL10(data_path, split='train', download=True, transform=transform)
+        dst_test = datasets.STL10(data_path, split='test', download=True, transform=transform)
+        class_names = dst_train.classes
+
     elif dataset == 'TinyImageNet':
         channel = 3
         im_size = (64, 64)
