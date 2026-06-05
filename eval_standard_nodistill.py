@@ -55,6 +55,7 @@ Example (surrogates on the distilled S you already have; MetaPoison-matched vict
       --num_targets 10 --num_victims 6 \
       --victim_epochs 50 --victim_lr 0.1 --victim_bs 125 \
       --target_select random --seed 0
+      random_select
 
 
 """
@@ -63,7 +64,10 @@ import argparse
 import csv
 import json
 import os
+import warnings
 from types import SimpleNamespace
+
+warnings.filterwarnings('ignore', category=UserWarning)
 
 import numpy as np
 import torch
@@ -162,8 +166,8 @@ def train_surrogates_on_syn(image_syn, label_syn, test_imgs, test_labs,
         net = get_network(args.surrogate_model, channel, num_classes, im_size)
         net, _, acc = evaluate_synset(i, net, image_syn.clone(), label_syn.clone(),
                                       testloader, syn_args)
-        print('  surrogate %d/%d on S  test acc = %.4f'
-              % (i + 1, args.num_surrogates, acc))
+        # print('  surrogate %d/%d on S  test acc = %.4f'
+        #       % (i + 1, args.num_surrogates, acc))
         net.eval()
         for p in net.parameters():
             p.requires_grad_(False)
@@ -201,10 +205,21 @@ def select_base(surrogates, images_norm, labels, x_t_norm, y_adv, N_p, lam, devi
     return cls_idx[sel]
 
 
+def select_base_random(labels, y_adv, N_p, device):
+    cls_idx = (labels == y_adv).nonzero(as_tuple=True)[0]
+    if len(cls_idx) < N_p:
+        raise ValueError('class %d has %d images < N_p=%d' % (y_adv, len(cls_idx), N_p))
+    perm = torch.randperm(len(cls_idx), device=device)
+    return cls_idx[perm[:N_p]]
+
+
 # --------------------------------------------------------------------------- #
 # crafting (Eq.2): per-sample L_inf PGD feature collision over the ensemble
 # --------------------------------------------------------------------------- #
 def craft_pgd(surrogates, base01, x_t_norm, norm, eps, steps, alpha, device):
+    
+    surrogates = [surrogates[0]]
+
     base01 = base01.detach()
     with torch.no_grad():
         f_tgts = [embed_of(n)(x_t_norm.unsqueeze(0)).detach() for n in surrogates]
@@ -234,6 +249,7 @@ def craft_pgd(surrogates, base01, x_t_norm, norm, eps, steps, alpha, device):
 def main(args):
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     print('%s device=%s' % (get_time(), device))
+    print('%s hyperparams: %s' % (get_time(), vars(args)))
     torch.manual_seed(args.seed)
     np.random.seed(args.seed)
     os.makedirs(args.out_dir, exist_ok=True)
@@ -256,13 +272,13 @@ def main(args):
           % (get_time(), N_total, args.budget, N_p))
 
     # ---- load distilled S and train surrogates ON IT ----------------------
-    print('\n%s loading distilled S from %s' % (get_time(), args.syn_data_path))
+    # print('\n%s loading distilled S from %s' % (get_time(), args.syn_data_path))
     ckpt = torch.load(args.syn_data_path, map_location='cpu', weights_only=False)
     image_syn, label_syn = ckpt['data'][-1]
     image_syn = image_syn.to(device)
     label_syn = label_syn.to(device)
-    print('  S: %s  min=%.3f max=%.3f (expected ~[-2.5, 2.7] for normalized CIFAR)'
-          % (tuple(image_syn.shape), image_syn.min().item(), image_syn.max().item()))
+    # print('  S: %s  min=%.3f max=%.3f (expected ~[-2.5, 2.7] for normalized CIFAR)'
+    #       % (tuple(image_syn.shape), image_syn.min().item(), image_syn.max().item()))
 
     print('\n%s === training %d surrogates (%s) on distilled S (%d ep each) ==='
           % (get_time(), args.num_surrogates, args.surrogate_model, args.surrogate_epochs))
@@ -316,9 +332,12 @@ def main(args):
             else:
                 clean_asr = float('nan')
 
-            # 1) selection on the S-trained surrogates
-            base_idx = select_base(surrogates, train_imgs, train_labs, x_t_norm,
-                                   y_adv, N_p, args.lambda_margin, device)
+            # 1) selection on the S-trained surrogates (or random ablation)
+            if args.random_select:
+                base_idx = select_base_random(train_labs, y_adv, N_p, device)
+            else:
+                base_idx = select_base(surrogates, train_imgs, train_labs, x_t_norm,
+                                       y_adv, N_p, args.lambda_margin, device)
             # 2) craft on the same surrogates
             base01 = denorm(train_imgs[base_idx]).clamp(0.0, 1.0).detach()
             x_adv01, coll = craft_pgd(surrogates, base01, x_t_norm, norm,
@@ -434,4 +453,6 @@ if __name__ == '__main__':
     p.add_argument('--victim_aug', action='store_true', default=False,
                    help="MetaPoison default is NO augmentation; leave off to match")
     p.add_argument('--clean_baseline', action='store_true', default=False)
+    p.add_argument('--random_select', action='store_true', default=False,
+                   help='ablation: replace scored base selection with uniform random')
     main(p.parse_args())
