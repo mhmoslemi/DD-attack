@@ -12,16 +12,30 @@
 #
 # The claim is that selection (A→B) drives most of the gain over (A→C).
 
-COMMON="python eval_standard_nodistill.py
-    --syn_data_path result/res_DM_CIFAR10_ConvNet_50ipc.pt
-    --surrogate_model ConvNet --model ConvNetBN
-    --class_pairs dog-bird
-    --budget 0.01 --epsilon 0.0313725 --pgd_steps 250 --pgd_alpha 0.0039216
-    --lambda_margin 1.0
-    --num_surrogates 10 --surrogate_epochs 1000
-    --num_targets 10 --num_victims 6
-    --victim_epochs 60 --victim_lr 0.1 --victim_bs 125 --victim_decay 40
-    --target_select random --seed 0 --clean_baseline"
+# COMMON="python eval_standard_nodistill.py
+#     --syn_data_path result/res_DM_CIFAR10_ConvNet_50ipc.pt
+#     --surrogate_model ConvNet --model ConvNetBN
+#     --class_pairs dog-bird
+#     --budget 0.01 --epsilon 0.0313725 --pgd_steps 250 --pgd_alpha 0.0039216
+#     --lambda_margin 1.0
+#     --num_surrogates 10 --surrogate_epochs 1000
+#     --num_targets 10 --num_victims 6
+#     --victim_epochs 60 --victim_lr 0.1 --victim_bs 125 --victim_decay 40
+#     --target_select random --seed 0 --clean_baseline"
+
+
+
+CUDA_VISIBLE_DEVICES=4 python eval_standard_nodistill.py \
+    --syn_data_path result/res_DM_CIFAR10_ConvNet_50ipc.pt \
+    --surrogate_model ConvNet --model ConvNetBN \
+    --class_pairs dog-bird \
+    --attack gradmatch --restarts 8 \
+    --budget 0.01 --epsilon 0.0313725 --pgd_steps 250 --pgd_alpha 0.0039216 \
+    --lambda_margin 1.0 \
+    --num_surrogates 10 --surrogate_epochs 1000 \
+    --num_targets 4 --num_victims 5 \
+    --victim_epochs 60 --victim_lr 0.1 --victim_bs 125 --victim_decay 40 \
+    --target_select random --seed 0 --clean_baseline
 
 # echo "===== Cell A: plain FC (random select + single surrogate) ====="
 # $COMMON --random_select --single_surrogate --out_dir result/abl_A_plain_fc
