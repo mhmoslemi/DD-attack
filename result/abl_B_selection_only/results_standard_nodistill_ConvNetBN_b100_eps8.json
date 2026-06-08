@@ -1,0 +1,160 @@
+{
+  "clean_cta": 0.8087166666666666,
+  "rows": [
+    {
+      "pair": "dog-bird",
+      "y_adv": 5,
+      "target_class": 2,
+      "target_idx": 430,
+      "clean_asr": 0.0,
+      "poison_cta": 0.8039999999999998,
+      "poison_asr": 16.666666666666668,
+      "collision_mse": 0.2268691062927246,
+      "realized_linf": 0.031372517347335815,
+      "N_p": 500
+    },
+    {
+      "pair": "dog-bird",
+      "y_adv": 5,
+      "target_class": 2,
+      "target_idx": 387,
+      "clean_asr": 16.666666666666668,
+      "poison_cta": 0.7987000000000001,
+      "poison_asr": 16.666666666666668,
+      "collision_mse": 0.2336060255765915,
+      "realized_linf": 0.031372517347335815,
+      "N_p": 500
+    },
+    {
+      "pair": "dog-bird",
+      "y_adv": 5,
+      "target_class": 2,
+      "target_idx": 6715,
+      "clean_asr": 0.0,
+      "poison_cta": 0.80215,
+      "poison_asr": 83.33333333333333,
+      "collision_mse": 0.22502897679805756,
+      "realized_linf": 0.031372517347335815,
+      "N_p": 500
+    },
+    {
+      "pair": "dog-bird",
+      "y_adv": 5,
+      "target_class": 2,
+      "target_idx": 7670,
+      "clean_asr": 0.0,
+      "poison_cta": 0.7986,
+      "poison_asr": 50.0,
+      "collision_mse": 0.21946336328983307,
+      "realized_linf": 0.031372517347335815,
+      "N_p": 500
+    },
+    {
+      "pair": "dog-bird",
+      "y_adv": 5,
+      "target_class": 2,
+      "target_idx": 9467,
+      "clean_asr": 0.0,
+      "poison_cta": 0.8066999999999999,
+      "poison_asr": 50.0,
+      "collision_mse": 0.22617609798908234,
+      "realized_linf": 0.031372517347335815,
+      "N_p": 500
+    },
+    {
+      "pair": "dog-bird",
+      "y_adv": 5,
+      "target_class": 2,
+      "target_idx": 2100,
+      "clean_asr": 0.0,
+      "poison_cta": 0.7939333333333334,
+      "poison_asr": 0.0,
+      "collision_mse": 0.21428178250789642,
+      "realized_linf": 0.031372517347335815,
+      "N_p": 500
+    },
+    {
+      "pair": "dog-bird",
+      "y_adv": 5,
+      "target_class": 2,
+      "target_idx": 7171,
+      "clean_asr": 0.0,
+      "poison_cta": 0.7982333333333332,
+      "poison_asr": 0.0,
+      "collision_mse": 0.21459676325321198,
+      "realized_linf": 0.031372517347335815,
+      "N_p": 500
+    },
+    {
+      "pair": "dog-bird",
+      "y_adv": 5,
+      "target_class": 2,
+      "target_idx": 4833,
+      "clean_asr": 0.0,
+      "poison_cta": 0.8021666666666668,
+      "poison_asr": 100.0,
+      "collision_mse": 0.21867547929286957,
+      "realized_linf": 0.031372517347335815,
+      "N_p": 500
+    },
+    {
+      "pair": "dog-bird",
+      "y_adv": 5,
+      "target_class": 2,
+      "target_idx": 5599,
+      "clean_asr": 0.0,
+      "poison_cta": 0.8022333333333335,
+      "poison_asr": 0.0,
+      "collision_mse": 0.25823813676834106,
+      "realized_linf": 0.031372517347335815,
+      "N_p": 500
+    },
+    {
+      "pair": "dog-bird",
+      "y_adv": 5,
+      "target_class": 2,
+      "target_idx": 2544,
+      "clean_asr": 0.0,
+      "poison_cta": 0.8048833333333333,
+      "poison_asr": 0.0,
+      "collision_mse": 0.22333522140979767,
+      "realized_linf": 0.031372517347335815,
+      "N_p": 500
+    }
+  ],
+  "args": {
+    "dataset": "CIFAR10",
+    "data_path": "data",
+    "model": "ConvNetBN",
+    "out_dir": "result/abl_B_selection_only",
+    "seed": 0,
+    "dsa_strategy": "color_crop_cutout_flip_scale_rotate",
+    "syn_data_path": "result/res_DM_CIFAR10_ConvNet_50ipc.pt",
+    "surrogate_model": "ConvNet",
+    "num_surrogates": 10,
+    "surrogate_epochs": 1000,
+    "surrogate_lr": 0.01,
+    "surrogate_bs": 256,
+    "class_pairs": [
+      "dog-bird"
+    ],
+    "budget": 0.01,
+    "epsilon": 0.0313725,
+    "pgd_steps": 250,
+    "pgd_alpha": 0.0039216,
+    "lambda_margin": 1.0,
+    "num_targets": 10,
+    "num_victims": 6,
+    "target_select": "random",
+    "victim_epochs": 60,
+    "victim_lr": 0.1,
+    "victim_bs": 125,
+    "victim_decay": [
+      40
+    ],
+    "victim_aug": false,
+    "clean_baseline": true,
+    "random_select": false,
+    "single_surrogate": true
+  }
+}

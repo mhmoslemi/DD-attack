@@ -1,5 +1,5 @@
 {
-  "clean_cta": 0.789,
+  "clean_cta": 0.80705,
   "rows": [
     {
       "pair": "dog-bird",
@@ -7,9 +7,9 @@
       "target_class": 2,
       "target_idx": 430,
       "clean_asr": 0.0,
-      "poison_cta": 0.77024,
+      "poison_cta": 0.7978750000000001,
       "poison_asr": 0.0,
-      "collision_mse": 0.289061576128006,
+      "collision_mse": 0.2294626533985138,
       "realized_linf": 0.031372517347335815,
       "N_p": 500
     },
@@ -18,10 +18,10 @@
       "y_adv": 5,
       "target_class": 2,
       "target_idx": 387,
-      "clean_asr": 20.0,
-      "poison_cta": 0.7732,
-      "poison_asr": 20.0,
-      "collision_mse": 0.3124554753303528,
+      "clean_asr": 25.0,
+      "poison_cta": 0.79605,
+      "poison_asr": 25.0,
+      "collision_mse": 0.24412916600704193,
       "realized_linf": 0.031372517347335815,
       "N_p": 500
     },
@@ -31,9 +31,9 @@
       "target_class": 2,
       "target_idx": 6715,
       "clean_asr": 0.0,
-      "poison_cta": 0.7853199999999999,
-      "poison_asr": 60.0,
-      "collision_mse": 0.28733089566230774,
+      "poison_cta": 0.80285,
+      "poison_asr": 75.0,
+      "collision_mse": 0.22305631637573242,
       "realized_linf": 0.031372517347335815,
       "N_p": 500
     },
@@ -43,9 +43,9 @@
       "target_class": 2,
       "target_idx": 7670,
       "clean_asr": 0.0,
-      "poison_cta": 0.7874,
-      "poison_asr": 20.0,
-      "collision_mse": 0.3011269271373749,
+      "poison_cta": 0.807675,
+      "poison_asr": 25.0,
+      "collision_mse": 0.19214709103107452,
       "realized_linf": 0.031372517347335815,
       "N_p": 500
     },
@@ -55,9 +55,9 @@
       "target_class": 2,
       "target_idx": 9467,
       "clean_asr": 0.0,
-      "poison_cta": 0.77476,
-      "poison_asr": 20.0,
-      "collision_mse": 0.29368868470191956,
+      "poison_cta": 0.804625,
+      "poison_asr": 25.0,
+      "collision_mse": 0.19400830566883087,
       "realized_linf": 0.031372517347335815,
       "N_p": 500
     }
@@ -69,7 +69,7 @@
     "out_dir": "result/standard_nodistill",
     "seed": 0,
     "dsa_strategy": "color_crop_cutout_flip_scale_rotate",
-    "syn_data_path": "result/res_DM_CIFAR10_ConvNet_50ipc.pt",
+    "syn_data_path": "result/res_DM_CIFAR10_ConvNet_10ipc.pt",
     "surrogate_model": "ConvNet",
     "num_surrogates": 5,
     "surrogate_epochs": 500,
@@ -84,17 +84,16 @@
     "pgd_alpha": 0.0039216,
     "lambda_margin": 2.0,
     "num_targets": 5,
-    "num_victims": 5,
+    "num_victims": 4,
     "target_select": "random",
-    "victim_epochs": 35,
+    "victim_epochs": 50,
     "victim_lr": 0.1,
     "victim_bs": 125,
     "victim_decay": [
-      100,
-      150
+      40
     ],
     "victim_aug": false,
     "clean_baseline": true,
-    "random_select": true
+    "random_select": false
   }
 }

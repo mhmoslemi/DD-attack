@@ -216,9 +216,10 @@ def select_base_random(labels, y_adv, N_p, device):
 # --------------------------------------------------------------------------- #
 # crafting (Eq.2): per-sample L_inf PGD feature collision over the ensemble
 # --------------------------------------------------------------------------- #
-def craft_pgd(surrogates, base01, x_t_norm, norm, eps, steps, alpha, device):
-    
-    surrogates = [surrogates[0]]
+def craft_pgd(surrogates, base01, x_t_norm, norm, eps, steps, alpha, device,
+              single_surrogate=False):
+    if single_surrogate:
+        surrogates = [surrogates[0]]
 
     base01 = base01.detach()
     with torch.no_grad():
@@ -341,7 +342,8 @@ def main(args):
             # 2) craft on the same surrogates
             base01 = denorm(train_imgs[base_idx]).clamp(0.0, 1.0).detach()
             x_adv01, coll = craft_pgd(surrogates, base01, x_t_norm, norm,
-                                      args.epsilon, args.pgd_steps, args.pgd_alpha, device)
+                                      args.epsilon, args.pgd_steps, args.pgd_alpha, device,
+                                      single_surrogate=args.single_surrogate)
             linf = (x_adv01 - base01).abs().max().item()
             # 3) inject (clean-label) into a fresh clone of the full train set
             poisoned = train_imgs.clone()
@@ -455,4 +457,6 @@ if __name__ == '__main__':
     p.add_argument('--clean_baseline', action='store_true', default=False)
     p.add_argument('--random_select', action='store_true', default=False,
                    help='ablation: replace scored base selection with uniform random')
+    p.add_argument('--single_surrogate', action='store_true', default=False,
+                   help='use only the first surrogate for PGD crafting instead of the full ensemble')
     main(p.parse_args())

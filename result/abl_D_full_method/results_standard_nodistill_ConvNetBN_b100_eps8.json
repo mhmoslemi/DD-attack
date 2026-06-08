@@ -1,0 +1,160 @@
+{
+  "clean_cta": 0.8054666666666668,
+  "rows": [
+    {
+      "pair": "dog-bird",
+      "y_adv": 5,
+      "target_class": 2,
+      "target_idx": 430,
+      "clean_asr": 0.0,
+      "poison_cta": 0.7982,
+      "poison_asr": 100.0,
+      "collision_mse": 0.273171991109848,
+      "realized_linf": 0.031372517347335815,
+      "N_p": 500
+    },
+    {
+      "pair": "dog-bird",
+      "y_adv": 5,
+      "target_class": 2,
+      "target_idx": 387,
+      "clean_asr": 0.0,
+      "poison_cta": 0.8005,
+      "poison_asr": 50.0,
+      "collision_mse": 0.28159403800964355,
+      "realized_linf": 0.031372517347335815,
+      "N_p": 500
+    },
+    {
+      "pair": "dog-bird",
+      "y_adv": 5,
+      "target_class": 2,
+      "target_idx": 6715,
+      "clean_asr": 0.0,
+      "poison_cta": 0.8043999999999999,
+      "poison_asr": 100.0,
+      "collision_mse": 0.26534128189086914,
+      "realized_linf": 0.031372517347335815,
+      "N_p": 500
+    },
+    {
+      "pair": "dog-bird",
+      "y_adv": 5,
+      "target_class": 2,
+      "target_idx": 7670,
+      "clean_asr": 0.0,
+      "poison_cta": 0.8044833333333333,
+      "poison_asr": 100.0,
+      "collision_mse": 0.2729376554489136,
+      "realized_linf": 0.031372517347335815,
+      "N_p": 500
+    },
+    {
+      "pair": "dog-bird",
+      "y_adv": 5,
+      "target_class": 2,
+      "target_idx": 9467,
+      "clean_asr": 0.0,
+      "poison_cta": 0.7993833333333334,
+      "poison_asr": 66.66666666666667,
+      "collision_mse": 0.28082627058029175,
+      "realized_linf": 0.031372517347335815,
+      "N_p": 500
+    },
+    {
+      "pair": "dog-bird",
+      "y_adv": 5,
+      "target_class": 2,
+      "target_idx": 2100,
+      "clean_asr": 0.0,
+      "poison_cta": 0.8015666666666666,
+      "poison_asr": 0.0,
+      "collision_mse": 0.2655758559703827,
+      "realized_linf": 0.031372517347335815,
+      "N_p": 500
+    },
+    {
+      "pair": "dog-bird",
+      "y_adv": 5,
+      "target_class": 2,
+      "target_idx": 7171,
+      "clean_asr": 0.0,
+      "poison_cta": 0.8029333333333334,
+      "poison_asr": 50.0,
+      "collision_mse": 0.2691182792186737,
+      "realized_linf": 0.031372517347335815,
+      "N_p": 500
+    },
+    {
+      "pair": "dog-bird",
+      "y_adv": 5,
+      "target_class": 2,
+      "target_idx": 4833,
+      "clean_asr": 0.0,
+      "poison_cta": 0.7987500000000001,
+      "poison_asr": 100.0,
+      "collision_mse": 0.27338844537734985,
+      "realized_linf": 0.031372517347335815,
+      "N_p": 500
+    },
+    {
+      "pair": "dog-bird",
+      "y_adv": 5,
+      "target_class": 2,
+      "target_idx": 5599,
+      "clean_asr": 0.0,
+      "poison_cta": 0.8088000000000001,
+      "poison_asr": 0.0,
+      "collision_mse": 0.30505070090293884,
+      "realized_linf": 0.031372517347335815,
+      "N_p": 500
+    },
+    {
+      "pair": "dog-bird",
+      "y_adv": 5,
+      "target_class": 2,
+      "target_idx": 2544,
+      "clean_asr": 0.0,
+      "poison_cta": 0.8058833333333334,
+      "poison_asr": 33.333333333333336,
+      "collision_mse": 0.27863654494285583,
+      "realized_linf": 0.031372517347335815,
+      "N_p": 500
+    }
+  ],
+  "args": {
+    "dataset": "CIFAR10",
+    "data_path": "data",
+    "model": "ConvNetBN",
+    "out_dir": "result/abl_D_full_method",
+    "seed": 0,
+    "dsa_strategy": "color_crop_cutout_flip_scale_rotate",
+    "syn_data_path": "result/res_DM_CIFAR10_ConvNet_50ipc.pt",
+    "surrogate_model": "ConvNet",
+    "num_surrogates": 10,
+    "surrogate_epochs": 1000,
+    "surrogate_lr": 0.01,
+    "surrogate_bs": 256,
+    "class_pairs": [
+      "dog-bird"
+    ],
+    "budget": 0.01,
+    "epsilon": 0.0313725,
+    "pgd_steps": 250,
+    "pgd_alpha": 0.0039216,
+    "lambda_margin": 1.0,
+    "num_targets": 10,
+    "num_victims": 6,
+    "target_select": "random",
+    "victim_epochs": 60,
+    "victim_lr": 0.1,
+    "victim_bs": 125,
+    "victim_decay": [
+      40
+    ],
+    "victim_aug": false,
+    "clean_baseline": true,
+    "random_select": false,
+    "single_surrogate": false
+  }
+}
