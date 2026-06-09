@@ -1,0 +1,107 @@
+{
+  "clean_cta": null,
+  "rows": [
+    {
+      "pair": "dog-bird",
+      "attack": "gradmatch",
+      "y_adv": 5,
+      "target_class": 2,
+      "target_idx": 430,
+      "clean_asr": NaN,
+      "poison_cta": 0.8026,
+      "poison_asr": 0.0,
+      "craft_obj": 0.203034907579422,
+      "realized_linf": 0.031372517347335815,
+      "N_p": 250
+    },
+    {
+      "pair": "dog-bird",
+      "attack": "gradmatch",
+      "y_adv": 5,
+      "target_class": 2,
+      "target_idx": 387,
+      "clean_asr": NaN,
+      "poison_cta": 0.8041,
+      "poison_asr": 33.333333333333336,
+      "craft_obj": 0.17927011847496033,
+      "realized_linf": 0.031372517347335815,
+      "N_p": 250
+    },
+    {
+      "pair": "dog-bird",
+      "attack": "gradmatch",
+      "y_adv": 5,
+      "target_class": 2,
+      "target_idx": 6715,
+      "clean_asr": NaN,
+      "poison_cta": 0.7993333333333333,
+      "poison_asr": 83.33333333333333,
+      "craft_obj": 0.2680312395095825,
+      "realized_linf": 0.031372517347335815,
+      "N_p": 250
+    },
+    {
+      "pair": "dog-bird",
+      "attack": "gradmatch",
+      "y_adv": 5,
+      "target_class": 2,
+      "target_idx": 7670,
+      "clean_asr": NaN,
+      "poison_cta": 0.8033166666666668,
+      "poison_asr": 0.0,
+      "craft_obj": 0.17628908157348633,
+      "realized_linf": 0.031372517347335815,
+      "N_p": 250
+    },
+    {
+      "pair": "dog-bird",
+      "attack": "gradmatch",
+      "y_adv": 5,
+      "target_class": 2,
+      "target_idx": 9467,
+      "clean_asr": NaN,
+      "poison_cta": 0.8039000000000001,
+      "poison_asr": 0.0,
+      "craft_obj": 0.2110547572374344,
+      "realized_linf": 0.031372517347335815,
+      "N_p": 250
+    }
+  ],
+  "args": {
+    "dataset": "CIFAR10",
+    "data_path": "data",
+    "model": "ConvNetBN",
+    "out_dir": "result/standard_nodistill",
+    "seed": 0,
+    "dsa_strategy": "color_crop_cutout_flip_scale_rotate",
+    "syn_data_path": "result/res_DM_CIFAR10_ConvNet_50ipc.pt",
+    "surrogate_model": "ConvNet",
+    "num_surrogates": 10,
+    "surrogate_epochs": 1000,
+    "surrogate_lr": 0.01,
+    "surrogate_bs": 256,
+    "attack": "gradmatch",
+    "class_pairs": [
+      "dog-bird"
+    ],
+    "budget": 0.005,
+    "epsilon": 0.0313725,
+    "pgd_steps": 150,
+    "pgd_alpha": 0.0039216,
+    "restarts": 8,
+    "lambda_margin": 0.1,
+    "num_targets": 5,
+    "num_victims": 6,
+    "target_select": "random",
+    "victim_epochs": 60,
+    "victim_lr": 0.1,
+    "victim_bs": 125,
+    "victim_decay": [
+      40
+    ],
+    "victim_aug": false,
+    "clean_baseline": false,
+    "random_select": false,
+    "single_surrogate": false
+  }
+}
