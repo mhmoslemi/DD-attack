@@ -14,6 +14,10 @@ VICTIM_EPOCHS=80
 VICTIM_LR=0.1
 VICTIM_BS=125
 
+CUDA_DEVICE=6          # <── change this to select the GPU (0, 1, 2, …)
+export CUDA_VISIBLE_DEVICES=$CUDA_DEVICE
+
+
 # ── 1. Surrogates (attack-independent; saved once) ───────────────────────────
 echo "=== precomputing surrogates ==="
 python -u main_IF.py \
