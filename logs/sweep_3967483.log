@@ -1,0 +1,67 @@
+──────────────────────────────────────────────────────────
+[1/108] ConvNetBN_dog-bird_fc_b0.00002_seed0
+──────────────────────────────────────────────────────────
+[2026-06-16 10:57:30] device=cuda
+[2026-06-16 10:57:30] hyperparams: {'dataset': 'CIFAR10', 'data_path': 'data', 'model': 'ConvNetBN', 'out_dir': 'result/standard_nodistill', 'seed': 0, 'target_idx_file': 'result/selected_targets.json', 'dsa_strategy': 'color_crop_cutout_flip_scale_rotate', 'syn_data_path': 'result/res_DM_CIFAR10_ConvNet_50ipc.pt', 'surrogate_model': 'ConvNet', 'num_surrogates': 10, 'surrogate_epochs': 1000, 'surrogate_lr': 0.01, 'surrogate_bs': 256, 'attack': 'fc', 'class_pairs': ['dog-bird'], 'budget': 2e-05, 'epsilon': 0.0313725, 'pgd_steps': 150, 'pgd_alpha': 0.0039216, 'restarts': 1, 'lambda_margin': 0.1, 'num_targets': 10, 'num_victims': 6, 'target_select': 'random', 'victim_epochs': 2, 'victim_lr': 0.1, 'victim_bs': 125, 'victim_decay': [40, 60], 'victim_aug': False, 'clean_baseline': False, 'random_select': False, 'single_surrogate': True}
+[2026-06-16 10:57:30] loaded pre-selected targets from result/selected_targets.json
+[2026-06-16 10:57:41] N_total=50000  budget=0.0000 -> N_p=1 poisons (all in y_adv class)
+
+[2026-06-16 10:57:41] === training 10 surrogates (ConvNet) on distilled S (1000 ep each) ===
+[2026-06-16 10:57:53] Evaluate_00: epoch = 1000 train time = 11 s train loss = 0.014995 train acc = 0.9980, test acc = 0.6082
+[2026-06-16 10:58:03] Evaluate_01: epoch = 1000 train time = 10 s train loss = 0.002891 train acc = 1.0000, test acc = 0.6102
+[2026-06-16 10:58:14] Evaluate_02: epoch = 1000 train time = 10 s train loss = 0.005282 train acc = 1.0000, test acc = 0.6091
+[2026-06-16 10:58:25] Evaluate_03: epoch = 1000 train time = 10 s train loss = 0.013991 train acc = 1.0000, test acc = 0.6058
+[2026-06-16 10:58:36] Evaluate_04: epoch = 1000 train time = 10 s train loss = 0.011049 train acc = 1.0000, test acc = 0.5991
+[2026-06-16 10:58:47] Evaluate_05: epoch = 1000 train time = 10 s train loss = 0.009032 train acc = 1.0000, test acc = 0.6077
+[2026-06-16 10:58:58] Evaluate_06: epoch = 1000 train time = 10 s train loss = 0.008851 train acc = 1.0000, test acc = 0.5997
+[2026-06-16 10:59:09] Evaluate_07: epoch = 1000 train time = 10 s train loss = 0.002471 train acc = 1.0000, test acc = 0.6058
+[2026-06-16 10:59:20] Evaluate_08: epoch = 1000 train time = 10 s train loss = 0.003122 train acc = 1.0000, test acc = 0.6110
+[2026-06-16 10:59:31] Evaluate_09: epoch = 1000 train time = 10 s train loss = 0.005515 train acc = 1.0000, test acc = 0.6179
+
+[2026-06-16 10:59:31] ################ pair dog-bird : y_adv=5(dog)  target_class=2(bird) ################
+  targets (preselected): [5032, 2391, 6880, 4541, 6708, 1876, 291, 2301, 7022, 775]
+  [dog-bird t1/10 idx=5032] fc craft_obj=0.1726 linf=0.0314 | clean_ASR=n/a poison_CTA=0.6057 poison_ASR=0%
+  [dog-bird t2/10 idx=2391] fc craft_obj=0.2106 linf=0.0314 | clean_ASR=n/a poison_CTA=0.5681 poison_ASR=0%
+  [dog-bird t3/10 idx=6880] fc craft_obj=0.1832 linf=0.0314 | clean_ASR=n/a poison_CTA=0.5956 poison_ASR=0%
+  [dog-bird t4/10 idx=4541] fc craft_obj=0.1581 linf=0.0314 | clean_ASR=n/a poison_CTA=0.5824 poison_ASR=0%
+  [dog-bird t5/10 idx=6708] fc craft_obj=0.1179 linf=0.0314 | clean_ASR=n/a poison_CTA=0.6020 poison_ASR=0%
+  [dog-bird t6/10 idx=1876] fc craft_obj=0.1406 linf=0.0314 | clean_ASR=n/a poison_CTA=0.6046 poison_ASR=0%
+  [dog-bird t7/10 idx=291] fc craft_obj=0.1209 linf=0.0314 | clean_ASR=n/a poison_CTA=0.6017 poison_ASR=0%
+  [dog-bird t8/10 idx=2301] fc craft_obj=0.1590 linf=0.0314 | clean_ASR=n/a poison_CTA=0.5940 poison_ASR=33%
+  [dog-bird t9/10 idx=7022] fc craft_obj=0.0894 linf=0.0314 | clean_ASR=n/a poison_CTA=0.5724 poison_ASR=33%
+  [dog-bird t10/10 idx=775] fc craft_obj=0.1105 linf=0.0314 | clean_ASR=n/a poison_CTA=0.5902 poison_ASR=0%
+
+  ---- pair dog-bird (fc) summary over 10 targets x 6 victims = 60 votes ----
+    poison CTA = 0.5917 +/- 0.0127
+    poison ASR = 6.7% +/- 13.3%
+    target-prediction tally (['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']): [2, 0, 36, 6, 6, 4, 2, 4, 0, 0]
+
+[2026-06-16 11:02:31] wrote results_standard_nodistill_fc_ConvNetBN_b0_eps8.{json,csv} to result/standard_nodistill
+──────────────────────────────────────────────────────────
+[2/108] ConvNetBN_dog-bird_fc_b0.0001_seed0
+──────────────────────────────────────────────────────────
+[2026-06-16 11:02:34] device=cuda
+[2026-06-16 11:02:34] hyperparams: {'dataset': 'CIFAR10', 'data_path': 'data', 'model': 'ConvNetBN', 'out_dir': 'result/standard_nodistill', 'seed': 0, 'target_idx_file': 'result/selected_targets.json', 'dsa_strategy': 'color_crop_cutout_flip_scale_rotate', 'syn_data_path': 'result/res_DM_CIFAR10_ConvNet_50ipc.pt', 'surrogate_model': 'ConvNet', 'num_surrogates': 10, 'surrogate_epochs': 1000, 'surrogate_lr': 0.01, 'surrogate_bs': 256, 'attack': 'fc', 'class_pairs': ['dog-bird'], 'budget': 0.0001, 'epsilon': 0.0313725, 'pgd_steps': 150, 'pgd_alpha': 0.0039216, 'restarts': 1, 'lambda_margin': 0.1, 'num_targets': 10, 'num_victims': 6, 'target_select': 'random', 'victim_epochs': 2, 'victim_lr': 0.1, 'victim_bs': 125, 'victim_decay': [40, 60], 'victim_aug': False, 'clean_baseline': False, 'random_select': False, 'single_surrogate': True}
+[2026-06-16 11:02:34] loaded pre-selected targets from result/selected_targets.json
+[2026-06-16 11:02:45] N_total=50000  budget=0.0001 -> N_p=5 poisons (all in y_adv class)
+
+[2026-06-16 11:02:45] === training 10 surrogates (ConvNet) on distilled S (1000 ep each) ===
+[2026-06-16 11:02:57] Evaluate_00: epoch = 1000 train time = 11 s train loss = 0.013940 train acc = 1.0000, test acc = 0.6187
+[2026-06-16 11:03:08] Evaluate_01: epoch = 1000 train time = 10 s train loss = 0.001980 train acc = 1.0000, test acc = 0.6096
+[2026-06-16 11:03:19] Evaluate_02: epoch = 1000 train time = 10 s train loss = 0.002841 train acc = 1.0000, test acc = 0.6159
+[2026-06-16 11:03:30] Evaluate_03: epoch = 1000 train time = 10 s train loss = 0.003956 train acc = 1.0000, test acc = 0.6137
+[2026-06-16 11:03:41] Evaluate_04: epoch = 1000 train time = 10 s train loss = 0.003840 train acc = 1.0000, test acc = 0.6059
+[2026-06-16 11:03:51] Evaluate_05: epoch = 1000 train time = 10 s train loss = 0.009883 train acc = 1.0000, test acc = 0.6083
+[2026-06-16 11:04:02] Evaluate_06: epoch = 1000 train time = 10 s train loss = 0.015253 train acc = 0.9980, test acc = 0.6157
+[2026-06-16 11:04:13] Evaluate_07: epoch = 1000 train time = 10 s train loss = 0.001580 train acc = 1.0000, test acc = 0.6098
+[2026-06-16 11:04:24] Evaluate_08: epoch = 1000 train time = 10 s train loss = 0.001339 train acc = 1.0000, test acc = 0.6103
+[2026-06-16 11:04:35] Evaluate_09: epoch = 1000 train time = 10 s train loss = 0.025003 train acc = 1.0000, test acc = 0.6093
+
+[2026-06-16 11:04:35] ################ pair dog-bird : y_adv=5(dog)  target_class=2(bird) ################
+  targets (preselected): [5032, 2391, 6880, 4541, 6708, 1876, 291, 2301, 7022, 775]
+  [dog-bird t1/10 idx=5032] fc craft_obj=0.1456 linf=0.0314 | clean_ASR=n/a poison_CTA=0.6093 poison_ASR=0%
+  [dog-bird t2/10 idx=2391] fc craft_obj=0.1811 linf=0.0314 | clean_ASR=n/a poison_CTA=0.5970 poison_ASR=0%
+  [dog-bird t3/10 idx=6880] fc craft_obj=0.1813 linf=0.0314 | clean_ASR=n/a poison_CTA=0.6098 poison_ASR=0%
+  [dog-bird t4/10 idx=4541] fc craft_obj=0.1397 linf=0.0314 | clean_ASR=n/a poison_CTA=0.6083 poison_ASR=0%
+  [dog-bird t5/10 idx=6708] fc craft_obj=0.1079 linf=0.0314 | clean_ASR=n/a poison_CTA=0.6249 poison_ASR=0%
+  [dog-bird t6/10 idx=1876] fc craft_obj=0.1403 linf=0.0314 | clean_ASR=n/a poison_CTA=0.5960 poison_ASR=0%

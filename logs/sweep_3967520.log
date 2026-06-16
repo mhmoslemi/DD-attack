@@ -1,0 +1,62 @@
+──────────────────────────────────────────────────────────
+[1/27] ConvNetBN_dog-bird_gradmatch_b0.00002_seed0
+──────────────────────────────────────────────────────────
+[2026-06-16 11:13:22] device=cuda
+[2026-06-16 11:13:22] hyperparams: {'dataset': 'CIFAR10', 'data_path': 'data', 'model': 'ConvNetBN', 'out_dir': 'result/standard_nodistill', 'seed': 0, 'target_idx_file': 'result/selected_targets.json', 'dsa_strategy': 'color_crop_cutout_flip_scale_rotate', 'syn_data_path': 'result/res_DM_CIFAR10_ConvNet_50ipc.pt', 'surrogate_model': 'ConvNet', 'num_surrogates': 10, 'surrogate_epochs': 1000, 'surrogate_lr': 0.01, 'surrogate_bs': 256, 'attack': 'gradmatch', 'class_pairs': ['dog-bird'], 'budget': 2e-05, 'epsilon': 0.0313725, 'pgd_steps': 150, 'pgd_alpha': 0.0039216, 'restarts': 8, 'lambda_margin': 0.1, 'num_targets': 10, 'num_victims': 6, 'target_select': 'random', 'victim_epochs': 80, 'victim_lr': 0.1, 'victim_bs': 125, 'victim_decay': [40, 60], 'victim_aug': False, 'clean_baseline': True, 'random_select': False, 'single_surrogate': True}
+[2026-06-16 11:13:22] loaded pre-selected targets from result/selected_targets.json
+[2026-06-16 11:13:34] N_total=50000  budget=0.0000 -> N_p=1 poisons (all in y_adv class)
+
+[2026-06-16 11:13:34] === training 10 surrogates (ConvNet) on distilled S (1000 ep each) ===
+[2026-06-16 11:13:45] Evaluate_00: epoch = 1000 train time = 11 s train loss = 0.005525 train acc = 1.0000, test acc = 0.6142
+[2026-06-16 11:13:56] Evaluate_01: epoch = 1000 train time = 10 s train loss = 0.003349 train acc = 1.0000, test acc = 0.6090
+[2026-06-16 11:14:07] Evaluate_02: epoch = 1000 train time = 10 s train loss = 0.009698 train acc = 1.0000, test acc = 0.6167
+[2026-06-16 11:14:18] Evaluate_03: epoch = 1000 train time = 11 s train loss = 0.004562 train acc = 1.0000, test acc = 0.6136
+[2026-06-16 11:14:29] Evaluate_04: epoch = 1000 train time = 10 s train loss = 0.005464 train acc = 1.0000, test acc = 0.6040
+[2026-06-16 11:14:40] Evaluate_05: epoch = 1000 train time = 10 s train loss = 0.023216 train acc = 1.0000, test acc = 0.6113
+[2026-06-16 11:14:51] Evaluate_06: epoch = 1000 train time = 10 s train loss = 0.008404 train acc = 1.0000, test acc = 0.6124
+[2026-06-16 11:15:02] Evaluate_07: epoch = 1000 train time = 10 s train loss = 0.002220 train acc = 1.0000, test acc = 0.6035
+[2026-06-16 11:15:13] Evaluate_08: epoch = 1000 train time = 11 s train loss = 0.003783 train acc = 1.0000, test acc = 0.6124
+[2026-06-16 11:15:24] Evaluate_09: epoch = 1000 train time = 10 s train loss = 0.003822 train acc = 1.0000, test acc = 0.6195
+
+[2026-06-16 11:15:24] === training 6 clean victims (ConvNetBN) from scratch on full clean data ===
+  clean baseline CTA = 0.7966
+
+[2026-06-16 11:26:44] ################ pair dog-bird : y_adv=5(dog)  target_class=2(bird) ################
+  targets (preselected): [5032, 2391, 6880, 4541, 6708, 1876, 291, 2301, 7022, 775]
+Traceback (most recent call last):
+  File "/tmp/DD-attack/main_IF.py", line 563, in <module>
+    main(p.parse_args())
+  File "/tmp/DD-attack/main_IF.py", line 428, in main
+    x_adv01, obj = craft_gradmatch(
+                   ^^^^^^^^^^^^^^^^
+  File "/tmp/DD-attack/main_IF.py", line 299, in craft_gradmatch
+    x_adv_norm = DiffAugment(x_adv_norm, dsa_strategy, seed=seed,
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/DD-attack/utils.py", line 545, in DiffAugment
+    x = f(x, param)
+        ^^^^^^^^^^^
+  File "/tmp/DD-attack/utils.py", line 635, in rand_crop
+    translation_x[:] = translation_x[0]
+    ~~~~~~~~~~~~~^^^
+RuntimeError: unsupported operation: some elements of the input tensor and the written-to tensor refer to a single memory location. Please clone() the tensor before performing the operation.
+──────────────────────────────────────────────────────────
+[2/27] ConvNetBN_dog-bird_gradmatch_b0.0001_seed0
+──────────────────────────────────────────────────────────
+[2026-06-16 11:26:47] device=cuda
+[2026-06-16 11:26:47] hyperparams: {'dataset': 'CIFAR10', 'data_path': 'data', 'model': 'ConvNetBN', 'out_dir': 'result/standard_nodistill', 'seed': 0, 'target_idx_file': 'result/selected_targets.json', 'dsa_strategy': 'color_crop_cutout_flip_scale_rotate', 'syn_data_path': 'result/res_DM_CIFAR10_ConvNet_50ipc.pt', 'surrogate_model': 'ConvNet', 'num_surrogates': 10, 'surrogate_epochs': 1000, 'surrogate_lr': 0.01, 'surrogate_bs': 256, 'attack': 'gradmatch', 'class_pairs': ['dog-bird'], 'budget': 0.0001, 'epsilon': 0.0313725, 'pgd_steps': 150, 'pgd_alpha': 0.0039216, 'restarts': 8, 'lambda_margin': 0.1, 'num_targets': 10, 'num_victims': 6, 'target_select': 'random', 'victim_epochs': 80, 'victim_lr': 0.1, 'victim_bs': 125, 'victim_decay': [40, 60], 'victim_aug': False, 'clean_baseline': True, 'random_select': False, 'single_surrogate': True}
+[2026-06-16 11:26:47] loaded pre-selected targets from result/selected_targets.json
+[2026-06-16 11:26:59] N_total=50000  budget=0.0001 -> N_p=5 poisons (all in y_adv class)
+
+[2026-06-16 11:26:59] === training 10 surrogates (ConvNet) on distilled S (1000 ep each) ===
+[2026-06-16 11:27:10] Evaluate_00: epoch = 1000 train time = 11 s train loss = 0.021094 train acc = 1.0000, test acc = 0.6127
+[2026-06-16 11:27:21] Evaluate_01: epoch = 1000 train time = 10 s train loss = 0.008390 train acc = 1.0000, test acc = 0.6103
+[2026-06-16 11:27:32] Evaluate_02: epoch = 1000 train time = 11 s train loss = 0.003360 train acc = 1.0000, test acc = 0.6129
+[2026-06-16 11:27:43] Evaluate_03: epoch = 1000 train time = 11 s train loss = 0.001398 train acc = 1.0000, test acc = 0.6029
+[2026-06-16 11:27:54] Evaluate_04: epoch = 1000 train time = 10 s train loss = 0.008135 train acc = 1.0000, test acc = 0.6099
+[2026-06-16 11:28:05] Evaluate_05: epoch = 1000 train time = 10 s train loss = 0.001571 train acc = 1.0000, test acc = 0.6120
+[2026-06-16 11:28:16] Evaluate_06: epoch = 1000 train time = 10 s train loss = 0.003068 train acc = 1.0000, test acc = 0.6198
+[2026-06-16 11:28:28] Evaluate_07: epoch = 1000 train time = 10 s train loss = 0.015167 train acc = 1.0000, test acc = 0.6122
+[2026-06-16 11:28:38] Evaluate_08: epoch = 1000 train time = 10 s train loss = 0.010319 train acc = 1.0000, test acc = 0.6088
+[2026-06-16 11:28:49] Evaluate_09: epoch = 1000 train time = 10 s train loss = 0.013396 train acc = 1.0000, test acc = 0.6153
+
+[2026-06-16 11:28:49] === training 6 clean victims (ConvNetBN) from scratch on full clean data ===

@@ -360,28 +360,81 @@ def main(args):
     image_syn = image_syn.to(device)
     label_syn = label_syn.to(device)
 
-    print('\n%s === training %d surrogates (%s) on distilled S (%d ep each) ==='
-          % (get_time(), args.num_surrogates, args.surrogate_model, args.surrogate_epochs))
-    surrogates = train_surrogates_on_syn(image_syn, label_syn, test_imgs, test_labs,
-                                         channel, num_classes, im_size, args,
-                                         dsa_param, device)
+    sur_cache = os.path.join(args.cache_dir,
+        'surrogates_%s_%dx%dep_seed%d' % (
+            args.surrogate_model, args.num_surrogates, args.surrogate_epochs, args.seed)
+    ) if args.cache_dir else ''
+
+    if sur_cache and all(
+            os.path.exists(os.path.join(sur_cache, 'surrogate_%d.pt' % i))
+            for i in range(args.num_surrogates)):
+        print('\n%s === loading %d surrogates from cache: %s ==='
+              % (get_time(), args.num_surrogates, sur_cache))
+        surrogates = []
+        requires = (args.attack == 'gradmatch')
+        for i in range(args.num_surrogates):
+            net = get_network(args.surrogate_model, channel, num_classes, im_size)
+            net.load_state_dict(torch.load(
+                os.path.join(sur_cache, 'surrogate_%d.pt' % i), map_location=device))
+            net = net.to(device).eval()
+            for p in net.parameters():
+                p.requires_grad_(requires)
+            surrogates.append(net)
+    else:
+        print('\n%s === training %d surrogates (%s) on distilled S (%d ep each) ==='
+              % (get_time(), args.num_surrogates, args.surrogate_model, args.surrogate_epochs))
+        surrogates = train_surrogates_on_syn(image_syn, label_syn, test_imgs, test_labs,
+                                             channel, num_classes, im_size, args,
+                                             dsa_param, device)
+        if sur_cache:
+            os.makedirs(sur_cache, exist_ok=True)
+            for i, net in enumerate(surrogates):
+                torch.save(net.state_dict(), os.path.join(sur_cache, 'surrogate_%d.pt' % i))
+            print('%s  saved surrogates to %s' % (get_time(), sur_cache))
 
     # ---- clean victim pool (baseline CTA + per-target clean ASR) ----------
     clean_victims = []
     clean_cta = None
     if args.clean_baseline:
-        print('\n%s === training %d clean victims (%s) from scratch on full clean data ==='
-              % (get_time(), args.num_victims, args.model))
-        for i in range(args.num_victims):
-            net = get_network(args.model, channel, num_classes, im_size)
-            net = train_from_scratch(net, train_imgs, train_labs, args.victim_epochs,
-                                     args.victim_lr, args.victim_bs, args.victim_decay,
-                                     device, weight_decay=0.0, aug=args.victim_aug,
-                                     dsa_strategy=args.dsa_strategy, dsa_param=dsa_param)
-            clean_victims.append(net)
+        vic_cache = os.path.join(args.cache_dir,
+            'clean_victims_%s_%dx%dep_seed%d' % (
+                args.model, args.num_victims, args.victim_epochs, args.seed)
+        ) if args.cache_dir else ''
+
+        if vic_cache and all(
+                os.path.exists(os.path.join(vic_cache, 'victim_%d.pt' % i))
+                for i in range(args.num_victims)):
+            print('\n%s === loading %d clean victims (%s) from cache: %s ==='
+                  % (get_time(), args.num_victims, args.model, vic_cache))
+            for i in range(args.num_victims):
+                net = get_network(args.model, channel, num_classes, im_size)
+                net.load_state_dict(torch.load(
+                    os.path.join(vic_cache, 'victim_%d.pt' % i), map_location=device))
+                net = net.to(device).eval()
+                clean_victims.append(net)
+        else:
+            print('\n%s === training %d clean victims (%s) from scratch on full clean data ==='
+                  % (get_time(), args.num_victims, args.model))
+            for i in range(args.num_victims):
+                net = get_network(args.model, channel, num_classes, im_size)
+                net = train_from_scratch(net, train_imgs, train_labs, args.victim_epochs,
+                                         args.victim_lr, args.victim_bs, args.victim_decay,
+                                         device, weight_decay=0.0, aug=args.victim_aug,
+                                         dsa_strategy=args.dsa_strategy, dsa_param=dsa_param)
+                clean_victims.append(net)
+            if vic_cache:
+                os.makedirs(vic_cache, exist_ok=True)
+                for i, net in enumerate(clean_victims):
+                    torch.save(net.state_dict(), os.path.join(vic_cache, 'victim_%d.pt' % i))
+                print('%s  saved clean victims to %s' % (get_time(), vic_cache))
+
         clean_cta = float(np.mean([test_acc(n, test_imgs, test_labs, device)
                                    for n in clean_victims]))
         print('  clean baseline CTA = %.4f' % clean_cta)
+
+    if args.precompute_only:
+        print('%s precompute_only: done, exiting.' % get_time())
+        return
 
     # ---- per class pair / target ------------------------------------------
     g = torch.Generator(device='cpu').manual_seed(args.seed)
@@ -556,6 +609,10 @@ if __name__ == '__main__':
     p.add_argument('--victim_aug', action='store_true', default=False,
                    help="MetaPoison default is NO augmentation; leave off to match")
     p.add_argument('--clean_baseline', action='store_true', default=False)
+    p.add_argument('--cache_dir', type=str, default='',
+                   help='directory to save/load surrogate and clean-victim checkpoints')
+    p.add_argument('--precompute_only', action='store_true', default=False,
+                   help='train+save surrogates/victims to --cache_dir then exit')
     p.add_argument('--random_select', action='store_true', default=False,
                    help='ablation: replace scored base selection with uniform random')
     p.add_argument('--single_surrogate', action='store_true', default=False,
