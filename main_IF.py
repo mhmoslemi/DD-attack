@@ -494,6 +494,7 @@ def main(args):
 
             # 4) victims from scratch on the poisoned full set
             victim_preds, victim_ctas = [], []
+            print('  victims: ', end='', flush=True)
             for vi in range(args.num_victims):
                 net = get_network(args.model, channel, num_classes, im_size)
                 net = train_from_scratch(net, poisoned, train_labs, args.victim_epochs,
@@ -508,6 +509,8 @@ def main(args):
                 del net
                 if device == 'cuda':
                     torch.cuda.empty_cache()
+                sep = ', ' if vi < args.num_victims - 1 else '\n'
+                print(f'v{vi+1} done', end=sep, flush=True)
 
             poison_asr = 100.0 * sum(p == y_adv for p in victim_preds) / args.num_victims
             poison_cta = float(np.mean(victim_ctas))

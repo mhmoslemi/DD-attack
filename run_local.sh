@@ -1,55 +1,24 @@
 #!/bin/bash
-#SBATCH --account=aip-boyuwang
-#SBATCH --time=0-06:25:00       # Time limit (DD-HH:MM:SS)
-#SBATCH --gpus-per-node=h100:4  # number of GPUs = NUM_GPUS below
-#SBATCH --cpus-per-task=4      # scale with NUM_GPUS (2 per GPU)
-#SBATCH --mem=12GB               # scale with NUM_GPUS (6GB per GPU)
-#SBATCH --mail-user=mhmoslemi2338@gmail.com
-#SBATCH --mail-type=ALL
 
-SCRATCH_DIR="/home/mmoslem3/scratch/DD-attack"
-LOG_DEST="$SCRATCH_DIR/logs"
-
-module load python/3.11.5 cuda/12.6 cudnn
-
-cp -r "$SCRATCH_DIR" "$SLURM_TMPDIR"
-cd "$SLURM_TMPDIR/DD-attack"
-
+LOG_DEST="logs"
 mkdir -p "$LOG_DEST"
 
-# Background log sync: rsync logs/ → scratch every 10 s so logs are live-readable from scratch
-(while true; do
-    rsync -a --update logs/ "$LOG_DEST/" 2>/dev/null
-    sleep 10
-done) &
-SYNC_PID=$!
-
-virtualenv --no-download "$SLURM_TMPDIR/env"
-source "$SLURM_TMPDIR/env/bin/activate"
-
-pip install --no-index --upgrade pip
-pip install -r "$SLURM_TMPDIR/DD-attack/requirements.txt"
-
+# Background log sync not needed locally — logs written directly to logs/
 # ── Parallelism ───────────────────────────────────────────────────────────────
-# Must match --gpus-per-node above.
-NUM_GPUS=4
+NUM_GPUS=1
 
 # ── Pre-selected targets (from select_targets.py) ────────────────────────────
-# Run once:  python select_targets.py --model ConvNetBN --seed 0
-# Then set the path here; leave empty ("") to fall back to random selection.
 TARGET_IDX_FILE=""  # set to "result/selected_targets.json" to re-enable JSON target loading
 
 # ── Reproducibility ──────────────────────────────────────────────────────────
 SEED=0
-export PYTHONHASHSEED=$SEED   # deterministic hash randomisation (Python 3.3+)
-
-mkdir -p logs
+export PYTHONHASHSEED=$SEED
 
 # ── Sweep grid ───────────────────────────────────────────────────────────────
 # PAIRS=(dog-bird frog-airplane)
 PAIRS=(dog-bird)
 # ATTACKS=(fc gradmatch)
-ATTACKS=(gradmatch)
+ATTACKS=(fc)
 # MODELS=(ConvNetBN ResNet20 VGG13)
 MODELS=(ConvNetBN)
 
@@ -90,6 +59,7 @@ for BUDGET in "${BUDGETS[@]}"; do
 
     COMMON_ARGS=(
         --syn_data_path result/res_DM_CIFAR10_ConvNet_50ipc.pt
+        --data_path /home/mmoslem3/scratch/data
         --surrogate_model ConvNet --model "$MODEL"
         --class_pairs "$PAIR"
         --attack "$ATTACK" --restarts "$RESTARTS"
@@ -127,10 +97,6 @@ done
 # wait for any remaining jobs (last batch may be smaller than NUM_GPUS)
 wait
 
-# Stop background sync and do a final rsync to scratch
-kill $SYNC_PID 2>/dev/null
-rsync -a --update logs/ "$LOG_DEST/"
-
 echo "══════════════════════════════════════════════════════════"
-echo "Sweep done. ${TOTAL} combos (x2 with baseline) — logs synced to $LOG_DEST"
+echo "Sweep done. ${TOTAL} combos (x2 with baseline) — logs in $LOG_DEST"
 echo "══════════════════════════════════════════════════════════"

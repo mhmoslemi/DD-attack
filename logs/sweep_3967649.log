@@ -23,3 +23,11 @@
 
 [2026-06-16 11:40:03] ################ pair frog-airplane : y_adv=6(frog)  target_class=0(airplane) ################
   targets (preselected): [8961, 1067, 3943, 5626, 1461, 1949, 8447, 3650, 1161, 2040]
+  [frog-airplane t1/10 idx=8961] fc craft_obj=0.1741 linf=0.0314 | clean_ASR=0% poison_CTA=0.7844 poison_ASR=0%
+  [frog-airplane t2/10 idx=1067] fc craft_obj=0.1299 linf=0.0314 | clean_ASR=0% poison_CTA=0.7847 poison_ASR=0%
+  [frog-airplane t3/10 idx=3943] fc craft_obj=0.1664 linf=0.0314 | clean_ASR=0% poison_CTA=0.7757 poison_ASR=0%
+  [frog-airplane t4/10 idx=5626] fc craft_obj=0.1771 linf=0.0314 | clean_ASR=0% poison_CTA=0.7792 poison_ASR=0%
+  [frog-airplane t5/10 idx=1461] fc craft_obj=0.2000 linf=0.0314 | clean_ASR=0% poison_CTA=0.7776 poison_ASR=0%
+  [frog-airplane t6/10 idx=1949] fc craft_obj=0.1679 linf=0.0314 | clean_ASR=0% poison_CTA=0.7689 poison_ASR=0%
+  [frog-airplane t7/10 idx=8447] fc craft_obj=0.1938 linf=0.0314 | clean_ASR=0% poison_CTA=0.7713 poison_ASR=0%
+  [frog-airplane t8/10 idx=3650] fc craft_obj=0.1801 linf=0.0314 | clean_ASR=0% poison_CTA=0.7895 poison_ASR=0%

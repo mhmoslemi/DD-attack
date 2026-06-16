@@ -10,12 +10,12 @@ SURROGATE_MODEL=ConvNet
 NUM_SURROGATES=10
 SURROGATE_EPOCHS=1000
 
-VICTIM_EPOCHS=80
+VICTIM_EPOCHS=60
 VICTIM_LR=0.1
 VICTIM_BS=125
 
-CUDA_DEVICE=6          # <── change this to select the GPU (0, 1, 2, …)
-export CUDA_VISIBLE_DEVICES=$CUDA_DEVICE
+# CUDA_DEVICE=6          # <── change this to select the GPU (0, 1, 2, …)
+# export CUDA_VISIBLE_DEVICES=$CUDA_DEVICE
 
 
 # ── 1. Surrogates (attack-independent; saved once) ───────────────────────────
@@ -48,7 +48,7 @@ for MODEL in ConvNetBN ResNet20 VGG13; do
         --victim_epochs $VICTIM_EPOCHS \
         --victim_lr $VICTIM_LR \
         --victim_bs $VICTIM_BS \
-        --victim_decay 40 60 \
+        --victim_decay 40 \
         --attack fc \
         --class_pairs frog-airplane \
         --seed $SEED

@@ -1,17 +1,10 @@
-created virtual environment CPython3.11.5.final.0-64 in 345ms
+created virtual environment CPython3.11.5.final.0-64 in 982ms
   creator CPython3Posix(dest=/tmp/env, clear=False, no_vcs_ignore=False, global=False)
   seeder FromAppData(download=False, pip=bundle, setuptools=bundle, wheel=bundle, via=copy, app_data_dir=/home/mmoslem3/.local/share/virtualenv)
-    added seed packages: pip==25.3, setuptools==80.9.0+computecanada, wheel==0.45.1+computecanada
+    added seed packages: pip==26.1.2, setuptools==80.9.0+computecanada, wheel==0.47.0
   activators BashActivator,CShellActivator,FishActivator,NushellActivator,PowerShellActivator,PythonActivator
 Looking in links: /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/gentoo2023/x86-64-v3, /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/gentoo2023/generic, /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/generic
-Requirement already satisfied: pip in /tmp/env/lib/python3.11/site-packages (25.3)
-Processing /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/generic/pip-26.0.1+computecanada-py3-none-any.whl
-Installing collected packages: pip
-  Attempting uninstall: pip
-    Found existing installation: pip 25.3
-    Uninstalling pip-25.3:
-      Successfully uninstalled pip-25.3
-Successfully installed pip-26.0.1+computecanada
+Requirement already satisfied: pip in /tmp/env/lib/python3.11/site-packages (26.1.2)
 Looking in links: /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/gentoo2023/x86-64-v3, /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/gentoo2023/generic, /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/generic
 Processing /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/generic/annotated_doc-0.0.4+computecanada-py3-none-any.whl (from -r /tmp/DD-attack/requirements.txt (line 1))
 Processing /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/generic/annotated_types-0.7.0+computecanada-py3-none-any.whl (from -r /tmp/DD-attack/requirements.txt (line 2))
@@ -122,36 +115,20 @@ Installing collected packages: torchfile, pytz, mpmath, antlr4_python3_runtime, 
 
 Successfully installed Faker-40.13.0 GitPython-3.1.49+computecanada MarkupSafe-3.0.2+computecanada POT-0.9.0+computecanada Pillow_SIMD-9.5.0.post2+computecanada annotated_doc-0.0.4+computecanada annotated_types-0.7.0+computecanada antlr4_python3_runtime-4.9.3+computecanada anyio-4.13.0+computecanada certifi-2026.2.25+computecanada charset_normalizer-3.4.6+computecanada click-8.3.2+computecanada contourpy-1.3.1+computecanada ctgan-0.12.1 cycler-0.12.1+computecanada efficientnet_pytorch-0.7.1+computecanada fast_pytorch_kmeans-0.2.2 filelock-3.20.1+computecanada fonttools-4.61.1+computecanada fsspec-2025.12.0+computecanada gitdb-4.0.12+computecanada h11-0.16.0+computecanada hf_xet-1.4.3+computecanada higher-0.2.1 httpcore-1.0.9+computecanada httpx-0.28.1+computecanada huggingface_hub-1.9.0+computecanada idna-3.11+computecanada jinja2-3.1.6+computecanada joblib-1.5.3+computecanada jsonpatch-1.33+computecanada jsonpointer-3.1.1+computecanada kiwisolver-1.4.8+computecanada kornia-0.8.2 kornia_rs-0.1.9+computecanada markdown_it_py-4.0.0+computecanada matplotlib-3.10.1+computecanada mdurl-0.1.2+computecanada mlconfig-0.1.1 mpmath-1.3.0+computecanada networkx-3.6.1+computecanada numpy-1.26.4+computecanada omegaconf-2.3.0+computecanada packaging-25.0+computecanada pandas-2.3.3+computecanada pillow-11.1.0+computecanada platformdirs-4.9.6 protobuf-6.33.6+computecanada psutil-7.0.0+computecanada pydantic-2.13.3+computecanada pydantic_core-2.46.3+computecanada pygments-2.20.0+computecanada pyparsing-3.2.5+computecanada python_dateutil-2.9.0.post0+computecanada pytz-2025.2+computecanada pyyaml-6.0.3+computecanada pyzmq-27.1.0+computecanada rdt-1.20.0 requests-2.33.1+computecanada rich-14.3.3+computecanada safetensors-0.7.0+computecanada scikit_learn-1.7.1+computecanada scipy-1.11.2+computecanada seaborn-0.13.2+computecanada sentry_sdk-2.58.0+computecanada shellingham-1.5.4+computecanada six-1.17.0+computecanada smmap-5.0.3+computecanada sympy-1.14.0+computecanada threadpoolctl-3.6.0+computecanada timm-1.0.26 toml-0.10.2+computecanada torch-2.9.1+computecanada torchfile-0.1.0+computecanada torchnet-0.0.4+computecanada torchvision-0.24.1+computecanada tornado-6.5.5+computecanada tqdm-4.67.1+computecanada triton-3.6.0+computecanada typer-0.24.1+computecanada typing_extensions-4.15.0+computecanada typing_inspection-0.4.2+computecanada tzdata-2025.3+computecanada urllib3-2.6.3+computecanada visdom-0.1.8.9+computecanada wandb-0.24.0+computecanada websocket_client-1.9.0+computecanada
 ──────────────────────────────────────────────────────────
-[1/27] ConvNetBN_frog-airplane_fc_b0.00002_seed0
+[1/9] ConvNetBN_frog-airplane_gradmatch_b0.1_seed0
 ──────────────────────────────────────────────────────────
-[2026-06-16 11:33:47] device=cuda
-[2026-06-16 11:33:47] hyperparams: {'dataset': 'CIFAR10', 'data_path': 'data', 'model': 'ConvNetBN', 'out_dir': 'result/standard_nodistill', 'seed': 0, 'target_idx_file': 'result/selected_targets.json', 'dsa_strategy': 'color_crop_cutout_flip_scale_rotate', 'syn_data_path': 'result/res_DM_CIFAR10_ConvNet_50ipc.pt', 'surrogate_model': 'ConvNet', 'num_surrogates': 10, 'surrogate_epochs': 1000, 'surrogate_lr': 0.01, 'surrogate_bs': 256, 'attack': 'fc', 'class_pairs': ['frog-airplane'], 'budget': 2e-05, 'epsilon': 0.0313725, 'pgd_steps': 150, 'pgd_alpha': 0.0039216, 'restarts': 1, 'lambda_margin': 0.1, 'num_targets': 10, 'num_victims': 6, 'target_select': 'random', 'victim_epochs': 30, 'victim_lr': 0.1, 'victim_bs': 125, 'victim_decay': [40, 60], 'victim_aug': False, 'clean_baseline': True, 'random_select': False, 'single_surrogate': True}
-[2026-06-16 11:33:47] loaded pre-selected targets from result/selected_targets.json
-[2026-06-16 11:33:59] N_total=50000  budget=0.0000 -> N_p=1 poisons (all in y_adv class)
+[2026-06-16 16:01:51] device=cuda
+[2026-06-16 16:01:51] hyperparams: {'dataset': 'CIFAR10', 'data_path': 'data', 'model': 'ConvNetBN', 'out_dir': 'result/standard_nodistill', 'seed': 0, 'target_idx_file': 'result/selected_targets.json', 'dsa_strategy': 'color_crop_cutout_flip_scale_rotate', 'syn_data_path': 'result/res_DM_CIFAR10_ConvNet_50ipc.pt', 'surrogate_model': 'ConvNet', 'num_surrogates': 10, 'surrogate_epochs': 1000, 'surrogate_lr': 0.01, 'surrogate_bs': 256, 'attack': 'gradmatch', 'class_pairs': ['frog-airplane'], 'budget': 0.1, 'epsilon': 0.0313725, 'pgd_steps': 150, 'pgd_alpha': 0.0039216, 'restarts': 8, 'lambda_margin': 0.1, 'num_targets': 10, 'num_victims': 6, 'target_select': 'random', 'victim_epochs': 60, 'victim_lr': 0.1, 'victim_bs': 125, 'victim_decay': [40], 'victim_aug': False, 'clean_baseline': True, 'cache_dir': 'result/cache', 'precompute_only': False, 'random_select': False, 'single_surrogate': True}
+[2026-06-16 16:01:51] loaded pre-selected targets from result/selected_targets.json
+[2026-06-16 16:02:03] N_total=50000  budget=0.1000 -> N_p=5000 poisons (all in y_adv class)
 
-[2026-06-16 11:33:59] === training 10 surrogates (ConvNet) on distilled S (1000 ep each) ===
-[2026-06-16 11:34:10] Evaluate_00: epoch = 1000 train time = 11 s train loss = 0.026126 train acc = 1.0000, test acc = 0.6165
-[2026-06-16 11:34:21] Evaluate_01: epoch = 1000 train time = 10 s train loss = 0.002178 train acc = 1.0000, test acc = 0.6102
-[2026-06-16 11:34:32] Evaluate_02: epoch = 1000 train time = 10 s train loss = 0.010765 train acc = 1.0000, test acc = 0.6129
-[2026-06-16 11:34:43] Evaluate_03: epoch = 1000 train time = 10 s train loss = 0.003432 train acc = 1.0000, test acc = 0.6051
-[2026-06-16 11:34:54] Evaluate_04: epoch = 1000 train time = 10 s train loss = 0.004284 train acc = 1.0000, test acc = 0.6096
-[2026-06-16 11:35:05] Evaluate_05: epoch = 1000 train time = 11 s train loss = 0.012248 train acc = 1.0000, test acc = 0.6145
-[2026-06-16 11:35:16] Evaluate_06: epoch = 1000 train time = 10 s train loss = 0.003013 train acc = 1.0000, test acc = 0.6095
-[2026-06-16 11:35:27] Evaluate_07: epoch = 1000 train time = 10 s train loss = 0.003667 train acc = 1.0000, test acc = 0.6089
-[2026-06-16 11:35:38] Evaluate_08: epoch = 1000 train time = 11 s train loss = 0.008606 train acc = 1.0000, test acc = 0.6036
-[2026-06-16 11:35:49] Evaluate_09: epoch = 1000 train time = 11 s train loss = 0.002458 train acc = 1.0000, test acc = 0.6062
+[2026-06-16 16:02:03] === loading 10 surrogates from cache: result/cache/surrogates_ConvNet_10x1000ep_seed0 ===
 
-[2026-06-16 11:35:49] === training 6 clean victims (ConvNetBN) from scratch on full clean data ===
-  clean baseline CTA = 0.7802
+[2026-06-16 16:02:03] === loading 6 clean victims (ConvNetBN) from cache: result/cache/clean_victims_ConvNetBN_6x60ep_seed0 ===
+  clean baseline CTA = 0.8053
 
-[2026-06-16 11:40:03] ################ pair frog-airplane : y_adv=6(frog)  target_class=0(airplane) ################
+[2026-06-16 16:02:03] ################ pair frog-airplane : y_adv=6(frog)  target_class=0(airplane) ################
   targets (preselected): [8961, 1067, 3943, 5626, 1461, 1949, 8447, 3650, 1161, 2040]
-  [frog-airplane t1/10 idx=8961] fc craft_obj=0.1741 linf=0.0314 | clean_ASR=0% poison_CTA=0.7844 poison_ASR=0%
-  [frog-airplane t2/10 idx=1067] fc craft_obj=0.1299 linf=0.0314 | clean_ASR=0% poison_CTA=0.7847 poison_ASR=0%
-  [frog-airplane t3/10 idx=3943] fc craft_obj=0.1664 linf=0.0314 | clean_ASR=0% poison_CTA=0.7757 poison_ASR=0%
-  [frog-airplane t4/10 idx=5626] fc craft_obj=0.1771 linf=0.0314 | clean_ASR=0% poison_CTA=0.7792 poison_ASR=0%
-  [frog-airplane t5/10 idx=1461] fc craft_obj=0.2000 linf=0.0314 | clean_ASR=0% poison_CTA=0.7776 poison_ASR=0%
-  [frog-airplane t6/10 idx=1949] fc craft_obj=0.1679 linf=0.0314 | clean_ASR=0% poison_CTA=0.7689 poison_ASR=0%
-  [frog-airplane t7/10 idx=8447] fc craft_obj=0.1938 linf=0.0314 | clean_ASR=0% poison_CTA=0.7713 poison_ASR=0%
-  [frog-airplane t8/10 idx=3650] fc craft_obj=0.1801 linf=0.0314 | clean_ASR=0% poison_CTA=0.7895 poison_ASR=0%
-[2026-06-16T12:17:50.006] error: *** JOB 3967649 ON kn172 CANCELLED AT 2026-06-16T12:17:50 DUE TO TIME LIMIT ***
+  [frog-airplane t1/10 idx=8961] gradmatch craft_obj=0.1632 linf=0.0314 | clean_ASR=0% poison_CTA=0.7712 poison_ASR=83%
+  [frog-airplane t2/10 idx=1067] gradmatch craft_obj=0.1457 linf=0.0314 | clean_ASR=0% poison_CTA=0.7793 poison_ASR=0%
+[2026-06-16T16:36:45.176] error: *** JOB 3968304 ON kn178 CANCELLED AT 2026-06-16T16:36:45 DUE to SIGNAL Terminated ***

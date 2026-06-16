@@ -1,0 +1,11 @@
+──────────────────────────────────────────────────────────
+[1/27] ConvNetBN_frog-airplane_fc_b0.00002_seed0
+──────────────────────────────────────────────────────────
+[2026-06-16 12:57:06] device=cuda
+[2026-06-16 12:57:06] hyperparams: {'dataset': 'CIFAR10', 'data_path': 'data', 'model': 'ConvNetBN', 'out_dir': 'result/standard_nodistill', 'seed': 0, 'target_idx_file': 'result/selected_targets.json', 'dsa_strategy': 'color_crop_cutout_flip_scale_rotate', 'syn_data_path': 'result/res_DM_CIFAR10_ConvNet_50ipc.pt', 'surrogate_model': 'ConvNet', 'num_surrogates': 10, 'surrogate_epochs': 1000, 'surrogate_lr': 0.01, 'surrogate_bs': 256, 'attack': 'fc', 'class_pairs': ['frog-airplane'], 'budget': 2e-05, 'epsilon': 0.0313725, 'pgd_steps': 150, 'pgd_alpha': 0.0039216, 'restarts': 1, 'lambda_margin': 0.1, 'num_targets': 10, 'num_victims': 6, 'target_select': 'random', 'victim_epochs': 30, 'victim_lr': 0.1, 'victim_bs': 125, 'victim_decay': [40, 60], 'victim_aug': False, 'clean_baseline': True, 'cache_dir': 'result/cache', 'precompute_only': False, 'random_select': False, 'single_surrogate': True}
+[2026-06-16 12:57:06] loaded pre-selected targets from result/selected_targets.json
+[2026-06-16 12:57:18] N_total=50000  budget=0.0000 -> N_p=1 poisons (all in y_adv class)
+
+[2026-06-16 12:57:18] === loading 10 surrogates from cache: result/cache/surrogates_ConvNet_10x1000ep_seed0 ===
+
+[2026-06-16 12:57:18] === training 6 clean victims (ConvNetBN) from scratch on full clean data ===
