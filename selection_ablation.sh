@@ -21,8 +21,13 @@ set -euo pipefail
 
 SYN=result/res_DM_CIFAR10_ConvNet_50ipc.pt
 OUT=result/sel_abl
-CACHE=$OUT/surrogates_K10.pt          # shared ensemble for ALL criteria
+LOG="${OUT}/selection_ablation_$(date +%Y%m%d_%H%M%S).log"
 mkdir -p "$OUT"
+exec > >(tee -a "$LOG") 2>&1
+export PYTHONUNBUFFERED=1
+export CUDA_VISIBLE_DEVICES=4
+echo "Logging to $LOG"
+CACHE=$OUT/surrogates_K10.pt          # shared ensemble for ALL criteria
 
 ATTACK=fc
 BUDGET=0.01
@@ -36,14 +41,15 @@ COMMON=(
     --budget "$BUDGET" --epsilon 0.0313725 --pgd_steps 250 --pgd_alpha 0.0039216
     --num_surrogates 10 --surrogate_epochs 1000
     --num_targets 10 --num_victims 6
-    --victim_epochs 60 --victim_lr 0.1 --victim_bs 125 --victim_decay 40
+    --victim_epochs 80 --victim_lr 0.1 --victim_bs 125 --victim_decay 40 60
     --lambda_margin 1.0 --single_surrogate
     --target_select random --seed 0
 )
 
 # order matters only in that the FIRST run trains + writes the cache; the rest
 # load it. Put a fast/cheap criterion first.
-for CRIT in random pixel_l2 el2n gradnorm margin feat_cos grad_cos feat_l2 ours anti; do
+# for CRIT in random pixel_l2 el2n gradnorm margin feat_cos grad_cos feat_l2 ours anti; do
+for CRIT in random pixel_l2 el2n gradnorm margin; do
     echo ""
     echo "================= selection = ${CRIT} ================="
     python eval_selection.py "${COMMON[@]}" \
@@ -51,14 +57,18 @@ for CRIT in random pixel_l2 el2n gradnorm margin feat_cos grad_cos feat_l2 ours 
         --out_dir "${OUT}/${CRIT}"
 done
 
+# order = ['random','pixel_l2','el2n','gradnorm','margin']
+
+
+#
+
 # ---- collate the comparison table -----------------------------------------
 echo ""
 echo "===== ASR / CTA by selection criterion ====="
 python - "$OUT" <<'PY'
 import sys, os, glob, json, numpy as np
 out = sys.argv[1]
-order = ['random','pixel_l2','el2n','gradnorm','margin','feat_cos','grad_cos',
-         'feat_l2','ours','anti']
+order = ['random','pixel_l2','el2n','gradnorm','margin']
 rows = {}
 for jf in glob.glob(os.path.join(out, '*', 'results_*.json')):
     d = json.load(open(jf))

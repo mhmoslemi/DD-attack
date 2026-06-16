@@ -1,0 +1,149 @@
+Logging to result/sel_abl/selection_ablation_20260612_195854.log
+
+================= selection = feat_cos =================
+[2026-06-12 19:58:56] device=cuda  criterion=feat_cos  (target-aware)
+[2026-06-12 19:58:56] hyperparams: {'dataset': 'CIFAR10', 'data_path': 'data', 'model': 'ConvNetBN', 'out_dir': 'result/sel_abl/feat_cos', 'seed': 0, 'dsa_strategy': 'color_crop_cutout_flip_scale_rotate', 'syn_data_path': 'result/res_DM_CIFAR10_ConvNet_50ipc.pt', 'surrogate_model': 'ConvNet', 'num_surrogates': 10, 'surrogate_epochs': 1000, 'surrogate_lr': 0.01, 'surrogate_bs': 256, 'surrogate_cache': 'result/sel_abl/surrogates_K10.pt', 'select_criterion': 'feat_cos', 'lambda_margin': 1.0, 'attack': 'fc', 'class_pairs': ['dog-bird'], 'budget': 0.01, 'epsilon': 0.0313725, 'pgd_steps': 250, 'pgd_alpha': 0.0039216, 'restarts': 8, 'single_surrogate': True, 'num_targets': 10, 'num_victims': 6, 'target_select': 'random', 'victim_epochs': 80, 'victim_lr': 0.1, 'victim_bs': 125, 'victim_decay': [40, 60], 'victim_aug': False}
+Files already downloaded and verified
+Files already downloaded and verified
+[2026-06-12 19:59:06] N_total=50000  budget=0.0100 -> N_p=500 bases (class y_adv)
+[2026-06-12 19:59:06] loading cached surrogates from result/sel_abl/surrogates_K10.pt
+
+[2026-06-12 19:59:06] ####### pair dog-bird : y_adv=5(dog) target_class=2(bird)  criterion=feat_cos #######
+  targets (random): [430, 387, 6715, 7670, 9467, 2100, 7171, 4833, 5599, 2544]
+  [dog-bird t1/10 idx=430] feat_cos/fc craft_obj=0.2192 linf=0.0314 | poison_CTA=0.8065 poison_ASR=33%
+  [dog-bird t2/10 idx=387] feat_cos/fc craft_obj=0.2244 linf=0.0314 | poison_CTA=0.8049 poison_ASR=17%
+  [dog-bird t3/10 idx=6715] feat_cos/fc craft_obj=0.2149 linf=0.0314 | poison_CTA=0.7969 poison_ASR=67%
+  [dog-bird t4/10 idx=7670] feat_cos/fc craft_obj=0.2222 linf=0.0314 | poison_CTA=0.8030 poison_ASR=67%
+  [dog-bird t5/10 idx=9467] feat_cos/fc craft_obj=0.2290 linf=0.0314 | poison_CTA=0.8026 poison_ASR=50%
+  [dog-bird t6/10 idx=2100] feat_cos/fc craft_obj=0.2124 linf=0.0314 | poison_CTA=0.7851 poison_ASR=0%
+  [dog-bird t7/10 idx=7171] feat_cos/fc craft_obj=0.2127 linf=0.0314 | poison_CTA=0.8028 poison_ASR=0%
+  [dog-bird t8/10 idx=4833] feat_cos/fc craft_obj=0.2118 linf=0.0314 | poison_CTA=0.7984 poison_ASR=33%
+  [dog-bird t9/10 idx=5599] feat_cos/fc craft_obj=0.2465 linf=0.0314 | poison_CTA=0.8046 poison_ASR=17%
+  [dog-bird t10/10 idx=2544] feat_cos/fc craft_obj=0.2087 linf=0.0314 | poison_CTA=0.7990 poison_ASR=0%
+
+  ---- pair dog-bird (feat_cos, fc) over 10 targets x 6 victims = 60 votes ----
+    poison CTA = 0.8004 +/- 0.0059
+    poison ASR = 28.3% +/- 24.8%
+    target-prediction tally (['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']): [0, 0, 32, 6, 1, 17, 2, 2, 0, 0]
+
+[2026-06-12 21:02:10] wrote results_sel_feat_cos_fc_ConvNetBN_b100_eps8.{json,csv} to result/sel_abl/feat_cos
+
+================= selection = grad_cos =================
+[2026-06-12 21:02:13] device=cuda  criterion=grad_cos  (target-aware)
+[2026-06-12 21:02:13] hyperparams: {'dataset': 'CIFAR10', 'data_path': 'data', 'model': 'ConvNetBN', 'out_dir': 'result/sel_abl/grad_cos', 'seed': 0, 'dsa_strategy': 'color_crop_cutout_flip_scale_rotate', 'syn_data_path': 'result/res_DM_CIFAR10_ConvNet_50ipc.pt', 'surrogate_model': 'ConvNet', 'num_surrogates': 10, 'surrogate_epochs': 1000, 'surrogate_lr': 0.01, 'surrogate_bs': 256, 'surrogate_cache': 'result/sel_abl/surrogates_K10.pt', 'select_criterion': 'grad_cos', 'lambda_margin': 1.0, 'attack': 'fc', 'class_pairs': ['dog-bird'], 'budget': 0.01, 'epsilon': 0.0313725, 'pgd_steps': 250, 'pgd_alpha': 0.0039216, 'restarts': 8, 'single_surrogate': True, 'num_targets': 10, 'num_victims': 6, 'target_select': 'random', 'victim_epochs': 80, 'victim_lr': 0.1, 'victim_bs': 125, 'victim_decay': [40, 60], 'victim_aug': False}
+Files already downloaded and verified
+Files already downloaded and verified
+[2026-06-12 21:02:25] N_total=50000  budget=0.0100 -> N_p=500 bases (class y_adv)
+[2026-06-12 21:02:25] loading cached surrogates from result/sel_abl/surrogates_K10.pt
+
+[2026-06-12 21:02:25] ####### pair dog-bird : y_adv=5(dog) target_class=2(bird)  criterion=grad_cos #######
+  targets (random): [430, 387, 6715, 7670, 9467, 2100, 7171, 4833, 5599, 2544]
+  [dog-bird t1/10 idx=430] grad_cos/fc craft_obj=0.2339 linf=0.0314 | poison_CTA=0.8022 poison_ASR=0%
+  [dog-bird t2/10 idx=387] grad_cos/fc craft_obj=0.2455 linf=0.0314 | poison_CTA=0.8066 poison_ASR=67%
+  [dog-bird t3/10 idx=6715] grad_cos/fc craft_obj=0.2257 linf=0.0314 | poison_CTA=0.8001 poison_ASR=33%
+  [dog-bird t4/10 idx=7670] grad_cos/fc craft_obj=0.2367 linf=0.0314 | poison_CTA=0.8012 poison_ASR=33%
+  [dog-bird t5/10 idx=9467] grad_cos/fc craft_obj=0.2431 linf=0.0314 | poison_CTA=0.8049 poison_ASR=50%
+  [dog-bird t6/10 idx=2100] grad_cos/fc craft_obj=0.2328 linf=0.0314 | poison_CTA=0.8058 poison_ASR=0%
+  [dog-bird t7/10 idx=7171] grad_cos/fc craft_obj=0.2363 linf=0.0314 | poison_CTA=0.8033 poison_ASR=0%
+  [dog-bird t8/10 idx=4833] grad_cos/fc craft_obj=0.2241 linf=0.0314 | poison_CTA=0.8037 poison_ASR=50%
+  [dog-bird t9/10 idx=5599] grad_cos/fc craft_obj=0.2704 linf=0.0314 | poison_CTA=0.8077 poison_ASR=0%
+  [dog-bird t10/10 idx=2544] grad_cos/fc craft_obj=0.2282 linf=0.0314 | poison_CTA=0.8006 poison_ASR=0%
+
+  ---- pair dog-bird (grad_cos, fc) over 10 targets x 6 victims = 60 votes ----
+    poison CTA = 0.8036 +/- 0.0025
+    poison ASR = 23.3% +/- 24.9%
+    target-prediction tally (['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']): [1, 0, 32, 2, 6, 14, 3, 2, 0, 0]
+
+[2026-06-12 22:05:11] wrote results_sel_grad_cos_fc_ConvNetBN_b100_eps8.{json,csv} to result/sel_abl/grad_cos
+
+================= selection = feat_l2 =================
+[2026-06-12 22:05:14] device=cuda  criterion=feat_l2  (target-aware)
+[2026-06-12 22:05:14] hyperparams: {'dataset': 'CIFAR10', 'data_path': 'data', 'model': 'ConvNetBN', 'out_dir': 'result/sel_abl/feat_l2', 'seed': 0, 'dsa_strategy': 'color_crop_cutout_flip_scale_rotate', 'syn_data_path': 'result/res_DM_CIFAR10_ConvNet_50ipc.pt', 'surrogate_model': 'ConvNet', 'num_surrogates': 10, 'surrogate_epochs': 1000, 'surrogate_lr': 0.01, 'surrogate_bs': 256, 'surrogate_cache': 'result/sel_abl/surrogates_K10.pt', 'select_criterion': 'feat_l2', 'lambda_margin': 1.0, 'attack': 'fc', 'class_pairs': ['dog-bird'], 'budget': 0.01, 'epsilon': 0.0313725, 'pgd_steps': 250, 'pgd_alpha': 0.0039216, 'restarts': 8, 'single_surrogate': True, 'num_targets': 10, 'num_victims': 6, 'target_select': 'random', 'victim_epochs': 80, 'victim_lr': 0.1, 'victim_bs': 125, 'victim_decay': [40, 60], 'victim_aug': False}
+Files already downloaded and verified
+Files already downloaded and verified
+[2026-06-12 22:05:24] N_total=50000  budget=0.0100 -> N_p=500 bases (class y_adv)
+[2026-06-12 22:05:24] loading cached surrogates from result/sel_abl/surrogates_K10.pt
+
+[2026-06-12 22:05:24] ####### pair dog-bird : y_adv=5(dog) target_class=2(bird)  criterion=feat_l2 #######
+  targets (random): [430, 387, 6715, 7670, 9467, 2100, 7171, 4833, 5599, 2544]
+  [dog-bird t1/10 idx=430] feat_l2/fc craft_obj=0.2177 linf=0.0314 | poison_CTA=0.8042 poison_ASR=17%
+  [dog-bird t2/10 idx=387] feat_l2/fc craft_obj=0.2245 linf=0.0314 | poison_CTA=0.8005 poison_ASR=67%
+  [dog-bird t3/10 idx=6715] feat_l2/fc craft_obj=0.2139 linf=0.0314 | poison_CTA=0.8018 poison_ASR=67%
+  [dog-bird t4/10 idx=7670] feat_l2/fc craft_obj=0.2209 linf=0.0314 | poison_CTA=0.8078 poison_ASR=33%
+  [dog-bird t5/10 idx=9467] feat_l2/fc craft_obj=0.2268 linf=0.0314 | poison_CTA=0.8043 poison_ASR=17%
+  [dog-bird t6/10 idx=2100] feat_l2/fc craft_obj=0.2121 linf=0.0314 | poison_CTA=0.8024 poison_ASR=0%
+  [dog-bird t7/10 idx=7171] feat_l2/fc craft_obj=0.2120 linf=0.0314 | poison_CTA=0.8043 poison_ASR=0%
+  [dog-bird t8/10 idx=4833] feat_l2/fc craft_obj=0.2103 linf=0.0314 | poison_CTA=0.8028 poison_ASR=33%
+  [dog-bird t9/10 idx=5599] feat_l2/fc craft_obj=0.2443 linf=0.0314 | poison_CTA=0.8029 poison_ASR=0%
+  [dog-bird t10/10 idx=2544] feat_l2/fc craft_obj=0.2088 linf=0.0314 | poison_CTA=0.8018 poison_ASR=0%
+
+  ---- pair dog-bird (feat_l2, fc) over 10 targets x 6 victims = 60 votes ----
+    poison CTA = 0.8033 +/- 0.0019
+    poison ASR = 23.3% +/- 24.9%
+    target-prediction tally (['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']): [0, 0, 36, 0, 5, 14, 1, 4, 0, 0]
+
+[2026-06-12 23:08:04] wrote results_sel_feat_l2_fc_ConvNetBN_b100_eps8.{json,csv} to result/sel_abl/feat_l2
+
+================= selection = ours =================
+[2026-06-12 23:08:07] device=cuda  criterion=ours  (target-aware)
+[2026-06-12 23:08:07] hyperparams: {'dataset': 'CIFAR10', 'data_path': 'data', 'model': 'ConvNetBN', 'out_dir': 'result/sel_abl/ours', 'seed': 0, 'dsa_strategy': 'color_crop_cutout_flip_scale_rotate', 'syn_data_path': 'result/res_DM_CIFAR10_ConvNet_50ipc.pt', 'surrogate_model': 'ConvNet', 'num_surrogates': 10, 'surrogate_epochs': 1000, 'surrogate_lr': 0.01, 'surrogate_bs': 256, 'surrogate_cache': 'result/sel_abl/surrogates_K10.pt', 'select_criterion': 'ours', 'lambda_margin': 1.0, 'attack': 'fc', 'class_pairs': ['dog-bird'], 'budget': 0.01, 'epsilon': 0.0313725, 'pgd_steps': 250, 'pgd_alpha': 0.0039216, 'restarts': 8, 'single_surrogate': True, 'num_targets': 10, 'num_victims': 6, 'target_select': 'random', 'victim_epochs': 80, 'victim_lr': 0.1, 'victim_bs': 125, 'victim_decay': [40, 60], 'victim_aug': False}
+Files already downloaded and verified
+Files already downloaded and verified
+[2026-06-12 23:08:20] N_total=50000  budget=0.0100 -> N_p=500 bases (class y_adv)
+[2026-06-12 23:08:20] loading cached surrogates from result/sel_abl/surrogates_K10.pt
+
+[2026-06-12 23:08:20] ####### pair dog-bird : y_adv=5(dog) target_class=2(bird)  criterion=ours #######
+  targets (random): [430, 387, 6715, 7670, 9467, 2100, 7171, 4833, 5599, 2544]
+  [dog-bird t1/10 idx=430] ours/fc craft_obj=0.2272 linf=0.0314 | poison_CTA=0.8079 poison_ASR=33%
+  [dog-bird t2/10 idx=387] ours/fc craft_obj=0.2399 linf=0.0314 | poison_CTA=0.8019 poison_ASR=33%
+  [dog-bird t3/10 idx=6715] ours/fc craft_obj=0.2244 linf=0.0314 | poison_CTA=0.7984 poison_ASR=83%
+  [dog-bird t4/10 idx=7670] ours/fc craft_obj=0.2325 linf=0.0314 | poison_CTA=0.8036 poison_ASR=83%
+  [dog-bird t5/10 idx=9467] ours/fc craft_obj=0.2364 linf=0.0314 | poison_CTA=0.8038 poison_ASR=67%
+  [dog-bird t6/10 idx=2100] ours/fc craft_obj=0.2277 linf=0.0314 | poison_CTA=0.8026 poison_ASR=0%
+  [dog-bird t7/10 idx=7171] ours/fc craft_obj=0.2257 linf=0.0314 | poison_CTA=0.7988 poison_ASR=33%
+  [dog-bird t8/10 idx=4833] ours/fc craft_obj=0.2251 linf=0.0314 | poison_CTA=0.8072 poison_ASR=100%
+  [dog-bird t9/10 idx=5599] ours/fc craft_obj=0.2531 linf=0.0314 | poison_CTA=0.8016 poison_ASR=0%
+  [dog-bird t10/10 idx=2544] ours/fc craft_obj=0.2228 linf=0.0314 | poison_CTA=0.7994 poison_ASR=33%
+
+  ---- pair dog-bird (ours, fc) over 10 targets x 6 victims = 60 votes ----
+    poison CTA = 0.8025 +/- 0.0031
+    poison ASR = 46.7% +/- 33.2%
+    target-prediction tally (['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']): [0, 0, 27, 1, 2, 28, 0, 2, 0, 0]
+
+[2026-06-13 00:11:32] wrote results_sel_ours_fc_ConvNetBN_b100_eps8.{json,csv} to result/sel_abl/ours
+
+================= selection = anti =================
+[2026-06-13 00:11:35] device=cuda  criterion=anti  (target-aware)
+[2026-06-13 00:11:35] hyperparams: {'dataset': 'CIFAR10', 'data_path': 'data', 'model': 'ConvNetBN', 'out_dir': 'result/sel_abl/anti', 'seed': 0, 'dsa_strategy': 'color_crop_cutout_flip_scale_rotate', 'syn_data_path': 'result/res_DM_CIFAR10_ConvNet_50ipc.pt', 'surrogate_model': 'ConvNet', 'num_surrogates': 10, 'surrogate_epochs': 1000, 'surrogate_lr': 0.01, 'surrogate_bs': 256, 'surrogate_cache': 'result/sel_abl/surrogates_K10.pt', 'select_criterion': 'anti', 'lambda_margin': 1.0, 'attack': 'fc', 'class_pairs': ['dog-bird'], 'budget': 0.01, 'epsilon': 0.0313725, 'pgd_steps': 250, 'pgd_alpha': 0.0039216, 'restarts': 8, 'single_surrogate': True, 'num_targets': 10, 'num_victims': 6, 'target_select': 'random', 'victim_epochs': 80, 'victim_lr': 0.1, 'victim_bs': 125, 'victim_decay': [40, 60], 'victim_aug': False}
+Files already downloaded and verified
+Files already downloaded and verified
+[2026-06-13 00:11:44] N_total=50000  budget=0.0100 -> N_p=500 bases (class y_adv)
+[2026-06-13 00:11:44] loading cached surrogates from result/sel_abl/surrogates_K10.pt
+
+[2026-06-13 00:11:44] ####### pair dog-bird : y_adv=5(dog) target_class=2(bird)  criterion=anti #######
+  targets (random): [430, 387, 6715, 7670, 9467, 2100, 7171, 4833, 5599, 2544]
+  [dog-bird t1/10 idx=430] anti/fc craft_obj=0.2832 linf=0.0314 | poison_CTA=0.7997 poison_ASR=0%
+  [dog-bird t2/10 idx=387] anti/fc craft_obj=0.3127 linf=0.0314 | poison_CTA=0.8079 poison_ASR=0%
+  [dog-bird t3/10 idx=6715] anti/fc craft_obj=0.2779 linf=0.0314 | poison_CTA=0.8004 poison_ASR=0%
+  [dog-bird t4/10 idx=7670] anti/fc craft_obj=0.3187 linf=0.0314 | poison_CTA=0.8023 poison_ASR=0%
+  [dog-bird t5/10 idx=9467] anti/fc craft_obj=0.2852 linf=0.0314 | poison_CTA=0.7952 poison_ASR=0%
+  [dog-bird t6/10 idx=2100] anti/fc craft_obj=0.2922 linf=0.0314 | poison_CTA=0.8039 poison_ASR=0%
+  [dog-bird t7/10 idx=7171] anti/fc craft_obj=0.2954 linf=0.0314 | poison_CTA=0.8038 poison_ASR=0%
+  [dog-bird t8/10 idx=4833] anti/fc craft_obj=0.2929 linf=0.0314 | poison_CTA=0.8040 poison_ASR=0%
+  [dog-bird t9/10 idx=5599] anti/fc craft_obj=0.3240 linf=0.0314 | poison_CTA=0.8035 poison_ASR=0%
+  [dog-bird t10/10 idx=2544] anti/fc craft_obj=0.2838 linf=0.0314 | poison_CTA=0.8065 poison_ASR=17%
+
+  ---- pair dog-bird (anti, fc) over 10 targets x 6 victims = 60 votes ----
+    poison CTA = 0.8027 +/- 0.0034
+    poison ASR = 1.7% +/- 5.0%
+    target-prediction tally (['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']): [1, 0, 40, 3, 7, 1, 4, 4, 0, 0]
+
+[2026-06-13 01:15:05] wrote results_sel_anti_fc_ConvNetBN_b100_eps8.{json,csv} to result/sel_abl/anti
+
+===== ASR / CTA by selection criterion =====
+  criterion    ASR(%)      SEM   CTA(%)
+  random         11.7      7.5     80.4
+  pixel_l2       25.0      6.8     79.9
+  el2n           21.7      8.5     80.1
+  gradnorm       28.3     10.6     80.2
+  margin          0.0      0.0     52.8

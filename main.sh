@@ -25,7 +25,14 @@
 
 
 
-python eval_standard_nodistill.py \
+# model ConvNetBN, ResNet20, VGG13
+# class_pairs dog-bird frog-airplane
+# attack FC gradmatch
+# budget 0.00002 0.0001 0.001 0.002 0.005 0.01 0.02 0.05 0.1
+
+
+
+python main_IF.py \
     --syn_data_path result/res_DM_CIFAR10_ConvNet_50ipc.pt \
     --surrogate_model ConvNet --model ConvNetBN \
     --class_pairs dog-bird \
@@ -33,9 +40,9 @@ python eval_standard_nodistill.py \
     --budget 0.005 --epsilon 0.0313725 --pgd_steps 150 --pgd_alpha 0.0039216 \
     --lambda_margin 0.1 \
     --num_surrogates 10 --surrogate_epochs 1000 \
-    --num_targets 5 --num_victims 6 \
-    --victim_epochs 60 --victim_lr 0.1 --victim_bs 125 --victim_decay 40 \
-    --target_select random --seed 0 
+    --num_targets 10 --num_victims 6 \
+    --victim_epochs 80 --victim_lr 0.1 --victim_bs 125 --victim_decay 40 60 \
+    --target_select random --seed 0  --single_surrogate
 
 # echo "===== Cell A: plain FC (random select + single surrogate) ====="
 # $COMMON --random_select --single_surrogate --out_dir result/abl_A_plain_fc

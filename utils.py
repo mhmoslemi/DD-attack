@@ -7,7 +7,7 @@ import torch.nn.functional as F
 from torch.utils.data import Dataset
 from torchvision import datasets, transforms
 from scipy.ndimage.interpolation import rotate as scipyrotate
-from networks import MLP, ConvNet, LeNet, AlexNet, AlexNetBN, VGG11, VGG11BN, ResNet18, ResNet18BN_AP, ResNet18BN
+from networks import MLP, ConvNet, LeNet, AlexNet, AlexNetBN, VGG11, VGG11BN, VGG13, VGG16, VGG19, ResNet18, ResNet18BN_AP, ResNet18BN, ResNet18_AP, ResNet20, ResNet34, ResNet50, ResNet101, ResNet152
 
 def get_dataset(dataset, data_path):
     if dataset == 'MNIST':
@@ -147,15 +147,33 @@ def get_network(model, channel, num_classes, im_size=(32, 32)):
     elif model == 'AlexNetBN':
         net = AlexNetBN(channel=channel, num_classes=num_classes)
     elif model == 'VGG11':
-        net = VGG11( channel=channel, num_classes=num_classes)
+        net = VGG11(channel=channel, num_classes=num_classes)
     elif model == 'VGG11BN':
         net = VGG11BN(channel=channel, num_classes=num_classes)
+    elif model == 'VGG13':
+        net = VGG13(channel=channel, num_classes=num_classes)
+    elif model == 'VGG16':
+        net = VGG16(channel=channel, num_classes=num_classes)
+    elif model == 'VGG19':
+        net = VGG19(channel=channel, num_classes=num_classes)
+    elif model == 'ResNet20':
+        net = ResNet20(channel=channel, num_classes=num_classes)
     elif model == 'ResNet18':
         net = ResNet18(channel=channel, num_classes=num_classes)
+    elif model == 'ResNet18_AP':
+        net = ResNet18_AP(channel=channel, num_classes=num_classes)
     elif model == 'ResNet18BN_AP':
         net = ResNet18BN_AP(channel=channel, num_classes=num_classes)
     elif model == 'ResNet18BN':
         net = ResNet18BN(channel=channel, num_classes=num_classes)
+    elif model == 'ResNet34':
+        net = ResNet34(channel=channel, num_classes=num_classes)
+    elif model == 'ResNet50':
+        net = ResNet50(channel=channel, num_classes=num_classes)
+    elif model == 'ResNet101':
+        net = ResNet101(channel=channel, num_classes=num_classes)
+    elif model == 'ResNet152':
+        net = ResNet152(channel=channel, num_classes=num_classes)
 
     elif model == 'ConvNetD1':
         net = ConvNet(channel=channel, num_classes=num_classes, net_width=net_width, net_depth=1, net_act=net_act, net_norm=net_norm, net_pooling=net_pooling, im_size=im_size)
