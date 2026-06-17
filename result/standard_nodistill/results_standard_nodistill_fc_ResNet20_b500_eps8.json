@@ -1,0 +1,111 @@
+{
+  "clean_cta": null,
+  "rows": [
+    {
+      "pair": "dog-bird",
+      "attack": "fc",
+      "y_adv": 5,
+      "target_class": 2,
+      "target_idx": 430,
+      "clean_asr": NaN,
+      "poison_cta": 0.8255666666666667,
+      "poison_asr": 0.0,
+      "craft_obj": 0.0022304716985672712,
+      "realized_linf": 0.031372517347335815,
+      "N_p": 2500
+    },
+    {
+      "pair": "dog-bird",
+      "attack": "fc",
+      "y_adv": 5,
+      "target_class": 2,
+      "target_idx": 387,
+      "clean_asr": NaN,
+      "poison_cta": 0.8216666666666667,
+      "poison_asr": 0.0,
+      "craft_obj": 0.002564824651926756,
+      "realized_linf": 0.031372517347335815,
+      "N_p": 2500
+    },
+    {
+      "pair": "dog-bird",
+      "attack": "fc",
+      "y_adv": 5,
+      "target_class": 2,
+      "target_idx": 6715,
+      "clean_asr": NaN,
+      "poison_cta": 0.8255333333333335,
+      "poison_asr": 0.0,
+      "craft_obj": 0.0037023292388767004,
+      "realized_linf": 0.031372517347335815,
+      "N_p": 2500
+    },
+    {
+      "pair": "dog-bird",
+      "attack": "fc",
+      "y_adv": 5,
+      "target_class": 2,
+      "target_idx": 7670,
+      "clean_asr": NaN,
+      "poison_cta": 0.8170000000000001,
+      "poison_asr": 0.0,
+      "craft_obj": 0.00523554440587759,
+      "realized_linf": 0.031372517347335815,
+      "N_p": 2500
+    },
+    {
+      "pair": "dog-bird",
+      "attack": "fc",
+      "y_adv": 5,
+      "target_class": 2,
+      "target_idx": 9467,
+      "clean_asr": NaN,
+      "poison_cta": 0.8241999999999999,
+      "poison_asr": 0.0,
+      "craft_obj": 0.004046527668833733,
+      "realized_linf": 0.031372517347335815,
+      "N_p": 2500
+    }
+  ],
+  "args": {
+    "dataset": "CIFAR10",
+    "data_path": "data",
+    "model": "ResNet20",
+    "out_dir": "result/standard_nodistill",
+    "seed": 0,
+    "target_idx_file": null,
+    "dsa_strategy": "color_crop_cutout_flip_scale_rotate",
+    "syn_data_path": "result/res_DM_CIFAR10_ConvNet_10ipc.pt",
+    "surrogate_model": "ResNet20",
+    "num_surrogates": 10,
+    "surrogate_epochs": 1200,
+    "surrogate_lr": 0.01,
+    "surrogate_bs": 256,
+    "attack": "fc",
+    "class_pairs": [
+      "dog-bird"
+    ],
+    "budget": 0.05,
+    "epsilon": 0.0313725,
+    "pgd_steps": 150,
+    "pgd_alpha": 0.0039216,
+    "restarts": 1,
+    "lambda_margin": 0.1,
+    "num_targets": 5,
+    "num_victims": 3,
+    "target_select": "random",
+    "victim_epochs": 60,
+    "victim_lr": 0.1,
+    "victim_bs": 125,
+    "victim_decay": [
+      40
+    ],
+    "victim_aug": false,
+    "clean_baseline": false,
+    "cache_dir": "",
+    "precompute_only": false,
+    "random_select": false,
+    "single_surrogate": true,
+    "surrogate_on_full_data": false
+  }
+}

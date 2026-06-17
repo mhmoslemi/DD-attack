@@ -18,11 +18,11 @@ export PYTHONHASHSEED=$SEED
 
 # ── Sweep grid ───────────────────────────────────────────────────────────────
 # PAIRS=(dog-bird frog-airplane)
-PAIRS=(dog-bird)
+PAIRS=(frog-airplane)
 # ATTACKS=(fc gradmatch)
 ATTACKS=(fc)
 # MODELS=(ConvNetBN ResNet20 VGG13)
-MODELS=(ResNet20)
+MODELS=(ConvNetBN)
 
 # BUDGETS=(0.00002 0.0001 0.001 0.002 0.005 0.01 0.02 0.05 0.1)
 # BUDGETS=(0.1 0.05 0.02 0.01 0.005 0.002 0.001 0.0001 0.00002)
@@ -42,8 +42,7 @@ run_combo() {
     echo "[GPU ${GPU}] ${TAG}" >> "$RUNLOG"
     echo "──────────────────────────────────────────────────────────" >> "$RUNLOG"
 
-    # CUDA_VISIBLE_DEVICES=$GPU python -u main_IF.py "$@" \
-    CUDA_VISIBLE_DEVICES=7 python -u main_IF.py "$@" \
+    CUDA_VISIBLE_DEVICES=$GPU python -u main_IF.py "$@" \
         2>&1 | stdbuf -oL tee -a "$RUNLOG"
 }
 
@@ -62,25 +61,30 @@ for BUDGET in "${BUDGETS[@]}"; do
     [[ -n "$TARGET_IDX_FILE" ]] && EXTRA_ARGS+=(--target_idx_file "$TARGET_IDX_FILE")
 
 # --data_path /home/mmoslem3/scratch/data
+    # Set to "--surrogate_on_full_data" to train surrogates on real data instead of distilled S
+    SURROGATE_DATA_FLAG=""
+    # SURROGATE_DATA_FLAG="--surrogate_on_full_data"
+
     COMMON_ARGS=(
         --syn_data_path result/res_DM_CIFAR10_ConvNet_50ipc.pt
-        --surrogate_model ResNet18 --model "$MODEL"
+        --surrogate_model ConvNet --model "$MODEL"
         --class_pairs "$PAIR"
         --attack "$ATTACK" --restarts "$RESTARTS"
         --budget "$BUDGET" --epsilon 0.0313725 --pgd_steps 150 --pgd_alpha 0.0039216
         --lambda_margin 1
-        --num_surrogates 10 --surrogate_epochs 1000
-        --num_targets 5 --num_victims 5
+        --num_surrogates 2 --surrogate_epochs 1000
+        --num_targets 10 --num_victims 5 
         --victim_epochs 60 --victim_lr 0.1 --victim_bs 125 --victim_decay 40
-        --target_select random --seed "$SEED" --single_surrogate --clean_baseline
+        --target_select random --seed "$SEED" --single_surrogate # --clean_baseline
         "${EXTRA_ARGS[@]}"
+        ${SURROGATE_DATA_FLAG}
     )
 
     echo "[${RUN}/${TOTAL}] ${TAG} → GPU ${GPU}"
 
     # main run + its baseline run sequentially on the same GPU, in background
     (
-        run_combo "$GPU" "$TAG"              "${COMMON_ARGS[@]}"
+        # run_combo "$GPU" "$TAG"              "${COMMON_ARGS[@]}"
         run_combo "$GPU" "${TAG}_random_bl"  "${COMMON_ARGS[@]}" --random_select
     ) &
     PIDS[$SLOT]=$!

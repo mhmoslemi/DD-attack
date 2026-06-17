@@ -7,7 +7,7 @@ import torch.nn.functional as F
 from torch.utils.data import Dataset
 from torchvision import datasets, transforms
 from scipy.ndimage.interpolation import rotate as scipyrotate
-from networks import MLP, ConvNet, LeNet, AlexNet, AlexNetBN, VGG11, VGG11BN, VGG13, VGG16, VGG19, ResNet18, ResNet18BN_AP, ResNet18BN, ResNet18_AP, ResNet20, ResNet34, ResNet50, ResNet101, ResNet152
+from networks import MLP, ConvNet, LeNet, AlexNet, AlexNetBN, VGG11, VGG11BN, VGG13, VGG16, VGG19, ResNet18, ResNet18BN_AP, ResNet18BN, ResNet18_AP, ResNet20, ResNet20BN, ResNet34, ResNet50, ResNet101, ResNet152
 
 def get_dataset(dataset, data_path):
     if dataset == 'MNIST':
@@ -158,6 +158,8 @@ def get_network(model, channel, num_classes, im_size=(32, 32)):
         net = VGG19(channel=channel, num_classes=num_classes)
     elif model == 'ResNet20':
         net = ResNet20(channel=channel, num_classes=num_classes)
+    elif model == 'ResNet20BN':
+        net = ResNet20BN(channel=channel, num_classes=num_classes)
     elif model == 'ResNet18':
         net = ResNet18(channel=channel, num_classes=num_classes)
     elif model == 'ResNet18_AP':

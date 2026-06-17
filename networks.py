@@ -541,3 +541,6 @@ class ResNetCIFAR(nn.Module):
 def ResNet20(channel, num_classes):
     return ResNetCIFAR(BasicBlock, 3, channel=channel, num_classes=num_classes)
 
+def ResNet20BN(channel, num_classes):
+    return ResNetCIFAR(BasicBlock, 3, channel=channel, num_classes=num_classes, norm='batchnorm')
+

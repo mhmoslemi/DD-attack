@@ -139,6 +139,43 @@ def predict_target(net, x_t_norm):
 # --------------------------------------------------------------------------- #
 # surrogate ensemble trained on the DISTILLED set S (reuse evaluate_synset)
 # --------------------------------------------------------------------------- #
+def train_surrogates_on_full(train_imgs, train_labs, test_imgs, test_labs,
+                             channel, num_classes, im_size, args, device):
+    """Train surrogates on the full real training set (no DSA, SGD like victims)."""
+    import time as _time
+    crit = nn.CrossEntropyLoss().to(device)
+    nets = []
+    requires = (args.attack == 'gradmatch')
+    for i in range(args.num_surrogates):
+        net = get_network(args.surrogate_model, channel, num_classes, im_size)
+        t0 = _time.time()
+        net = train_from_scratch(net, train_imgs, train_labs, args.surrogate_epochs,
+                                 args.surrogate_lr, args.surrogate_bs, [],
+                                 device, weight_decay=0.0)
+        t_train = _time.time() - t0
+        net.eval()
+        loss_sum, acc_sum, n = 0.0, 0, 0
+        with torch.no_grad():
+            for j in range(0, len(train_imgs), 512):
+                imgs = train_imgs[j:j + 512]
+                labs = train_labs[j:j + 512]
+                out = net(imgs)
+                loss_sum += crit(out, labs).item() * len(imgs)
+                acc_sum += (out.argmax(1) == labs).sum().item()
+                n += len(imgs)
+        train_loss = loss_sum / n
+        train_acc_val = acc_sum / n
+        test_acc_val = test_acc(net, test_imgs, test_labs, device)
+        print('%s Evaluate_%02d: epoch = %04d train time = %d s train loss = %.6f '
+              'train acc = %.4f, test acc = %.4f'
+              % (get_time(), i, args.surrogate_epochs, int(t_train),
+                 train_loss, train_acc_val, test_acc_val))
+        for p in net.parameters():
+            p.requires_grad_(requires)
+        nets.append(net)
+    return nets
+
+
 def train_surrogates_on_syn(image_syn, label_syn, test_imgs, test_labs,
                             channel, num_classes, im_size, args, dsa_param, device):
     testloader = DataLoader(TensorDataset(test_imgs, test_labs),
@@ -166,7 +203,8 @@ def train_surrogates_on_syn(image_syn, label_syn, test_imgs, test_labs,
 # selection (Eq.1): ensemble-averaged, standardized  d(x) + lambda * M(x)
 # --------------------------------------------------------------------------- #
 @torch.no_grad()
-def select_base(surrogates, images_norm, labels, x_t_norm, y_adv, N_p, lam, device):
+def select_base(surrogates, images_norm, labels, x_t_norm, y_adv, N_p, lam, device,
+                base_dist='l2'):
     cls_idx = (labels == y_adv).nonzero(as_tuple=True)[0]
     if len(cls_idx) < N_p:
         raise ValueError('class %d has %d images < N_p=%d' % (y_adv, len(cls_idx), N_p))
@@ -178,7 +216,11 @@ def select_base(surrogates, images_norm, labels, x_t_norm, y_adv, N_p, lam, devi
         ds, ms = [], []
         for i in range(0, len(cand), 512):
             b = cand[i:i + 512]
-            d = ((emb(b) - f_t) ** 2).sum(dim=1)                  # ||f(x)-f(x_t)||^2
+            fb = emb(b)
+            if base_dist == 'cosine':
+                d = 1.0 - F.cosine_similarity(fb, f_t.expand(len(b), -1), dim=1)
+            else:  # l2
+                d = ((fb - f_t) ** 2).sum(dim=1)
             z = net(b)
             z_adv = z[:, y_adv].clone()
             z_o = z.clone()
@@ -360,9 +402,11 @@ def main(args):
     image_syn = image_syn.to(device)
     label_syn = label_syn.to(device)
 
+    _sur_tag = 'fulldata' if args.surrogate_on_full_data else 'syn'
     sur_cache = os.path.join(args.cache_dir,
-        'surrogates_%s_%dx%dep_seed%d' % (
-            args.surrogate_model, args.num_surrogates, args.surrogate_epochs, args.seed)
+        'surrogates_%s_%s_%dx%dep_seed%d' % (
+            args.surrogate_model, _sur_tag,
+            args.num_surrogates, args.surrogate_epochs, args.seed)
     ) if args.cache_dir else ''
 
     if sur_cache and all(
@@ -381,11 +425,18 @@ def main(args):
                 p.requires_grad_(requires)
             surrogates.append(net)
     else:
-        print('\n%s === training %d surrogates (%s) on distilled S (%d ep each) ==='
-              % (get_time(), args.num_surrogates, args.surrogate_model, args.surrogate_epochs))
-        surrogates = train_surrogates_on_syn(image_syn, label_syn, test_imgs, test_labs,
-                                             channel, num_classes, im_size, args,
-                                             dsa_param, device)
+        if args.surrogate_on_full_data:
+            print('\n%s === training %d surrogates (%s) on FULL real data (%d ep each) ==='
+                  % (get_time(), args.num_surrogates, args.surrogate_model, args.surrogate_epochs))
+            surrogates = train_surrogates_on_full(train_imgs, train_labs,
+                                                  test_imgs, test_labs,
+                                                  channel, num_classes, im_size, args, device)
+        else:
+            print('\n%s === training %d surrogates (%s) on distilled S (%d ep each) ==='
+                  % (get_time(), args.num_surrogates, args.surrogate_model, args.surrogate_epochs))
+            surrogates = train_surrogates_on_syn(image_syn, label_syn, test_imgs, test_labs,
+                                                 channel, num_classes, im_size, args,
+                                                 dsa_param, device)
         if sur_cache:
             os.makedirs(sur_cache, exist_ok=True)
             for i, net in enumerate(surrogates):
@@ -474,7 +525,8 @@ def main(args):
                 base_idx = select_base_random(train_labs, y_adv, N_p, device)
             else:
                 base_idx = select_base(surrogates, train_imgs, train_labs, x_t_norm,
-                                       y_adv, N_p, args.lambda_margin, device)
+                                       y_adv, N_p, args.lambda_margin, device,
+                                       base_dist=args.base_dist)
             # 2) craft on the same surrogates
             base01 = denorm(train_imgs[base_idx]).clamp(0.0, 1.0).detach()
             if args.attack == 'gradmatch':
@@ -616,9 +668,13 @@ if __name__ == '__main__':
                    help='directory to save/load surrogate and clean-victim checkpoints')
     p.add_argument('--precompute_only', action='store_true', default=False,
                    help='train+save surrogates/victims to --cache_dir then exit')
+    p.add_argument('--base_dist', type=str, default='l2', choices=['l2', 'cosine'],
+                   help='feature distance for base selection: l2 (default) or cosine')
     p.add_argument('--random_select', action='store_true', default=False,
                    help='ablation: replace scored base selection with uniform random')
     p.add_argument('--single_surrogate', action='store_true', default=False,
                    help='use only the first surrogate for crafting instead of the ensemble')
+    p.add_argument('--surrogate_on_full_data', action='store_true', default=False,
+                   help='train surrogates on the full real training set instead of the distilled S')
     main(p.parse_args())
 
