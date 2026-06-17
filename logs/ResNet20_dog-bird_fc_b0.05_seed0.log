@@ -1,0 +1,89 @@
+──────────────────────────────────────────────────────────
+[GPU 0] ResNet20_dog-bird_fc_b0.05_seed0
+──────────────────────────────────────────────────────────
+[2026-06-17 17:15:37] device=cuda
+[2026-06-17 17:15:37] hyperparams: {'dataset': 'CIFAR10', 'data_path': '/home/mmoslem3/scratch/data', 'model': 'ResNet20', 'out_dir': 'result/standard_nodistill', 'seed': 0, 'target_idx_file': None, 'dsa_strategy': 'color_crop_cutout_flip_scale_rotate', 'syn_data_path': 'result/res_DM_CIFAR10_ConvNet_50ipc.pt', 'surrogate_model': 'ResNet18', 'num_surrogates': 10, 'surrogate_epochs': 1000, 'surrogate_lr': 0.01, 'surrogate_bs': 256, 'attack': 'fc', 'class_pairs': ['dog-bird'], 'budget': 0.05, 'epsilon': 0.0313725, 'pgd_steps': 150, 'pgd_alpha': 0.0039216, 'restarts': 1, 'lambda_margin': 1.0, 'num_targets': 5, 'num_victims': 5, 'target_select': 'random', 'victim_epochs': 60, 'victim_lr': 0.1, 'victim_bs': 125, 'victim_decay': [40], 'victim_aug': False, 'clean_baseline': True, 'cache_dir': 'result/cache', 'precompute_only': False, 'random_select': False, 'single_surrogate': True}
+Traceback (most recent call last):
+  File "/work/mohammad/DD-attack/main_IF.py", line 623, in <module>
+    main(p.parse_args())
+  File "/work/mohammad/DD-attack/main_IF.py", line 343, in main
+    get_dataset(args.dataset, args.data_path)
+  File "/work/mohammad/DD-attack/utils.py", line 53, in get_dataset
+    dst_train = datasets.CIFAR10(data_path, train=True, download=True, transform=transform) # no augmentation
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/mohammad/vllm_env/lib/python3.12/site-packages/torchvision/datasets/cifar.py", line 66, in __init__
+    self.download()
+  File "/work/mohammad/vllm_env/lib/python3.12/site-packages/torchvision/datasets/cifar.py", line 139, in download
+    download_and_extract_archive(self.url, self.root, filename=self.filename, md5=self.tgz_md5)
+  File "/work/mohammad/vllm_env/lib/python3.12/site-packages/torchvision/datasets/utils.py", line 388, in download_and_extract_archive
+    download_url(url, download_root, filename, md5)
+  File "/work/mohammad/vllm_env/lib/python3.12/site-packages/torchvision/datasets/utils.py", line 108, in download_url
+    os.makedirs(root, exist_ok=True)
+  File "<frozen os>", line 215, in makedirs
+  File "<frozen os>", line 215, in makedirs
+  File "<frozen os>", line 225, in makedirs
+PermissionError: [Errno 13] Permission denied: '/home/mmoslem3'
+──────────────────────────────────────────────────────────
+[GPU 0] ResNet20_dog-bird_fc_b0.05_seed0
+──────────────────────────────────────────────────────────
+[2026-06-17 17:16:09] device=cuda
+[2026-06-17 17:16:09] hyperparams: {'dataset': 'CIFAR10', 'data_path': 'data', 'model': 'ResNet20', 'out_dir': 'result/standard_nodistill', 'seed': 0, 'target_idx_file': None, 'dsa_strategy': 'color_crop_cutout_flip_scale_rotate', 'syn_data_path': 'result/res_DM_CIFAR10_ConvNet_50ipc.pt', 'surrogate_model': 'ResNet18', 'num_surrogates': 10, 'surrogate_epochs': 1000, 'surrogate_lr': 0.01, 'surrogate_bs': 256, 'attack': 'fc', 'class_pairs': ['dog-bird'], 'budget': 0.05, 'epsilon': 0.0313725, 'pgd_steps': 150, 'pgd_alpha': 0.0039216, 'restarts': 1, 'lambda_margin': 1.0, 'num_targets': 5, 'num_victims': 5, 'target_select': 'random', 'victim_epochs': 60, 'victim_lr': 0.1, 'victim_bs': 125, 'victim_decay': [40], 'victim_aug': False, 'clean_baseline': True, 'cache_dir': 'result/cache', 'precompute_only': False, 'random_select': False, 'single_surrogate': True}
+[2026-06-17 17:16:19] N_total=50000  budget=0.0500 -> N_p=2500 poisons (all in y_adv class)
+
+[2026-06-17 17:16:19] === training 10 surrogates (ResNet18) on distilled S (1000 ep each) ===
+[2026-06-17 17:16:51] Evaluate_00: epoch = 1000 train time = 31 s train loss = 0.002492 train acc = 1.0000, test acc = 0.5270
+[2026-06-17 17:17:22] Evaluate_01: epoch = 1000 train time = 31 s train loss = 0.002569 train acc = 1.0000, test acc = 0.5163
+[2026-06-17 17:17:54] Evaluate_02: epoch = 1000 train time = 31 s train loss = 0.002547 train acc = 1.0000, test acc = 0.5260
+[2026-06-17 17:18:25] Evaluate_03: epoch = 1000 train time = 31 s train loss = 0.000489 train acc = 1.0000, test acc = 0.5318
+[2026-06-17 17:18:57] Evaluate_04: epoch = 1000 train time = 31 s train loss = 0.000699 train acc = 1.0000, test acc = 0.5304
+[2026-06-17 17:19:28] Evaluate_05: epoch = 1000 train time = 31 s train loss = 0.002954 train acc = 1.0000, test acc = 0.5095
+[2026-06-17 17:20:00] Evaluate_06: epoch = 1000 train time = 31 s train loss = 0.002118 train acc = 1.0000, test acc = 0.5289
+[2026-06-17 17:20:31] Evaluate_07: epoch = 1000 train time = 31 s train loss = 0.000703 train acc = 1.0000, test acc = 0.5271
+[2026-06-17 17:21:03] Evaluate_08: epoch = 1000 train time = 31 s train loss = 0.000804 train acc = 1.0000, test acc = 0.5256
+[2026-06-17 17:21:34] Evaluate_09: epoch = 1000 train time = 31 s train loss = 0.000738 train acc = 1.0000, test acc = 0.5157
+[2026-06-17 17:21:34]  saved surrogates to result/cache/surrogates_ResNet18_10x1000ep_seed0
+
+[2026-06-17 17:21:34] === training 5 clean victims (ResNet20) from scratch on full clean data ===
+──────────────────────────────────────────────────────────
+[GPU 0] ResNet20_dog-bird_fc_b0.05_seed0
+──────────────────────────────────────────────────────────
+[2026-06-17 17:26:20] device=cuda
+[2026-06-17 17:26:20] hyperparams: {'dataset': 'CIFAR10', 'data_path': 'data', 'model': 'ResNet20', 'out_dir': 'result/standard_nodistill', 'seed': 0, 'target_idx_file': None, 'dsa_strategy': 'color_crop_cutout_flip_scale_rotate', 'syn_data_path': 'result/res_DM_CIFAR10_ConvNet_50ipc.pt', 'surrogate_model': 'ResNet18', 'num_surrogates': 10, 'surrogate_epochs': 1000, 'surrogate_lr': 0.01, 'surrogate_bs': 256, 'attack': 'fc', 'class_pairs': ['dog-bird'], 'budget': 0.05, 'epsilon': 0.0313725, 'pgd_steps': 150, 'pgd_alpha': 0.0039216, 'restarts': 1, 'lambda_margin': 1.0, 'num_targets': 5, 'num_victims': 5, 'target_select': 'random', 'victim_epochs': 60, 'victim_lr': 0.1, 'victim_bs': 125, 'victim_decay': [40], 'victim_aug': False, 'clean_baseline': True, 'cache_dir': 'result/cache', 'precompute_only': False, 'random_select': False, 'single_surrogate': True}
+[2026-06-17 17:26:31] N_total=50000  budget=0.0500 -> N_p=2500 poisons (all in y_adv class)
+
+[2026-06-17 17:26:31] === loading 10 surrogates from cache: result/cache/surrogates_ResNet18_10x1000ep_seed0 ===
+
+[2026-06-17 17:26:33] === training 5 clean victims (ResNet20) from scratch on full clean data ===
+──────────────────────────────────────────────────────────
+[GPU 0] ResNet20_dog-bird_fc_b0.05_seed0
+──────────────────────────────────────────────────────────
+[2026-06-17 17:27:09] device=cuda
+[2026-06-17 17:27:09] hyperparams: {'dataset': 'CIFAR10', 'data_path': 'data', 'model': 'ResNet20', 'out_dir': 'result/standard_nodistill', 'seed': 0, 'target_idx_file': None, 'dsa_strategy': 'color_crop_cutout_flip_scale_rotate', 'syn_data_path': 'result/res_DM_CIFAR10_ConvNet_100ipc.pt', 'surrogate_model': 'ResNet18', 'num_surrogates': 10, 'surrogate_epochs': 1000, 'surrogate_lr': 0.01, 'surrogate_bs': 256, 'attack': 'fc', 'class_pairs': ['dog-bird'], 'budget': 0.05, 'epsilon': 0.0313725, 'pgd_steps': 150, 'pgd_alpha': 0.0039216, 'restarts': 1, 'lambda_margin': 1.0, 'num_targets': 5, 'num_victims': 5, 'target_select': 'random', 'victim_epochs': 60, 'victim_lr': 0.1, 'victim_bs': 125, 'victim_decay': [40], 'victim_aug': False, 'clean_baseline': True, 'cache_dir': 'result/cache', 'precompute_only': False, 'random_select': False, 'single_surrogate': True}
+[2026-06-17 17:27:20] N_total=50000  budget=0.0500 -> N_p=2500 poisons (all in y_adv class)
+
+[2026-06-17 17:27:20] === loading 10 surrogates from cache: result/cache/surrogates_ResNet18_10x1000ep_seed0 ===
+
+[2026-06-17 17:27:20] === training 5 clean victims (ResNet20) from scratch on full clean data ===
+──────────────────────────────────────────────────────────
+[GPU 0] ResNet20_dog-bird_fc_b0.05_seed0
+──────────────────────────────────────────────────────────
+[2026-06-17 17:27:46] device=cuda
+[2026-06-17 17:27:46] hyperparams: {'dataset': 'CIFAR10', 'data_path': 'data', 'model': 'ResNet20', 'out_dir': 'result/standard_nodistill', 'seed': 0, 'target_idx_file': None, 'dsa_strategy': 'color_crop_cutout_flip_scale_rotate', 'syn_data_path': 'result/res_DM_CIFAR10_ConvNet_100ipc.pt', 'surrogate_model': 'ResNet18', 'num_surrogates': 10, 'surrogate_epochs': 1001, 'surrogate_lr': 0.01, 'surrogate_bs': 256, 'attack': 'fc', 'class_pairs': ['dog-bird'], 'budget': 0.05, 'epsilon': 0.0313725, 'pgd_steps': 150, 'pgd_alpha': 0.0039216, 'restarts': 1, 'lambda_margin': 1.0, 'num_targets': 5, 'num_victims': 5, 'target_select': 'random', 'victim_epochs': 60, 'victim_lr': 0.1, 'victim_bs': 125, 'victim_decay': [40], 'victim_aug': False, 'clean_baseline': True, 'cache_dir': 'result/cache', 'precompute_only': False, 'random_select': False, 'single_surrogate': True}
+──────────────────────────────────────────────────────────
+[GPU 0] ResNet20_dog-bird_fc_b0.05_seed0
+──────────────────────────────────────────────────────────
+[2026-06-17 17:28:22] device=cuda
+[2026-06-17 17:28:22] hyperparams: {'dataset': 'CIFAR10', 'data_path': 'data', 'model': 'ResNet20', 'out_dir': 'result/standard_nodistill', 'seed': 0, 'target_idx_file': None, 'dsa_strategy': 'color_crop_cutout_flip_scale_rotate', 'syn_data_path': 'result/res_DM_CIFAR10_ConvNet_100ipc.pt', 'surrogate_model': 'ResNet18', 'num_surrogates': 10, 'surrogate_epochs': 1001, 'surrogate_lr': 0.01, 'surrogate_bs': 256, 'attack': 'fc', 'class_pairs': ['dog-bird'], 'budget': 0.05, 'epsilon': 0.0313725, 'pgd_steps': 150, 'pgd_alpha': 0.0039216, 'restarts': 1, 'lambda_margin': 1.0, 'num_targets': 5, 'num_victims': 5, 'target_select': 'random', 'victim_epochs': 60, 'victim_lr': 0.1, 'victim_bs': 125, 'victim_decay': [40], 'victim_aug': False, 'clean_baseline': True, 'cache_dir': 'result/cache', 'precompute_only': False, 'random_select': False, 'single_surrogate': True}
+[2026-06-17 17:28:33] N_total=50000  budget=0.0500 -> N_p=2500 poisons (all in y_adv class)
+
+[2026-06-17 17:28:33] === training 10 surrogates (ResNet18) on distilled S (1001 ep each) ===
+──────────────────────────────────────────────────────────
+[GPU 0] ResNet20_dog-bird_fc_b0.05_seed0
+──────────────────────────────────────────────────────────
+[2026-06-17 17:29:08] device=cuda
+[2026-06-17 17:29:08] hyperparams: {'dataset': 'CIFAR10', 'data_path': 'data', 'model': 'ResNet20', 'out_dir': 'result/standard_nodistill', 'seed': 0, 'target_idx_file': None, 'dsa_strategy': 'color_crop_cutout_flip_scale_rotate', 'syn_data_path': 'result/res_DM_CIFAR10_ConvNet_50ipc.pt', 'surrogate_model': 'ResNet18', 'num_surrogates': 10, 'surrogate_epochs': 1000, 'surrogate_lr': 0.01, 'surrogate_bs': 256, 'attack': 'fc', 'class_pairs': ['dog-bird'], 'budget': 0.05, 'epsilon': 0.0313725, 'pgd_steps': 150, 'pgd_alpha': 0.0039216, 'restarts': 1, 'lambda_margin': 1.0, 'num_targets': 5, 'num_victims': 5, 'target_select': 'random', 'victim_epochs': 60, 'victim_lr': 0.1, 'victim_bs': 125, 'victim_decay': [40], 'victim_aug': False, 'clean_baseline': True, 'cache_dir': 'result/cache', 'precompute_only': False, 'random_select': False, 'single_surrogate': True}
+[2026-06-17 17:29:18] N_total=50000  budget=0.0500 -> N_p=2500 poisons (all in y_adv class)
+
+[2026-06-17 17:29:19] === loading 10 surrogates from cache: result/cache/surrogates_ResNet18_10x1000ep_seed0 ===
+
+[2026-06-17 17:29:26] === training 5 clean victims (ResNet20) from scratch on full clean data ===

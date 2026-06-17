@@ -1,5 +1,7 @@
 #!/bin/bash
 
+
+
 LOG_DEST="logs"
 mkdir -p "$LOG_DEST"
 
@@ -20,10 +22,11 @@ PAIRS=(dog-bird)
 # ATTACKS=(fc gradmatch)
 ATTACKS=(fc)
 # MODELS=(ConvNetBN ResNet20 VGG13)
-MODELS=(ConvNetBN)
+MODELS=(ResNet20)
 
 # BUDGETS=(0.00002 0.0001 0.001 0.002 0.005 0.01 0.02 0.05 0.1)
-BUDGETS=(0.1 0.05 0.02 0.01 0.005 0.002 0.001 0.0001 0.00002)
+# BUDGETS=(0.1 0.05 0.02 0.01 0.005 0.002 0.001 0.0001 0.00002)
+BUDGETS=(0.05)
 
 TOTAL=$(( ${#MODELS[@]} * ${#PAIRS[@]} * ${#ATTACKS[@]} * ${#BUDGETS[@]} ))
 RUN=0
@@ -39,7 +42,8 @@ run_combo() {
     echo "[GPU ${GPU}] ${TAG}" >> "$RUNLOG"
     echo "──────────────────────────────────────────────────────────" >> "$RUNLOG"
 
-    CUDA_VISIBLE_DEVICES=$GPU python -u main_IF.py "$@" \
+    # CUDA_VISIBLE_DEVICES=$GPU python -u main_IF.py "$@" \
+    CUDA_VISIBLE_DEVICES=7 python -u main_IF.py "$@" \
         2>&1 | stdbuf -oL tee -a "$RUNLOG"
 }
 
@@ -57,16 +61,16 @@ for BUDGET in "${BUDGETS[@]}"; do
     EXTRA_ARGS=(--cache_dir result/cache)
     [[ -n "$TARGET_IDX_FILE" ]] && EXTRA_ARGS+=(--target_idx_file "$TARGET_IDX_FILE")
 
+# --data_path /home/mmoslem3/scratch/data
     COMMON_ARGS=(
         --syn_data_path result/res_DM_CIFAR10_ConvNet_50ipc.pt
-        --data_path /home/mmoslem3/scratch/data
-        --surrogate_model ConvNet --model "$MODEL"
+        --surrogate_model ResNet18 --model "$MODEL"
         --class_pairs "$PAIR"
         --attack "$ATTACK" --restarts "$RESTARTS"
         --budget "$BUDGET" --epsilon 0.0313725 --pgd_steps 150 --pgd_alpha 0.0039216
         --lambda_margin 1
         --num_surrogates 10 --surrogate_epochs 1000
-        --num_targets 10 --num_victims 5
+        --num_targets 5 --num_victims 5
         --victim_epochs 60 --victim_lr 0.1 --victim_bs 125 --victim_decay 40
         --target_select random --seed "$SEED" --single_surrogate --clean_baseline
         "${EXTRA_ARGS[@]}"

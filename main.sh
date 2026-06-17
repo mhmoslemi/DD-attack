@@ -32,16 +32,17 @@
 
 
 
-python main_IF.py \
-    --syn_data_path result/res_DM_CIFAR10_ConvNet_50ipc.pt \
-    --surrogate_model ConvNet --model ConvNetBN \
+
+CUDA_VISIBLE_DEVICES=6 python main_IF.py \
+    --syn_data_path result/res_DM_CIFAR10_ConvNet_100ipc.pt \
+    --surrogate_model ResNet18 --model ResNet20 \
     --class_pairs dog-bird \
-    --attack gradmatch --restarts 8 \
+    --attack fc --restarts 1 \
     --budget 0.005 --epsilon 0.0313725 --pgd_steps 150 --pgd_alpha 0.0039216 \
-    --lambda_margin 0.1 \
+    --lambda_margin 1 \
     --num_surrogates 10 --surrogate_epochs 1000 \
-    --num_targets 10 --num_victims 6 \
-    --victim_epochs 80 --victim_lr 0.1 --victim_bs 125 --victim_decay 40 60 \
+    --num_targets 5 --num_victims 5 \
+    --victim_epochs 60 --victim_lr 0.1 --victim_bs 125 --victim_decay 40 \
     --target_select random --seed 0  --single_surrogate
 
 # echo "===== Cell A: plain FC (random select + single surrogate) ====="
