@@ -1,0 +1,295 @@
+hyperparams: { 'model': 'ConvNetBN',    'attack': 'gradmatch', 'class_pairs': ['dog-bird'], 'budget': 0.1,  'restarts': 8,  'random_select': False, }
+N_total=50000  budget=0.1000 -> N_p=5000 poisons 
+
+  ---- dog-bird (gradmatch) : 10 targets x 5 victims  ----
+    clean baseline CTA = 0.8010   
+    poison CTA = 0.7698 +/- 0.0063
+    poison ASR = 88.0% +/- 20.4%
+    
+
+hyperparams: { 'model': 'ConvNetBN',    'attack': 'gradmatch', 'class_pairs': ['dog-bird'], 'budget': 0.1,  'restarts': 8,  'random_select': True, }
+
+
+  ---- dog-bird (gradmatch) : 10 targets x 5 victims  ----
+    clean baseline CTA = 0.8010   
+    poison CTA = 0.7693 +/- 0.0058
+    poison ASR = 88.0% +/- 24.0%
+    
+
+===========================================================================
+===========================================================================
+
+
+hyperparams: { 'model': 'ResNet20',    'attack': 'gradmatch', 'class_pairs': ['dog-bird'], 'budget': 0.1,  'restarts': 8,  'random_select': False, }
+N_total=50000  budget=0.1000 -> N_p=5000 poisons 
+  
+
+  ---- dog-bird (gradmatch) : 10 targets x 5 victims  ----
+    clean baseline CTA = 0.8265   
+    poison CTA = 0.7869 +/- 0.0068
+    poison ASR = 72.0% +/- 33.7%
+    
+
+===========================================================================
+===========================================================================
+
+
+hyperparams: { 'model': 'ConvNetBN',    'attack': 'fc', 'class_pairs': ['frog-airplane'], 'budget': 0.1,  'restarts': 1,  'random_select': False, }
+N_total=50000  budget=0.1000 -> N_p=5000 poisons 
+
+  ---- frog-airplane (fc) : 10 targets x 5 victims  ----
+    clean baseline CTA = 0.8051   
+    poison CTA = 0.7516 +/- 0.0072
+    poison ASR = 16.0% +/- 30.7%
+    
+
+
+hyperparams: { 'model': 'ConvNetBN',    'attack': 'fc', 'class_pairs': ['frog-airplane'], 'budget': 0.1,  'restarts': 1,  'random_select': True, }
+  
+
+  ---- frog-airplane (fc) : 10 targets x 5 victims  ----
+    clean baseline CTA = 0.8010   
+    poison CTA = 0.7515 +/- 0.0086
+    poison ASR = 16.0% +/- 21.5%
+    
+
+
+===========================================================================
+===========================================================================
+
+
+hyperparams: { 'model': 'ConvNetBN',    'attack': 'fc', 'class_pairs': ['frog-airplane'], 'budget': 0.05,  'restarts': 1,  'random_select': False, }
+N_total=50000  budget=0.0500 -> N_p=2500 poisons 
+
+
+  ---- frog-airplane (fc) : 10 targets x 5 victims  ----
+    clean baseline CTA = 0.8010   
+    poison CTA = 0.7980 +/- 0.0026
+    poison ASR = 10.0% +/- 18.4%
+    
+
+hyperparams: { 'model': 'ConvNetBN',    'attack': 'fc', 'class_pairs': ['frog-airplane'], 'budget': 0.05,  'restarts': 1,  'random_select': True, }
+N_total=50000  budget=0.0500 -> N_p=2500 poisons 
+
+
+  ---- frog-airplane (fc) : 10 targets x 5 victims  ----
+    clean baseline CTA = 0.8010   
+    poison CTA = 0.7992 +/- 0.0041
+    poison ASR = 2.0% +/- 6.0%
+    
+
+===========================================================================
+===========================================================================
+
+
+hyperparams: { 'model': 'ConvNetBN',    'attack': 'fc', 'class_pairs': ['frog-airplane'], 'budget': 0.02,  'restarts': 1,  'random_select': False, }
+N_total=50000  budget=0.0200 -> N_p=1000 poisons 
+
+
+  ---- frog-airplane (fc) : 10 targets x 5 victims  ----
+    clean baseline CTA = 0.8010   
+    poison CTA = 0.8044 +/- 0.0037
+    poison ASR = 4.0% +/- 8.0%
+    
+
+hyperparams: { 'model': 'ConvNetBN',    'attack': 'fc', 'class_pairs': ['frog-airplane'], 'budget': 0.02,  'restarts': 1,  'random_select': True, }
+N_total=50000  budget=0.0200 -> N_p=1000 poisons 
+
+
+  ---- frog-airplane (fc) : 10 targets x 5 victims  ----
+    clean baseline CTA = 0.8010   
+    poison CTA = 0.8012 +/- 0.0030
+    poison ASR = 4.0% +/- 12.0%
+    
+
+===========================================================================
+===========================================================================
+
+
+hyperparams: { 'model': 'ConvNetBN',    'attack': 'fc', 'class_pairs': ['frog-airplane'], 'budget': 0.01,  'restarts': 1,  'random_select': False, }
+N_total=50000  budget=0.0100 -> N_p=500 poisons 
+
+
+  ---- frog-airplane (fc) : 10 targets x 5 victims  ----
+    clean baseline CTA = 0.8010   
+    poison CTA = 0.8000 +/- 0.0052
+    poison ASR = 2.0% +/- 6.0%
+    
+
+
+===========================================================================
+===========================================================================
+
+
+[1
+hyperparams: { 'model': 'ResNet20',    'attack': 'fc', 'class_pairs': ['dog-bird'], 'budget': 0.1,  'restarts': 1,  'random_select': False, }
+N_total=50000  budget=0.1000 -> N_p=5000 poisons 
+
+
+  ---- dog-bird (fc) : 10 targets x 5 victims  ----
+    clean baseline CTA = 0.8257   
+    poison CTA = 0.7674 +/- 0.0029
+    poison ASR = 28.0% +/- 32.5%
+
+
+hyperparams: { 'model': 'ResNet20',    'attack': 'fc', 'class_pairs': ['dog-bird'], 'budget': 0.1,  'restarts': 1,  'random_select': True, }
+N_total=50000  budget=0.1000 -> N_p=5000 poisons 
+
+
+  ---- dog-bird (fc) : 10 targets x 5 victims  ----
+    clean baseline CTA = 0.8265   
+    poison CTA = 0.7662 +/- 0.0026
+    poison ASR = 30.0% +/- 36.1%
+
+
+
+
+
+
+===========================================================================
+===========================================================================
+
+
+
+[2
+hyperparams: { 'model': 'ResNet20',    'attack': 'fc', 'class_pairs': ['dog-bird'], 'budget': 0.05,  'restarts': 1,  'random_select': False, }
+N_total=50000  budget=0.0500 -> N_p=2500 poisons 
+
+  ---- dog-bird (fc) : 10 targets x 5 victims  ----
+    clean baseline CTA = 0.8265   
+    poison CTA = 0.8159 +/- 0.0027
+    poison ASR = 32.0% +/- 42.1%
+
+hyperparams: { 'model': 'ResNet20',    'attack': 'fc', 'class_pairs': ['dog-bird'], 'budget': 0.05,  'restarts': 1,  'random_select': True, }
+N_total=50000  budget=0.0500 -> N_p=2500 poisons 
+
+
+  ---- dog-bird (fc) : 10 targets x 5 victims  ----
+    clean baseline CTA = 0.8265   
+    poison CTA = 0.8201 +/- 0.0026
+    poison ASR = 42.0% +/- 45.1%
+
+
+
+===========================================================================
+===========================================================================
+
+
+
+
+hyperparams: { 'model': 'ResNet20',    'attack': 'gradmatch', 'class_pairs': ['dog-bird'], 'budget': 0.1,  'restarts': 8,  'random_select': False, }
+N_total=50000  budget=0.1000 -> N_p=5000 poisons 
+
+
+  ---- dog-bird (gradmatch) : 10 targets x 5 victims  ----
+    clean baseline CTA = 0.8265   
+    poison CTA = 0.7869 +/- 0.0068
+    poison ASR = 72.0% +/- 33.7%
+
+
+
+
+===========================================================================
+===========================================================================
+
+
+
+
+hyperparams: { 'model': 'ConvNetBN',    'attack': 'fc', 'class_pairs': ['dog-bird'], 'budget': 0.1,  'restarts': 1,  'random_select': False, }
+
+
+N_total=50000  budget=0.1000 -> N_p=5000 poisons 
+
+
+  ---- dog-bird (fc) : 10 targets x 5 victims  ----
+    clean baseline CTA = 0.8051   
+    poison CTA = 0.7533 +/- 0.0031
+    poison ASR = 62.0% +/- 40.4%
+
+hyperparams: { 'model': 'ConvNetBN',    'attack': 'fc', 'class_pairs': ['dog-bird'], 'budget': 0.1,  'restarts': 1,  'random_select': True, }
+N_total=50000  budget=0.1000 -> N_p=5000 poisons 
+
+  ---- dog-bird (fc) : 10 targets x 5 victims  ----
+    clean baseline CTA = 0.8010   
+    poison CTA = 0.7551 +/- 0.0063
+    poison ASR = 76.0% +/- 32.0%
+
+
+
+
+
+===========================================================================
+===========================================================================
+
+
+hyperparams: { 'model': 'ConvNetBN',    'attack': 'fc', 'class_pairs': ['dog-bird'], 'budget': 0.05,  'restarts': 1,  'random_select': False, }
+N_total=50000  budget=0.0500 -> N_p=2500 poisons 
+
+
+  ---- dog-bird (fc) : 10 targets x 5 victims  ----
+    clean baseline CTA = 0.8010   
+    poison CTA = 0.7991 +/- 0.0046
+    poison ASR = 56.0% +/- 39.8%
+
+hyperparams: { 'model': 'ConvNetBN',    'attack': 'fc', 'class_pairs': ['dog-bird'], 'budget': 0.05,  'restarts': 1,  'random_select': True, }
+
+
+  ---- dog-bird (fc) : 10 targets x 5 victims  ----
+    clean baseline CTA = 0.8010   
+    poison CTA = 0.7983 +/- 0.0037
+    poison ASR = 42.0% +/- 40.4%
+
+
+
+
+
+
+===========================================================================
+===========================================================================
+
+
+
+
+
+hyperparams: { 'model': 'ConvNetBN',    'attack': 'fc', 'class_pairs': ['dog-bird'], 'budget': 0.02,  'restarts': 1,  'random_select': False, }
+N_total=50000  budget=0.0200 -> N_p=1000 poisons 
+
+  ---- dog-bird (fc) : 10 targets x 5 victims  ----
+    clean baseline CTA = 0.8010   
+    poison CTA = 0.8028 +/- 0.0024
+    poison ASR = 48.0% +/- 31.2%
+
+hyperparams: { 'model': 'ConvNetBN',    'attack': 'fc', 'class_pairs': ['dog-bird'], 'budget': 0.02,  'restarts': 1,  'random_select': True, }
+N_total=50000  budget=0.0200 -> N_p=1000 poisons 
+
+  ---- dog-bird (fc) : 10 targets x 5 victims  ----
+    clean baseline CTA = 0.8010   
+    poison CTA = 0.8029 +/- 0.0045
+    poison ASR = 16.0% +/- 19.6%
+
+
+
+
+
+===========================================================================
+===========================================================================
+
+
+
+hyperparams: { 'model': 'ConvNetBN',    'attack': 'fc', 'class_pairs': ['dog-bird'], 'budget': 0.01,  'restarts': 1,  'random_select': False, }
+N_total=50000  budget=0.0100 -> N_p=500 poisons 
+
+
+  ---- dog-bird (fc) : 10 targets x 5 victims  ----
+    clean baseline CTA = 0.8010   
+    poison CTA = 0.8032 +/- 0.0046
+    poison ASR = 36.0% +/- 34.4%
+
+hyperparams: { 'model': 'ConvNetBN',    'attack': 'fc', 'class_pairs': ['dog-bird'], 'budget': 0.01,  'restarts': 1,  'random_select': True, }
+N_total=50000  budget=0.0100 -> N_p=500 poisons 
+
+
+  ---- dog-bird (fc) : 10 targets x 5 victims  ----
+    clean baseline CTA = 0.8010   
+    poison CTA = 0.8034 +/- 0.0021
+    poison ASR = 6.0% +/- 12.8%
