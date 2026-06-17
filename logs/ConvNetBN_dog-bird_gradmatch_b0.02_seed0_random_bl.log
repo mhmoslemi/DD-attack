@@ -1,0 +1,42 @@
+──────────────────────────────────────────────────────────
+[GPU 2] ConvNetBN_dog-bird_gradmatch_b0.02_seed0_random_bl
+──────────────────────────────────────────────────────────
+[2026-06-17 01:31:56] device=cuda
+[2026-06-17 01:31:56] hyperparams: {'dataset': 'CIFAR10', 'data_path': 'data', 'model': 'ConvNetBN', 'out_dir': 'result/standard_nodistill', 'seed': 0, 'target_idx_file': None, 'dsa_strategy': 'color_crop_cutout_flip_scale_rotate', 'syn_data_path': 'result/res_DM_CIFAR10_ConvNet_50ipc.pt', 'surrogate_model': 'ConvNet', 'num_surrogates': 10, 'surrogate_epochs': 1000, 'surrogate_lr': 0.01, 'surrogate_bs': 256, 'attack': 'gradmatch', 'class_pairs': ['dog-bird'], 'budget': 0.02, 'epsilon': 0.0313725, 'pgd_steps': 150, 'pgd_alpha': 0.0039216, 'restarts': 8, 'lambda_margin': 1.0, 'num_targets': 10, 'num_victims': 5, 'target_select': 'random', 'victim_epochs': 60, 'victim_lr': 0.1, 'victim_bs': 125, 'victim_decay': [40], 'victim_aug': False, 'clean_baseline': True, 'cache_dir': 'result/cache', 'precompute_only': False, 'random_select': True, 'single_surrogate': True}
+[2026-06-17 01:32:07] N_total=50000  budget=0.0200 -> N_p=1000 poisons (all in y_adv class)
+
+[2026-06-17 01:32:07] === loading 10 surrogates from cache: result/cache/surrogates_ConvNet_10x1000ep_seed0 ===
+
+[2026-06-17 01:32:07] === loading 5 clean victims (ConvNetBN) from cache: result/cache/clean_victims_ConvNetBN_5x60ep_seed0 ===
+  clean baseline CTA = 0.8047
+
+[2026-06-17 01:32:08] ################ pair dog-bird : y_adv=5(dog)  target_class=2(bird) ################
+  targets (random): [430, 387, 6715, 7670, 9467, 2100, 7171, 4833, 5599, 2544]
+  victims: v1 done, v2 done, v3 done, v4 done, v5 done
+  [dog-bird t1/10 idx=430] gradmatch craft_obj=0.2084 linf=0.0314 | clean_ASR=0% poison_CTA=0.8006 poison_ASR=0%
+  victims: v1 done, v2 done, v3 done, v4 done, v5 done
+  [dog-bird t2/10 idx=387] gradmatch craft_obj=0.1845 linf=0.0314 | clean_ASR=20% poison_CTA=0.7983 poison_ASR=20%
+  victims: v1 done, v2 done, v3 done, v4 done, v5 done
+  [dog-bird t3/10 idx=6715] gradmatch craft_obj=0.2687 linf=0.0314 | clean_ASR=0% poison_CTA=0.8008 poison_ASR=60%
+  victims: v1 done, v2 done, v3 done, v4 done, v5 done
+  [dog-bird t4/10 idx=7670] gradmatch craft_obj=0.1558 linf=0.0314 | clean_ASR=0% poison_CTA=0.8102 poison_ASR=20%
+  victims: v1 done, v2 done, v3 done, v4 done, v5 done
+  [dog-bird t5/10 idx=9467] gradmatch craft_obj=0.2264 linf=0.0314 | clean_ASR=0% poison_CTA=0.8057 poison_ASR=0%
+  victims: v1 done, v2 done, v3 done, v4 done, v5 done
+  [dog-bird t6/10 idx=2100] gradmatch craft_obj=0.2451 linf=0.0314 | clean_ASR=0% poison_CTA=0.7933 poison_ASR=0%
+  victims: v1 done, v2 done, v3 done, v4 done, v5 done
+  [dog-bird t7/10 idx=7171] gradmatch craft_obj=0.2168 linf=0.0314 | clean_ASR=0% poison_CTA=0.8083 poison_ASR=20%
+  victims: v1 done, v2 done, v3 done, v4 done, v5 done
+  [dog-bird t8/10 idx=4833] gradmatch craft_obj=0.2093 linf=0.0314 | clean_ASR=0% poison_CTA=0.8037 poison_ASR=60%
+  victims: v1 done, v2 done, v3 done, v4 done, v5 done
+  [dog-bird t9/10 idx=5599] gradmatch craft_obj=0.2329 linf=0.0314 | clean_ASR=0% poison_CTA=0.8047 poison_ASR=0%
+  victims: v1 done, v2 done, v3 done, v4 done, v5 done
+  [dog-bird t10/10 idx=2544] gradmatch craft_obj=0.2173 linf=0.0314 | clean_ASR=0% poison_CTA=0.8075 poison_ASR=20%
+
+  ---- pair dog-bird (gradmatch) summary over 10 targets x 5 victims = 50 votes ----
+    clean baseline CTA = 0.8047   mean clean ASR = 2.0%
+    poison CTA = 0.8033 +/- 0.0049
+    poison ASR = 20.0% +/- 21.9%
+    target-prediction tally (['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']): [2, 0, 27, 1, 3, 10, 2, 4, 0, 1]
+
+[2026-06-17 02:19:36] wrote results_standard_nodistill_gradmatch_ConvNetBN_b200_eps8.{json,csv} to result/standard_nodistill

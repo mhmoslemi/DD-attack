@@ -1,0 +1,43 @@
+──────────────────────────────────────────────────────────
+[GPU 2] ConvNetBN_frog-airplane_fc_b0.02_seed0
+──────────────────────────────────────────────────────────
+[2026-06-16 23:26:12] device=cuda
+[2026-06-16 23:26:12] hyperparams: {'dataset': 'CIFAR10', 'data_path': 'data', 'model': 'ConvNetBN', 'out_dir': 'result/standard_nodistill', 'seed': 0, 'target_idx_file': None, 'dsa_strategy': 'color_crop_cutout_flip_scale_rotate', 'syn_data_path': 'result/res_DM_CIFAR10_ConvNet_50ipc.pt', 'surrogate_model': 'ConvNet', 'num_surrogates': 10, 'surrogate_epochs': 1000, 'surrogate_lr': 0.01, 'surrogate_bs': 256, 'attack': 'fc', 'class_pairs': ['frog-airplane'], 'budget': 0.02, 'epsilon': 0.0313725, 'pgd_steps': 150, 'pgd_alpha': 0.0039216, 'restarts': 1, 'lambda_margin': 1.0, 'num_targets': 10, 'num_victims': 5, 'target_select': 'random', 'victim_epochs': 60, 'victim_lr': 0.1, 'victim_bs': 125, 'victim_decay': [40], 'victim_aug': False, 'clean_baseline': True, 'cache_dir': 'result/cache', 'precompute_only': False, 'random_select': False, 'single_surrogate': True}
+[2026-06-16 23:26:35] N_total=50000  budget=0.0200 -> N_p=1000 poisons (all in y_adv class)
+
+[2026-06-16 23:26:35] === loading 10 surrogates from cache: result/cache/surrogates_ConvNet_10x1000ep_seed0 ===
+
+[2026-06-16 23:26:35] === training 5 clean victims (ConvNetBN) from scratch on full clean data ===
+[2026-06-16 23:31:42]  saved clean victims to result/cache/clean_victims_ConvNetBN_5x60ep_seed0
+  clean baseline CTA = 0.7956
+
+[2026-06-16 23:31:43] ################ pair frog-airplane : y_adv=6(frog)  target_class=0(airplane) ################
+  targets (random): [398, 315, 6738, 7742, 9544, 2113, 7146, 5124, 5703, 2672]
+  victims: v1 done, v2 done, v3 done, v4 done, v5 done
+  [frog-airplane t1/10 idx=398] fc craft_obj=0.2582 linf=0.0314 | clean_ASR=0% poison_CTA=0.7860 poison_ASR=0%
+  victims: v1 done, v2 done, v3 done, v4 done, v5 done
+  [frog-airplane t2/10 idx=315] fc craft_obj=0.2305 linf=0.0314 | clean_ASR=0% poison_CTA=0.7961 poison_ASR=0%
+  victims: v1 done, v2 done, v3 done, v4 done, v5 done
+  [frog-airplane t3/10 idx=6738] fc craft_obj=0.2667 linf=0.0314 | clean_ASR=0% poison_CTA=0.8026 poison_ASR=0%
+  victims: v1 done, v2 done, v3 done, v4 done, v5 done
+  [frog-airplane t4/10 idx=7742] fc craft_obj=0.2384 linf=0.0314 | clean_ASR=0% poison_CTA=0.8039 poison_ASR=0%
+  victims: v1 done, v2 done, v3 done, v4 done, v5 done
+  [frog-airplane t5/10 idx=9544] fc craft_obj=0.2406 linf=0.0314 | clean_ASR=0% poison_CTA=0.8075 poison_ASR=0%
+  victims: v1 done, v2 done, v3 done, v4 done, v5 done
+  [frog-airplane t6/10 idx=2113] fc craft_obj=0.2395 linf=0.0314 | clean_ASR=0% poison_CTA=0.7916 poison_ASR=0%
+  victims: v1 done, v2 done, v3 done, v4 done, v5 done
+  [frog-airplane t7/10 idx=7146] fc craft_obj=0.2590 linf=0.0314 | clean_ASR=0% poison_CTA=0.8066 poison_ASR=0%
+  victims: v1 done, v2 done, v3 done, v4 done, v5 done
+  [frog-airplane t8/10 idx=5124] fc craft_obj=0.2634 linf=0.0314 | clean_ASR=0% poison_CTA=0.7964 poison_ASR=0%
+  victims: v1 done, v2 done, v3 done, v4 done, v5 done
+  [frog-airplane t9/10 idx=5703] fc craft_obj=0.2315 linf=0.0314 | clean_ASR=0% poison_CTA=0.8046 poison_ASR=0%
+  victims: v1 done, v2 done, v3 done, v4 done, v5 done
+  [frog-airplane t10/10 idx=2672] fc craft_obj=0.2501 linf=0.0314 | clean_ASR=0% poison_CTA=0.7968 poison_ASR=20%
+
+  ---- pair frog-airplane (fc) summary over 10 targets x 5 victims = 50 votes ----
+    clean baseline CTA = 0.7956   mean clean ASR = 0.0%
+    poison CTA = 0.7992 +/- 0.0066
+    poison ASR = 2.0% +/- 6.0%
+    target-prediction tally (['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']): [47, 1, 0, 0, 0, 0, 1, 0, 0, 1]
+
+[2026-06-17 00:23:37] wrote results_standard_nodistill_fc_ConvNetBN_b200_eps8.{json,csv} to result/standard_nodistill
