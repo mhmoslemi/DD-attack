@@ -29,22 +29,26 @@
 # class_pairs dog-bird frog-airplane
 # attack FC gradmatch
 # budget 0.00002 0.0001 0.001 0.002 0.005 0.01 0.02 0.05 0.1
+# --surrogate_model ResNet20BN --model ResNet20BN \
 
-BUDGETS=(0.1 0.05 0.02 0.01 0.005 0.002 0.001 0.0001 0.00002)
+BUDGETS=(0.1 0.05 0.02 0.01 0.005 0.002 0.001 0.0005)
 
 
 for budget in "${BUDGETS[@]}"; do
     python main_IF.py \
-        --syn_data_path result/res_DM_CIFAR10_ConvNet_50ipc.pt \
-        --surrogate_model ResNet20BN --model ResNet20BN \
+        --syn_data_path result/res_DM_CIFAR10_ConvNet_100ipc.pt \
+        --surrogate_model ConvNet --model ConvNetBN \
         --class_pairs dog-bird \
         --attack gradmatch --restarts 4 \
         --budget "$budget" --epsilon 0.0313725 --pgd_steps 75 --pgd_alpha 0.0039216 \
         --lambda_margin 1 \
-        --num_surrogates 5 --surrogate_epochs 40 \
+        --num_surrogates 10 --surrogate_epochs 1000 \
         --num_targets 10 --num_victims 5  \
         --victim_epochs 50 --victim_lr 0.1 --victim_bs 125 --victim_decay 40 \
-        --target_select random --seed 0  --single_surrogate --surrogate_on_full_data --base_dist cosine
+        --target_select random --seed 0  --single_surrogate 
+        
+        
+        # --surrogate_on_full_data --base_dist cosine
 
     # python main_IF.py \
     #     --syn_data_path result/res_DM_CIFAR10_ConvNet_50ipc.pt \
