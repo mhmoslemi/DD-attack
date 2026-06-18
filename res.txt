@@ -1,4 +1,4 @@
-hyperparams: { 'model': 'ConvNetBN',    'attack': 'gradmatch', 'class_pairs': ['dog-bird'], 'budget': 0.1,  'restarts': 8,  'random_select': False, }
+ { 'model': 'ConvNetBN',    'attack': 'gradmatch', 'class_pairs': ['dog-bird'], 'budget': 0.1,  'restarts': 8,  'random_select': False, }
 N_total=50000  budget=0.1000 -> N_p=5000 poisons 
 
   ---- dog-bird (gradmatch) : 10 targets x 5 victims  ----
@@ -7,7 +7,7 @@ N_total=50000  budget=0.1000 -> N_p=5000 poisons
     poison ASR = 88.0% +/- 20.4%
     
 
-hyperparams: { 'model': 'ConvNetBN',    'attack': 'gradmatch', 'class_pairs': ['dog-bird'], 'budget': 0.1,  'restarts': 8,  'random_select': True, }
+ { 'model': 'ConvNetBN',    'attack': 'gradmatch', 'class_pairs': ['dog-bird'], 'budget': 0.1,  'restarts': 8,  'random_select': True, }
 
 
   ---- dog-bird (gradmatch) : 10 targets x 5 victims  ----
@@ -20,7 +20,7 @@ hyperparams: { 'model': 'ConvNetBN',    'attack': 'gradmatch', 'class_pairs': ['
 ===========================================================================
 
 
-hyperparams: { 'model': 'ResNet20',    'attack': 'gradmatch', 'class_pairs': ['dog-bird'], 'budget': 0.1,  'restarts': 8,  'random_select': False, }
+ { 'model': 'ResNet20',    'attack': 'gradmatch', 'class_pairs': ['dog-bird'], 'budget': 0.1,  'restarts': 8,  'random_select': False, }
 N_total=50000  budget=0.1000 -> N_p=5000 poisons 
   
 
@@ -34,7 +34,7 @@ N_total=50000  budget=0.1000 -> N_p=5000 poisons
 ===========================================================================
 
 
-hyperparams: { 'model': 'ConvNetBN',    'attack': 'fc', 'class_pairs': ['frog-airplane'], 'budget': 0.1,  'restarts': 1,  'random_select': False, }
+ { 'model': 'ConvNetBN',    'attack': 'fc', 'class_pairs': ['frog-airplane'], 'budget': 0.1,  'restarts': 1,  'random_select': False, }
 N_total=50000  budget=0.1000 -> N_p=5000 poisons 
 
   ---- frog-airplane (fc) : 10 targets x 5 victims  ----
@@ -44,7 +44,7 @@ N_total=50000  budget=0.1000 -> N_p=5000 poisons
     
 
 
-hyperparams: { 'model': 'ConvNetBN',    'attack': 'fc', 'class_pairs': ['frog-airplane'], 'budget': 0.1,  'restarts': 1,  'random_select': True, }
+ { 'model': 'ConvNetBN',    'attack': 'fc', 'class_pairs': ['frog-airplane'], 'budget': 0.1,  'restarts': 1,  'random_select': True, }
   
 
   ---- frog-airplane (fc) : 10 targets x 5 victims  ----
@@ -58,7 +58,7 @@ hyperparams: { 'model': 'ConvNetBN',    'attack': 'fc', 'class_pairs': ['frog-ai
 ===========================================================================
 
 
-hyperparams: { 'model': 'ConvNetBN',    'attack': 'fc', 'class_pairs': ['frog-airplane'], 'budget': 0.05,  'restarts': 1,  'random_select': False, }
+ { 'model': 'ConvNetBN',    'attack': 'fc', 'class_pairs': ['frog-airplane'], 'budget': 0.05,  'restarts': 1,  'random_select': False, }
 N_total=50000  budget=0.0500 -> N_p=2500 poisons 
 
 
@@ -68,7 +68,7 @@ N_total=50000  budget=0.0500 -> N_p=2500 poisons
     poison ASR = 10.0% +/- 18.4%
     
 
-hyperparams: { 'model': 'ConvNetBN',    'attack': 'fc', 'class_pairs': ['frog-airplane'], 'budget': 0.05,  'restarts': 1,  'random_select': True, }
+ { 'model': 'ConvNetBN',    'attack': 'fc', 'class_pairs': ['frog-airplane'], 'budget': 0.05,  'restarts': 1,  'random_select': True, }
 N_total=50000  budget=0.0500 -> N_p=2500 poisons 
 
 
@@ -82,7 +82,7 @@ N_total=50000  budget=0.0500 -> N_p=2500 poisons
 ===========================================================================
 
 
-hyperparams: { 'model': 'ConvNetBN',    'attack': 'fc', 'class_pairs': ['frog-airplane'], 'budget': 0.02,  'restarts': 1,  'random_select': False, }
+ { 'model': 'ConvNetBN',    'attack': 'fc', 'class_pairs': ['frog-airplane'], 'budget': 0.02,  'restarts': 1,  'random_select': False, }
 N_total=50000  budget=0.0200 -> N_p=1000 poisons 
 
 
@@ -92,7 +92,7 @@ N_total=50000  budget=0.0200 -> N_p=1000 poisons
     poison ASR = 4.0% +/- 8.0%
     
 
-hyperparams: { 'model': 'ConvNetBN',    'attack': 'fc', 'class_pairs': ['frog-airplane'], 'budget': 0.02,  'restarts': 1,  'random_select': True, }
+ { 'model': 'ConvNetBN',    'attack': 'fc', 'class_pairs': ['frog-airplane'], 'budget': 0.02,  'restarts': 1,  'random_select': True, }
 N_total=50000  budget=0.0200 -> N_p=1000 poisons 
 
 
@@ -106,7 +106,7 @@ N_total=50000  budget=0.0200 -> N_p=1000 poisons
 ===========================================================================
 
 
-hyperparams: { 'model': 'ConvNetBN',    'attack': 'fc', 'class_pairs': ['frog-airplane'], 'budget': 0.01,  'restarts': 1,  'random_select': False, }
+ { 'model': 'ConvNetBN',    'attack': 'fc', 'class_pairs': ['frog-airplane'], 'budget': 0.01,  'restarts': 1,  'random_select': False, }
 N_total=50000  budget=0.0100 -> N_p=500 poisons 
 
 
@@ -122,7 +122,7 @@ N_total=50000  budget=0.0100 -> N_p=500 poisons
 
 
 [1
-hyperparams: { 'model': 'ResNet20',    'attack': 'fc', 'class_pairs': ['dog-bird'], 'budget': 0.1,  'restarts': 1,  'random_select': False, }
+ { 'model': 'ResNet20',    'attack': 'fc', 'class_pairs': ['dog-bird'], 'budget': 0.1,  'restarts': 1,  'random_select': False, }
 N_total=50000  budget=0.1000 -> N_p=5000 poisons 
 
 
@@ -132,7 +132,7 @@ N_total=50000  budget=0.1000 -> N_p=5000 poisons
     poison ASR = 28.0% +/- 32.5%
 
 
-hyperparams: { 'model': 'ResNet20',    'attack': 'fc', 'class_pairs': ['dog-bird'], 'budget': 0.1,  'restarts': 1,  'random_select': True, }
+ { 'model': 'ResNet20',    'attack': 'fc', 'class_pairs': ['dog-bird'], 'budget': 0.1,  'restarts': 1,  'random_select': True, }
 N_total=50000  budget=0.1000 -> N_p=5000 poisons 
 
 
@@ -152,7 +152,7 @@ N_total=50000  budget=0.1000 -> N_p=5000 poisons
 
 
 [2
-hyperparams: { 'model': 'ResNet20',    'attack': 'fc', 'class_pairs': ['dog-bird'], 'budget': 0.05,  'restarts': 1,  'random_select': False, }
+ { 'model': 'ResNet20',    'attack': 'fc', 'class_pairs': ['dog-bird'], 'budget': 0.05,  'restarts': 1,  'random_select': False, }
 N_total=50000  budget=0.0500 -> N_p=2500 poisons 
 
   ---- dog-bird (fc) : 10 targets x 5 victims  ----
@@ -160,7 +160,7 @@ N_total=50000  budget=0.0500 -> N_p=2500 poisons
     poison CTA = 0.8159 +/- 0.0027
     poison ASR = 32.0% +/- 42.1%
 
-hyperparams: { 'model': 'ResNet20',    'attack': 'fc', 'class_pairs': ['dog-bird'], 'budget': 0.05,  'restarts': 1,  'random_select': True, }
+ { 'model': 'ResNet20',    'attack': 'fc', 'class_pairs': ['dog-bird'], 'budget': 0.05,  'restarts': 1,  'random_select': True, }
 N_total=50000  budget=0.0500 -> N_p=2500 poisons 
 
 
@@ -177,7 +177,7 @@ N_total=50000  budget=0.0500 -> N_p=2500 poisons
 
 
 
-hyperparams: { 'model': 'ResNet20',    'attack': 'gradmatch', 'class_pairs': ['dog-bird'], 'budget': 0.1,  'restarts': 8,  'random_select': False, }
+ { 'model': 'ResNet20',    'attack': 'gradmatch', 'class_pairs': ['dog-bird'], 'budget': 0.1,  'restarts': 8,  'random_select': False, }
 N_total=50000  budget=0.1000 -> N_p=5000 poisons 
 
 
@@ -195,7 +195,7 @@ N_total=50000  budget=0.1000 -> N_p=5000 poisons
 
 
 
-hyperparams: { 'model': 'ConvNetBN',    'attack': 'fc', 'class_pairs': ['dog-bird'], 'budget': 0.1,  'restarts': 1,  'random_select': False, }
+ { 'model': 'ConvNetBN',    'attack': 'fc', 'class_pairs': ['dog-bird'], 'budget': 0.1,  'restarts': 1,  'random_select': False, }
 
 
 N_total=50000  budget=0.1000 -> N_p=5000 poisons 
@@ -206,7 +206,7 @@ N_total=50000  budget=0.1000 -> N_p=5000 poisons
     poison CTA = 0.7533 +/- 0.0031
     poison ASR = 62.0% +/- 40.4%
 
-hyperparams: { 'model': 'ConvNetBN',    'attack': 'fc', 'class_pairs': ['dog-bird'], 'budget': 0.1,  'restarts': 1,  'random_select': True, }
+ { 'model': 'ConvNetBN',    'attack': 'fc', 'class_pairs': ['dog-bird'], 'budget': 0.1,  'restarts': 1,  'random_select': True, }
 N_total=50000  budget=0.1000 -> N_p=5000 poisons 
 
   ---- dog-bird (fc) : 10 targets x 5 victims  ----
@@ -222,7 +222,7 @@ N_total=50000  budget=0.1000 -> N_p=5000 poisons
 ===========================================================================
 
 
-hyperparams: { 'model': 'ConvNetBN',    'attack': 'fc', 'class_pairs': ['dog-bird'], 'budget': 0.05,  'restarts': 1,  'random_select': False, }
+ { 'model': 'ConvNetBN',    'attack': 'fc', 'class_pairs': ['dog-bird'], 'budget': 0.05,  'restarts': 1,  'random_select': False, }
 N_total=50000  budget=0.0500 -> N_p=2500 poisons 
 
 
@@ -231,7 +231,7 @@ N_total=50000  budget=0.0500 -> N_p=2500 poisons
     poison CTA = 0.7991 +/- 0.0046
     poison ASR = 56.0% +/- 39.8%
 
-hyperparams: { 'model': 'ConvNetBN',    'attack': 'fc', 'class_pairs': ['dog-bird'], 'budget': 0.05,  'restarts': 1,  'random_select': True, }
+ { 'model': 'ConvNetBN',    'attack': 'fc', 'class_pairs': ['dog-bird'], 'budget': 0.05,  'restarts': 1,  'random_select': True, }
 
 
   ---- dog-bird (fc) : 10 targets x 5 victims  ----
@@ -251,7 +251,7 @@ hyperparams: { 'model': 'ConvNetBN',    'attack': 'fc', 'class_pairs': ['dog-bir
 
 
 
-hyperparams: { 'model': 'ConvNetBN',    'attack': 'fc', 'class_pairs': ['dog-bird'], 'budget': 0.02,  'restarts': 1,  'random_select': False, }
+ { 'model': 'ConvNetBN',    'attack': 'fc', 'class_pairs': ['dog-bird'], 'budget': 0.02,  'restarts': 1,  'random_select': False, }
 N_total=50000  budget=0.0200 -> N_p=1000 poisons 
 
   ---- dog-bird (fc) : 10 targets x 5 victims  ----
@@ -259,7 +259,7 @@ N_total=50000  budget=0.0200 -> N_p=1000 poisons
     poison CTA = 0.8028 +/- 0.0024
     poison ASR = 48.0% +/- 31.2%
 
-hyperparams: { 'model': 'ConvNetBN',    'attack': 'fc', 'class_pairs': ['dog-bird'], 'budget': 0.02,  'restarts': 1,  'random_select': True, }
+ { 'model': 'ConvNetBN',    'attack': 'fc', 'class_pairs': ['dog-bird'], 'budget': 0.02,  'restarts': 1,  'random_select': True, }
 N_total=50000  budget=0.0200 -> N_p=1000 poisons 
 
   ---- dog-bird (fc) : 10 targets x 5 victims  ----
@@ -276,7 +276,7 @@ N_total=50000  budget=0.0200 -> N_p=1000 poisons
 
 
 
-hyperparams: { 'model': 'ConvNetBN',    'attack': 'fc', 'class_pairs': ['dog-bird'], 'budget': 0.01,  'restarts': 1,  'random_select': False, }
+ { 'model': 'ConvNetBN',    'attack': 'fc', 'class_pairs': ['dog-bird'], 'budget': 0.01,  'restarts': 1,  'random_select': False, }
 N_total=50000  budget=0.0100 -> N_p=500 poisons 
 
 
@@ -285,7 +285,7 @@ N_total=50000  budget=0.0100 -> N_p=500 poisons
     poison CTA = 0.8032 +/- 0.0046
     poison ASR = 36.0% +/- 34.4%
 
-hyperparams: { 'model': 'ConvNetBN',    'attack': 'fc', 'class_pairs': ['dog-bird'], 'budget': 0.01,  'restarts': 1,  'random_select': True, }
+ { 'model': 'ConvNetBN',    'attack': 'fc', 'class_pairs': ['dog-bird'], 'budget': 0.01,  'restarts': 1,  'random_select': True, }
 N_total=50000  budget=0.0100 -> N_p=500 poisons 
 
 
@@ -293,3 +293,114 @@ N_total=50000  budget=0.0100 -> N_p=500 poisons
     clean baseline CTA = 0.8010   
     poison CTA = 0.8034 +/- 0.0021
     poison ASR = 6.0% +/- 12.8%
+
+
+
+
+
+===========================================================================
+===========================================================================
+
+
+
+
+
+
+
+===========================================================================
+===========================================================================
+
+
+
+
+
+
+[2026-06-18 11:46:23]  { 'model': 'ConvNetBN',  'attack': 'fc', 'class_pairs': ['dog-bird'], 'budget': 0.005,  'lambda_margin': 10.0,   'random_select': False,  }
+[2026-06-18 11:46:35] N_total=50000  budget=0.0050 -> N_p=250 poisons (all in y_adv class)
+
+
+[2026-06-18 11:50:12] ################ pair dog-bird : y_adv=5(dog)  target_class=2(bird) ################
+
+  ---- pair dog-bird (fc) summary over 10 targets x 5 victims = 50 votes ----
+    poison CTA = 0.8027 +/- 0.0022
+    poison ASR = 22.0% +/- 26.0%
+    
+
+  
+  { 'model': 'ConvNetBN', 'seed': 0, 'attack': 'fc', 'class_pairs': ['dog-bird'], 'budget': 0.005,  'lambda_margin': 10.0,   'random_select': True,  }
+[2026-06-18 10:53:47] N_total=50000  budget=0.0050 -> N_p=250 poisons (all in y_adv class)
+
+[2026-06-18 10:53:47] === training 1 surrogates (ConvNet) on distilled S (40 ep each) ===
+[2026-06-18 10:53:48] Evaluate_00: epoch = 0040 train time = 1 s train loss = 0.990720 train acc = 0.7070, test acc = 0.5727
+
+[2026-06-18 10:53:48] ################ pair dog-bird : y_adv=5(dog)  target_class=2(bird) ################
+
+  ---- pair dog-bird (fc) summary over 10 targets x 5 victims = 50 votes ----
+    poison CTA = 0.8033 +/- 0.0037
+    poison ASR = 8.0% +/- 13.3%
+    
+
+===========================================================================
+===========================================================================
+
+
+
+
+    { 'model': 'ConvNetBN',  'attack': 'fc', 'class_pairs': ['dog-bird'], 'budget': 0.002,  'lambda_margin': 10.0,   'random_select': False,  }
+[2026-06-18 13:24:39] N_total=50000  budget=0.0020 -> N_p=100 poisons (all in y_adv class)
+
+[2026-06-18 13:28:12] ################ pair dog-bird : y_adv=5(dog)  target_class=2(bird) ################
+  ---- pair dog-bird (fc) summary over 10 targets x 5 victims = 50 votes ----
+    poison CTA = 0.8014 +/- 0.0048
+    poison ASR = 16.0% +/- 25.0%
+    
+
+
+
+ { 'model': 'ConvNetBN',   'attack': 'fc', 'class_pairs': ['dog-bird'], 'budget': 0.002,  'lambda_margin': 1.0,   'random_select': False,  }
+[2026-06-18 14:59:10] N_total=50000  budget=0.0020 -> N_p=100 poisons (all in y_adv class)
+
+
+  ---- pair dog-bird (fc) summary over 10 targets x 5 victims = 50 votes ----
+    poison CTA = 0.8039 +/- 0.0046
+    poison ASR = 22.0% +/- 32.8%
+    
+
+
+ { 'model': 'ConvNetBN',  'surrogate_model': 'ConvNet', 'num_surrogates': 1,  'attack': 'fc', 'class_pairs': ['dog-bird'], 'budget': 0.002,  'lambda_margin': 1.0,   'random_select': True,  }
+[2026-06-18 15:43:05] N_total=50000  budget=0.0020 -> N_p=100 poisons (all in y_adv class)
+
+
+  ---- pair dog-bird (fc) summary over 10 targets x 5 victims = 50 votes ----
+    poison CTA = 0.8025 +/- 0.0029
+    poison ASR = 4.0% +/- 8.0%
+    
+
+
+===========================================================================
+===========================================================================
+
+
+[2026-06-18 13:52:11]  { 'model': 'ConvNetBN',  'attack': 'fc', 'class_pairs': ['dog-bird'], 'budget': 0.001,  'lambda_margin': 10.0,   'random_select': False,  }
+[2026-06-18 13:52:22] N_total=50000  budget=0.0010 -> N_p=50 poisons (all in y_adv class)
+[2026-06-18 13:56:01] ################ pair dog-bird : y_adv=5(dog)  target_class=2(bird) ################
+
+  ---- pair dog-bird (fc) summary over 10 targets x 5 victims = 50 votes ----
+    poison CTA = 0.8033 +/- 0.0035
+    poison ASR = 4.0% +/- 8.0%
+    
+
+
+
+===========================================================================
+===========================================================================
+
+
+[2026-06-18 14:07:16]  { 'model': 'ConvNetBN',  'attack': 'fc', 'class_pairs': ['dog-bird'], 'budget': 0.0005,  'lambda_margin': 10.0,   'random_select': False,  }
+[2026-06-18 14:07:28] N_total=50000  budget=0.0005 -> N_p=25 poisons (all in y_adv class)
+[2026-06-18 14:11:03] ################ pair dog-bird : y_adv=5(dog)  target_class=2(bird) ################
+
+  ---- pair dog-bird (fc) summary over 10 targets x 5 victims = 50 votes ----
+    poison CTA = 0.8026 +/- 0.0038
+    poison ASR = 2.0% +/- 6.0%
+    

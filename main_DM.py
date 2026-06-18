@@ -20,7 +20,7 @@ def main():
     parser.add_argument('--dataset', type=str, default='CIFAR10', help='dataset') # MNIST
     # parser.add_argument('--dataset', type=str, default='MNIST', help='dataset') # MNIST
     parser.add_argument('--model', type=str, default='ResNet20BN', help='model')
-    parser.add_argument('--ipc', type=int, default=10, help='image(s) per class')
+    parser.add_argument('--ipc', type=int, default=50, help='image(s) per class')
     parser.add_argument('--eval_mode', type=str, default='S', help='eval_mode') # S: the same to training model, M: multi architectures,  W: net width, D: net depth, A: activation function, P: pooling layer, N: normalization layer,
     parser.add_argument('--num_exp', type=int, default=1, help='the number of experiments')
     parser.add_argument('--num_eval', type=int, default=4, help='the number of evaluating randomly initialized models')
@@ -50,7 +50,7 @@ def main():
         os.mkdir(args.save_path)
 
     # eval_it_pool = np.arange(0, args.Iteration+1, 2000).tolist() if args.eval_mode == 'S' or args.eval_mode == 'SS' else [args.Iteration] # The list of iterations when we evaluate models and record results.
-    eval_it_pool = [args.Iteration]
+    eval_it_pool = [1000,2000,3000,args.Iteration]
     # print('eval_it_pool: ', eval_it_pool)
     channel, im_size, num_classes, class_names, mean, std, dst_train, dst_test, testloader = get_dataset(args.dataset, args.data_path)
     model_eval_pool = get_eval_pool(args.eval_mode, args.model, args.model)
@@ -206,7 +206,7 @@ def main():
             if it%250 == 0:
                 print('%s iter = %05d, loss = %.4f' % (get_time(), it, loss_avg))
 
-            if it == args.Iteration: # only record the final results
+            if it%250 == 0: # only record the final results
                 data_save.append([copy.deepcopy(image_syn.detach().cpu()), copy.deepcopy(label_syn.detach().cpu())])
                 torch.save({'data': data_save, 'accs_all_exps': accs_all_exps, }, os.path.join(args.save_path, 'res_%s_%s_%s_%dipc.pt'%(args.method, args.dataset, args.model, args.ipc)))
 

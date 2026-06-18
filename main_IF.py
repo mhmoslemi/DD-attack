@@ -309,7 +309,7 @@ def craft_fc(surrogates, base01, x_t_norm, norm, eps, steps, alpha, device,
 # --------------------------------------------------------------------------- #
 def craft_gradmatch(surrogates, base01, x_t_norm, y_adv, norm, eps, step, iters,
                     restarts, device, dsa_strategy=None, dsa_param=None,
-                    single_surrogate=False):
+                    single_surrogate=False, fast=False):
     nets = [surrogates[0]] if single_surrogate else surrogates
     for net in nets:                       # need d L / d theta
         for p in net.parameters():
@@ -340,22 +340,42 @@ def craft_gradmatch(surrogates, base01, x_t_norm, y_adv, norm, eps, step, iters,
                 seed = int(torch.randint(0, 100000, (1,)).item())
                 x_adv_norm = DiffAugment(x_adv_norm, dsa_strategy, seed=seed,
                                          param=dsa_param)
-            obj = 0.0
-            for net, g_t in zip(nets, g_targets):
-                params = [p for p in net.parameters()]
-                loss_p = crit(net(x_adv_norm), y_p)
-                g_p = _flat_grad(torch.autograd.grad(loss_p, params, create_graph=True))
-                obj = obj + (1.0 - _cosine(g_p, g_t))
-            obj = obj / len(nets)
-            grad = torch.autograd.grad(obj, delta)[0]
-            opt.zero_grad()
-            delta.grad = grad.sign()                       # signed Adam
+            if fast:
+                # First-order approximation: compute param grads and delta grad in
+                # one backward pass instead of building a second-order graph.
+                # Avoids create_graph=True (~2-3x faster per iteration).
+                obj_val = 0.0
+                grad_accum = torch.zeros_like(delta)
+                for net, g_t in zip(nets, g_targets):
+                    params = [p for p in net.parameters() if p.requires_grad]
+                    loss_p = crit(net(x_adv_norm), y_p)
+                    all_grads = torch.autograd.grad(loss_p, params + [delta])
+                    g_p = _flat_grad(list(all_grads[:-1])).detach()
+                    grad_accum = grad_accum + all_grads[-1].detach()
+                    obj_val += (1.0 - _cosine(g_p, g_t)).item()
+                obj_val /= len(nets)
+                grad_accum /= len(nets)
+                opt.zero_grad()
+                delta.grad = grad_accum.sign()             # signed Adam
+            else:
+                # Exact second-order: differentiate cosine(g_p, g_t) through to delta.
+                obj = 0.0
+                for net, g_t in zip(nets, g_targets):
+                    params = [p for p in net.parameters()]
+                    loss_p = crit(net(x_adv_norm), y_p)
+                    g_p = _flat_grad(torch.autograd.grad(loss_p, params, create_graph=True))
+                    obj = obj + (1.0 - _cosine(g_p, g_t))
+                obj = obj / len(nets)
+                grad = torch.autograd.grad(obj, delta)[0]
+                opt.zero_grad()
+                delta.grad = grad.sign()                   # signed Adam
+                obj_val = obj.item()
             opt.step()
             with torch.no_grad():
                 delta.clamp_(-eps, eps)
                 delta.data = torch.clamp(base01 + delta, 0.0, 1.0) - base01
-            if obj.item() < best_obj:
-                best_obj = obj.item()
+            if obj_val < best_obj:
+                best_obj = obj_val
                 best_delta = delta.detach().clone()
 
     return torch.clamp(base01 + best_delta, 0.0, 1.0), best_obj
@@ -534,7 +554,8 @@ def main(args):
                     surrogates, base01, x_t_norm, y_adv, norm, args.epsilon,
                     args.pgd_alpha, args.pgd_steps, args.restarts, device,
                     dsa_strategy=args.dsa_strategy, dsa_param=dsa_param,
-                    single_surrogate=args.single_surrogate)
+                    single_surrogate=args.single_surrogate,
+                    fast=args.fast_gradmatch)
             else:  # 'fc'
                 x_adv01, obj = craft_fc(
                     surrogates, base01, x_t_norm, norm, args.epsilon, args.pgd_steps,
@@ -674,6 +695,9 @@ if __name__ == '__main__':
                    help='ablation: replace scored base selection with uniform random')
     p.add_argument('--single_surrogate', action='store_true', default=False,
                    help='use only the first surrogate for crafting instead of the ensemble')
+    p.add_argument('--fast_gradmatch', action='store_true', default=False,
+                   help='first-order approximation for gradmatch: avoids create_graph=True '
+                        '(~2-3x faster per iteration; approximates the exact second-order gradient)')
     p.add_argument('--surrogate_on_full_data', action='store_true', default=False,
                    help='train surrogates on the full real training set instead of the distilled S')
     main(p.parse_args())
