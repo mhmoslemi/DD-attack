@@ -1,0 +1,41 @@
+nvidia-smi --query-compute-apps=pid --format=csv,noheader | xargs -I {} ps -o pid=,user=,etime=,comm= -p {} | awk '{
+    split($3, t, /[:-]/); 
+    if (length(t) == 4) hours = (t[1]*24) + t[2] + (t[3]/60) + (t[4]/3600);
+    else if (length(t) == 3) hours = t[1] + (t[2]/60) + (t[3]/3600);
+    else hours = (t[1]/60) + (t[2]/3600);
+    printf "PID %-6s | User %-10s | Time %-6.2f Hours | Cmd %s\n", $1, $2, hours, $4
+}'
+
+
+
+#!/usr/bin/env bash
+
+# Map GPU UUID -> index
+declare -A GPU
+while IFS=',' read -r uuid idx; do
+    GPU["${uuid// /}"]="${idx// /}"
+done < <(nvidia-smi --query-gpu=uuid,index --format=csv,noheader)
+
+# For each compute app: resolve GPU index, join with ps info
+nvidia-smi --query-compute-apps=gpu_uuid,pid --format=csv,noheader | while IFS=',' read -r uuid pid; do
+    uuid="${uuid// /}"; pid="${pid// /}"
+    info=$(ps -o user=,etime=,comm= -p "$pid") || continue
+    echo "${GPU[$uuid]} $pid $info"
+done | sort -k1,1n | awk '{
+    split($4, t, /[:-]/);
+    if (length(t) == 4) hours = (t[1]*24) + t[2] + (t[3]/60) + (t[4]/3600);
+    else if (length(t) == 3) hours = t[1] + (t[2]/60) + (t[3]/3600);
+    else hours = (t[1]/60) + (t[2]/3600);
+    printf "GPU %-3s | PID %-6s | User %-10s | Time %-6.2f Hours | Cmd %s\n", $1, $2, $3, hours, $5
+}'
+
+
+
+nvidia-smi --query-compute-apps=pid --format=csv,noheader | xargs -I {} ps -o pid,user,etime,comm -p {}
+
+
+
+
+watch -n 1 'nvidia-smi pmon -c 1 -s u'
+
+# ... [truncated for comparison] ...

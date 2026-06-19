@@ -35,7 +35,7 @@ BUDGETS=(0.1 0.05 0.02 0.01 0.005 0.002 0.001 0.0005)
 
 
 for budget in "${BUDGETS[@]}"; do
-    python main_IF.py \
+    CUDA_VISIBLE_DEVICES=7 python main_IF.py \
         --syn_data_path result/res_DM_CIFAR10_ConvNet_100ipc.pt \
         --surrogate_model ConvNet --model ConvNetBN \
         --class_pairs dog-bird \

@@ -8,11 +8,11 @@
       "target_class": 2,
       "target_idx": 430,
       "clean_asr": NaN,
-      "poison_cta": 0.8014999999999999,
+      "poison_cta": 0.8045,
       "poison_asr": 0.0,
-      "craft_obj": 0.1846785545349121,
+      "craft_obj": 0.21515655517578125,
       "realized_linf": 0.031372517347335815,
-      "N_p": 250
+      "N_p": 100
     },
     {
       "pair": "dog-bird",
@@ -21,11 +21,11 @@
       "target_class": 2,
       "target_idx": 387,
       "clean_asr": NaN,
-      "poison_cta": 0.8006400000000001,
-      "poison_asr": 60.0,
-      "craft_obj": 0.1885964274406433,
+      "poison_cta": 0.80388,
+      "poison_asr": 40.0,
+      "craft_obj": 0.17577999830245972,
       "realized_linf": 0.031372517347335815,
-      "N_p": 250
+      "N_p": 100
     },
     {
       "pair": "dog-bird",
@@ -34,11 +34,11 @@
       "target_class": 2,
       "target_idx": 6715,
       "clean_asr": NaN,
-      "poison_cta": 0.80822,
-      "poison_asr": 100.0,
-      "craft_obj": 0.2629844546318054,
+      "poison_cta": 0.8054600000000001,
+      "poison_asr": 20.0,
+      "craft_obj": 0.2777913808822632,
       "realized_linf": 0.031372517347335815,
-      "N_p": 250
+      "N_p": 100
     },
     {
       "pair": "dog-bird",
@@ -47,11 +47,11 @@
       "target_class": 2,
       "target_idx": 7670,
       "clean_asr": NaN,
-      "poison_cta": 0.80722,
-      "poison_asr": 40.0,
-      "craft_obj": 0.1695265769958496,
+      "poison_cta": 0.80274,
+      "poison_asr": 0.0,
+      "craft_obj": 0.19097471237182617,
       "realized_linf": 0.031372517347335815,
-      "N_p": 250
+      "N_p": 100
     },
     {
       "pair": "dog-bird",
@@ -60,11 +60,11 @@
       "target_class": 2,
       "target_idx": 9467,
       "clean_asr": NaN,
-      "poison_cta": 0.79518,
-      "poison_asr": 0.0,
-      "craft_obj": 0.2065514326095581,
+      "poison_cta": 0.79954,
+      "poison_asr": 20.0,
+      "craft_obj": 0.22456616163253784,
       "realized_linf": 0.031372517347335815,
-      "N_p": 250
+      "N_p": 100
     },
     {
       "pair": "dog-bird",
@@ -73,11 +73,11 @@
       "target_class": 2,
       "target_idx": 2100,
       "clean_asr": NaN,
-      "poison_cta": 0.8046599999999999,
+      "poison_cta": 0.80296,
       "poison_asr": 0.0,
-      "craft_obj": 0.2074154019355774,
+      "craft_obj": 0.2435804009437561,
       "realized_linf": 0.031372517347335815,
-      "N_p": 250
+      "N_p": 100
     },
     {
       "pair": "dog-bird",
@@ -86,11 +86,11 @@
       "target_class": 2,
       "target_idx": 7171,
       "clean_asr": NaN,
-      "poison_cta": 0.79712,
+      "poison_cta": 0.8078199999999999,
       "poison_asr": 20.0,
-      "craft_obj": 0.2003178596496582,
+      "craft_obj": 0.21594589948654175,
       "realized_linf": 0.031372517347335815,
-      "N_p": 250
+      "N_p": 100
     },
     {
       "pair": "dog-bird",
@@ -99,11 +99,11 @@
       "target_class": 2,
       "target_idx": 4833,
       "clean_asr": NaN,
-      "poison_cta": 0.79952,
-      "poison_asr": 80.0,
-      "craft_obj": 0.2387150526046753,
+      "poison_cta": 0.7870600000000001,
+      "poison_asr": 40.0,
+      "craft_obj": 0.2130163311958313,
       "realized_linf": 0.031372517347335815,
-      "N_p": 250
+      "N_p": 100
     },
     {
       "pair": "dog-bird",
@@ -112,11 +112,11 @@
       "target_class": 2,
       "target_idx": 5599,
       "clean_asr": NaN,
-      "poison_cta": 0.80342,
+      "poison_cta": 0.80282,
       "poison_asr": 0.0,
-      "craft_obj": 0.2462407350540161,
+      "craft_obj": 0.2551044821739197,
       "realized_linf": 0.031372517347335815,
-      "N_p": 250
+      "N_p": 100
     },
     {
       "pair": "dog-bird",
@@ -125,11 +125,11 @@
       "target_class": 2,
       "target_idx": 2544,
       "clean_asr": NaN,
-      "poison_cta": 0.80046,
+      "poison_cta": 0.80494,
       "poison_asr": 20.0,
-      "craft_obj": 0.23383915424346924,
+      "craft_obj": 0.25151246786117554,
       "realized_linf": 0.031372517347335815,
-      "N_p": 250
+      "N_p": 100
     }
   ],
   "args": {
@@ -150,7 +150,7 @@
     "class_pairs": [
       "dog-bird"
     ],
-    "budget": 0.005,
+    "budget": 0.002,
     "epsilon": 0.0313725,
     "pgd_steps": 75,
     "pgd_alpha": 0.0039216,
