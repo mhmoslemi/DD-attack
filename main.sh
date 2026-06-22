@@ -33,21 +33,61 @@
 
 BUDGETS=(0.1 0.05 0.02 0.01 0.005 0.002 0.001 0.0005)
 
+# BUDGETS=(0.005 0.002 0.001 0.0005)
+
+
+# BUDGETS=(0.0005)
 
 for budget in "${BUDGETS[@]}"; do
-    CUDA_VISIBLE_DEVICES=7 python main_IF.py \
+    # CUDA_VISIBLE_DEVICES=5 python main_IF.py \
+    #     --syn_data_path result/res_DM_CIFAR10_ConvNet_100ipc.pt \
+    #     --surrogate_model ResNet20BN --model ResNet20BN \
+    #     --class_pairs dog-bird \
+    #     --attack gradmatch --restarts 4 \
+    #     --budget "$budget" --epsilon 0.0313725 --pgd_steps 75 --pgd_alpha 0.0039216 \
+    #     --lambda_margin 1 \
+    #     --num_surrogates 1 --surrogate_epochs 45 \
+    #     --num_targets 10 --num_victims 5  \
+    #     --victim_epochs 45 --victim_lr 0.1 --victim_bs 125 --victim_decay 30 \
+    #     --target_select random --seed 0  --single_surrogate --multilayer --surrogate_on_full_data --random_select
+        
+        # --random_select
+        
+    CUDA_VISIBLE_DEVICES=5 python main_IF.py \
         --syn_data_path result/res_DM_CIFAR10_ConvNet_100ipc.pt \
-        --surrogate_model ConvNet --model ConvNetBN \
+        --surrogate_model ResNet20BN --model ResNet20BN \
         --class_pairs dog-bird \
-        --attack gradmatch --restarts 4 \
-        --budget "$budget" --epsilon 0.0313725 --pgd_steps 75 --pgd_alpha 0.0039216 \
+        --attack fc --restarts 1 \
+        --budget "$budget" --epsilon 0.0313725 --pgd_steps 150 --pgd_alpha 0.0039216 \
         --lambda_margin 1 \
-        --num_surrogates 10 --surrogate_epochs 1000 \
+        --num_surrogates 6 --surrogate_epochs 40 \
         --num_targets 10 --num_victims 5  \
-        --victim_epochs 50 --victim_lr 0.1 --victim_bs 125 --victim_decay 40 \
-        --target_select random --seed 0  --single_surrogate 
+        --victim_epochs 40 --victim_lr 0.1 --victim_bs 125 --victim_decay 35 \
+        --target_select random --seed 0 --multilayer --surrogate_on_full_data \
+        --cache_dir result/cache
+        
+
+        #  --single_surrogate  
+        #  --random_select
+        
+        #  --surrogate_on_full_data
         
         
+
+        # --random_select
+    # CUDA_VISIBLE_DEVICES=5 python main_IF.py \
+    #     --syn_data_path result/res_DM_CIFAR10_ConvNet_100ipc.pt \
+    #     --surrogate_model VGG13BN --model VGG13BN \
+    #     --class_pairs dog-bird \
+    #     --attack fc --restarts 1 \
+    #     --budget "$budget" --epsilon 0.0313725 --pgd_steps 150 --pgd_alpha 0.0039216 \
+    #     --lambda_margin 1 \
+    #     --num_surrogates 1 --surrogate_epochs 40 \
+    #     --num_targets 10 --num_victims 5  \
+    #     --victim_epochs 40 --victim_lr 0.1 --victim_bs 125 --victim_decay 35 \
+    #     --target_select random --seed 0  --single_surrogate --surrogate_on_full_data --random_select
+
+
         # --surrogate_on_full_data --base_dist cosine
 
     # python main_IF.py \

@@ -48,6 +48,11 @@ def embed_of(net):
     return net.module.embed if isinstance(net, nn.DataParallel) else net.embed
 
 
+def multi_embed_of(net):
+    m = net.module if isinstance(net, nn.DataParallel) else net
+    return m.intermediate_embeds
+
+
 def _standardize(v, eps=1e-8):
     return (v - v.mean()) / (v.std() + eps)
 
@@ -62,9 +67,13 @@ def _margin_toward(z, y_adv):
 
 @torch.no_grad()
 def select_bases(criterion, surrogates, images_norm, labels, x_t_norm, y_adv,
-                 N_p, lam, device, denorm=None, bs=512, generator=None):
+                 N_p, lam, device, denorm=None, bs=512, generator=None,
+                 multilayer=False):
     """Return global indices of N_p selected bases of class y_adv (smaller score
-    = better). `denorm` (callable normalized -> [0,1]) is required for pixel_l2."""
+    = better). `denorm` (callable normalized -> [0,1]) is required for pixel_l2.
+    `multilayer`: when True and criterion in ('feat_l2','ours','anti'), compute
+    feature distance as the mean of per-stage standardized L2 distances instead
+    of using only the penultimate layer."""
     if criterion not in CRITERIA:
         raise ValueError('unknown criterion %r; choose from %s' % (criterion, CRITERIA))
 
@@ -94,6 +103,7 @@ def select_bases(criterion, surrogates, images_norm, labels, x_t_norm, y_adv,
     score = torch.zeros(n, device=device)
     needs_logits = criterion in ('grad_cos', 'gradnorm', 'el2n', 'margin', 'ours', 'anti')
     needs_feat_dist = criterion in ('feat_l2', 'ours', 'anti')
+    use_multilayer = multilayer and criterion in ('feat_l2', 'ours', 'anti')
 
     for net in surrogates:
         emb = embed_of(net)
@@ -111,16 +121,26 @@ def select_bases(criterion, surrogates, images_norm, labels, x_t_norm, y_adv,
         dist = torch.empty(n, device=device)                 # ours/anti: distance
         marg = torch.empty(n, device=device)                 # ours/anti: margin
 
+        if use_multilayer:
+            m_emb = multi_embed_of(net)
+            f_t_list = m_emb(x_t_norm.unsqueeze(0))           # list of (1, D_l)
+            dists_l = [torch.empty(n, device=device) for _ in f_t_list]
+
         for i in range(0, n, bs):
             b = cand[i:i + bs]
             f = emb(b)
             z = net(b) if needs_logits else None
 
-            if needs_feat_dist:
+            if use_multilayer:
+                f_list = m_emb(b)
+                for l, (fl, f_tl) in enumerate(zip(f_list, f_t_list)):
+                    dists_l[l][i:i + bs] = ((fl - f_tl) ** 2).sum(1)
+            elif needs_feat_dist:
                 d = ((f - f_t) ** 2).sum(1)
 
             if criterion == 'feat_l2':
-                prim[i:i + bs] = d
+                if not use_multilayer:
+                    prim[i:i + bs] = d
             elif criterion == 'feat_cos':
                 prim[i:i + bs] = 1.0 - F.cosine_similarity(f, f_t.expand_as(f), dim=1)
             elif criterion == 'grad_cos':
@@ -136,11 +156,18 @@ def select_bases(criterion, surrogates, images_norm, labels, x_t_norm, y_adv,
             elif criterion == 'margin':
                 prim[i:i + bs] = _margin_toward(z, y_adv)     # smaller margin = better
             elif criterion in ('ours', 'anti'):
-                dist[i:i + bs] = d
+                if not use_multilayer:
+                    dist[i:i + bs] = d
                 marg[i:i + bs] = _margin_toward(z, y_adv)
 
         if criterion in ('ours', 'anti'):
-            score += _standardize(dist) + lam * _standardize(marg)
+            if use_multilayer:
+                d_combined = sum(_standardize(dl) for dl in dists_l) / len(dists_l)
+            else:
+                d_combined = _standardize(dist)
+            score += d_combined + lam * _standardize(marg)
+        elif criterion == 'feat_l2' and use_multilayer:
+            score += sum(_standardize(dl) for dl in dists_l) / len(dists_l)
         else:
             score += _standardize(prim)
 

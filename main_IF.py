@@ -64,6 +64,11 @@ def embed_of(net):
     return net.module.embed if isinstance(net, nn.DataParallel) else net.embed
 
 
+def multi_embed_of(net):
+    m = net.module if isinstance(net, nn.DataParallel) else net
+    return m.intermediate_embeds
+
+
 def standardize(v, eps=1e-8):
     return (v - v.mean()) / (v.std() + eps)
 
@@ -204,7 +209,7 @@ def train_surrogates_on_syn(image_syn, label_syn, test_imgs, test_labs,
 # --------------------------------------------------------------------------- #
 @torch.no_grad()
 def select_base(surrogates, images_norm, labels, x_t_norm, y_adv, N_p, lam, device,
-                base_dist='l2'):
+                base_dist='l2', multilayer=False):
     cls_idx = (labels == y_adv).nonzero(as_tuple=True)[0]
     if len(cls_idx) < N_p:
         raise ValueError('class %d has %d images < N_p=%d' % (y_adv, len(cls_idx), N_p))
@@ -213,6 +218,10 @@ def select_base(surrogates, images_norm, labels, x_t_norm, y_adv, N_p, lam, devi
     for net in surrogates:
         emb = embed_of(net)
         f_t = emb(x_t_norm.unsqueeze(0))
+        if multilayer:
+            m_emb = multi_embed_of(net)
+            f_t_list = m_emb(x_t_norm.unsqueeze(0))           # list of (1, D_l)
+            dists_l_batches = [[] for _ in f_t_list]
         ds, ms = [], []
         for i in range(0, len(cand), 512):
             b = cand[i:i + 512]
@@ -226,9 +235,18 @@ def select_base(surrogates, images_norm, labels, x_t_norm, y_adv, N_p, lam, devi
             z_o = z.clone()
             z_o[:, y_adv] = float('-inf')
             m = z_adv - z_o.max(dim=1).values                     # margin toward y_adv
+            if multilayer:
+                f_list = m_emb(b)
+                for l, (fl, f_tl) in enumerate(zip(f_list, f_t_list)):
+                    dists_l_batches[l].append(((fl - f_tl) ** 2).sum(1))
             ds.append(d)
             ms.append(m)
-        score += standardize(torch.cat(ds)) + lam * standardize(torch.cat(ms))
+        if multilayer:
+            dists_l = [torch.cat(batches) for batches in dists_l_batches]
+            d_combined = sum(standardize(dl) for dl in dists_l) / len(dists_l)
+            score += d_combined + lam * standardize(torch.cat(ms))
+        else:
+            score += standardize(torch.cat(ds)) + lam * standardize(torch.cat(ms))
     score /= len(surrogates)
     sel = torch.topk(score, k=N_p, largest=False).indices          # least conf + closest
     return cls_idx[sel]
@@ -546,7 +564,8 @@ def main(args):
             else:
                 base_idx = select_base(surrogates, train_imgs, train_labs, x_t_norm,
                                        y_adv, N_p, args.lambda_margin, device,
-                                       base_dist=args.base_dist)
+                                       base_dist=args.base_dist,
+                                       multilayer=args.multilayer)
             # 2) craft on the same surrogates
             base01 = denorm(train_imgs[base_idx]).clamp(0.0, 1.0).detach()
             if args.attack == 'gradmatch':
@@ -693,6 +712,9 @@ if __name__ == '__main__':
                    help='feature distance for base selection: l2 (default) or cosine')
     p.add_argument('--random_select', action='store_true', default=False,
                    help='ablation: replace scored base selection with uniform random')
+    p.add_argument('--multilayer', action='store_true', default=False,
+                   help='use features from all intermediate stages (not just the last layer) '
+                        'for base selection distance; recommended for deep nets like VGG/ResNet')
     p.add_argument('--single_surrogate', action='store_true', default=False,
                    help='use only the first surrogate for crafting instead of the ensemble')
     p.add_argument('--fast_gradmatch', action='store_true', default=False,

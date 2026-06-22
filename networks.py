@@ -52,6 +52,15 @@ class ConvNet(nn.Module):
         out = out.view(out.size(0), -1)
         return out
 
+    def intermediate_embeds(self, x):
+        """GAP-pooled features after each pool layer; fallback to final embed if no pooling."""
+        feats = []
+        for layer in self.features:
+            x = layer(x)
+            if isinstance(layer, (nn.MaxPool2d, nn.AvgPool2d)):
+                feats.append(F.adaptive_avg_pool2d(x, 1).flatten(1))
+        return feats if feats else [x.view(x.size(0), -1)]
+
     def _get_activation(self, net_act):
         if net_act == 'sigmoid':
             return nn.Sigmoid()
@@ -169,6 +178,14 @@ class AlexNet(nn.Module):
         x = x.view(x.size(0), -1)
         return x
 
+    def intermediate_embeds(self, x):
+        feats = []
+        for layer in self.features:
+            x = layer(x)
+            if isinstance(layer, nn.MaxPool2d):
+                feats.append(F.adaptive_avg_pool2d(x, 1).flatten(1))
+        return feats if feats else [x.view(x.size(0), -1)]
+
 
 ''' AlexNetBN '''
 class AlexNetBN(nn.Module):
@@ -207,6 +224,14 @@ class AlexNetBN(nn.Module):
         x = x.view(x.size(0), -1)
         return x
 
+    def intermediate_embeds(self, x):
+        feats = []
+        for layer in self.features:
+            x = layer(x)
+            if isinstance(layer, nn.MaxPool2d):
+                feats.append(F.adaptive_avg_pool2d(x, 1).flatten(1))
+        return feats if feats else [x.view(x.size(0), -1)]
+
 
 ''' VGG '''
 cfg_vgg = {
@@ -233,6 +258,15 @@ class VGG(nn.Module):
         x = x.view(x.size(0), -1)
         return x
 
+    def intermediate_embeds(self, x):
+        """Features after each MaxPool stage (excludes the trailing no-op AvgPool)."""
+        feats = []
+        for layer in self.features:
+            x = layer(x)
+            if isinstance(layer, nn.MaxPool2d):
+                feats.append(F.adaptive_avg_pool2d(x, 1).flatten(1))
+        return feats if feats else [x.view(x.size(0), -1)]
+
     def _make_layers(self, cfg, norm):
         layers = []
         in_channels = self.channel
@@ -254,6 +288,8 @@ def VGG11BN(channel, num_classes):
     return VGG('VGG11', channel, num_classes, norm='batchnorm')
 def VGG13(channel, num_classes):
     return VGG('VGG13', channel, num_classes)
+def VGG13BN(channel, num_classes):
+    return VGG('VGG13', channel, num_classes, norm='batchnorm')
 def VGG16(channel, num_classes):
     return VGG('VGG16', channel, num_classes)
 def VGG19(channel, num_classes):
@@ -369,6 +405,15 @@ class ResNet_AP(nn.Module):
         out = out.view(out.size(0), -1)
         return out
 
+    def intermediate_embeds(self, x):
+        out = F.relu(self.bn1(self.conv1(x)))
+        feats = []
+        out = self.layer1(out); feats.append(F.adaptive_avg_pool2d(out, 1).flatten(1))
+        out = self.layer2(out); feats.append(F.adaptive_avg_pool2d(out, 1).flatten(1))
+        out = self.layer3(out); feats.append(F.adaptive_avg_pool2d(out, 1).flatten(1))
+        out = self.layer4(out); feats.append(F.adaptive_avg_pool2d(out, 1).flatten(1))
+        return feats
+
 def ResNet18BN_AP(channel, num_classes):
     return ResNet_AP(BasicBlock_AP, [2,2,2,2], channel=channel, num_classes=num_classes, norm='batchnorm')
 
@@ -476,6 +521,15 @@ class ResNet(nn.Module):
         out = out.view(out.size(0), -1)
         return out
 
+    def intermediate_embeds(self, x):
+        out = F.relu(self.bn1(self.conv1(x)))
+        feats = []
+        out = self.layer1(out); feats.append(F.adaptive_avg_pool2d(out, 1).flatten(1))
+        out = self.layer2(out); feats.append(F.adaptive_avg_pool2d(out, 1).flatten(1))
+        out = self.layer3(out); feats.append(F.adaptive_avg_pool2d(out, 1).flatten(1))
+        out = self.layer4(out); feats.append(F.adaptive_avg_pool2d(out, 1).flatten(1))
+        return feats
+
 
 def ResNet18BN(channel, num_classes):
     return ResNet(BasicBlock, [2,2,2,2], channel=channel, num_classes=num_classes, norm='batchnorm')
@@ -536,6 +590,14 @@ class ResNetCIFAR(nn.Module):
         out = F.adaptive_avg_pool2d(out, 1)
         out = out.view(out.size(0), -1)
         return out
+
+    def intermediate_embeds(self, x):
+        out = F.relu(self.bn1(self.conv1(x)))
+        feats = []
+        out = self.layer1(out); feats.append(F.adaptive_avg_pool2d(out, 1).flatten(1))
+        out = self.layer2(out); feats.append(F.adaptive_avg_pool2d(out, 1).flatten(1))
+        out = self.layer3(out); feats.append(F.adaptive_avg_pool2d(out, 1).flatten(1))
+        return feats
 
 
 def ResNet20(channel, num_classes):

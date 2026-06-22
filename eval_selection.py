@@ -142,7 +142,8 @@ def main(args):
             base_idx = select_bases(args.select_criterion, surrogates, train_imgs,
                                     train_labs, x_t_norm, y_adv, N_p,
                                     args.lambda_margin, device,
-                                    denorm=denorm, generator=sel_gen)
+                                    denorm=denorm, generator=sel_gen,
+                                    multilayer=args.multilayer)
 
             # 2) craft on the fixed ensemble
             base01 = denorm(train_imgs[base_idx]).clamp(0.0, 1.0).detach()
@@ -246,6 +247,9 @@ if __name__ == '__main__':
                    help='base-selection rule to ablate; see selection_strategies.CRITERIA')
     p.add_argument('--lambda_margin', type=float, default=1.0,
                    help="only used by 'ours'/'anti'")
+    p.add_argument('--multilayer', action='store_true', default=False,
+                   help='use all intermediate layer features for distance (not just last layer); '
+                        'applies to feat_l2/ours/anti; recommended for VGG/ResNet')
     # attack
     p.add_argument('--attack', type=str, default='fc', choices=['fc', 'gradmatch'])
     p.add_argument('--class_pairs', nargs='+', default=['dog-bird'])
