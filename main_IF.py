@@ -42,6 +42,7 @@ import argparse
 import csv
 import json
 import os
+import sys
 import warnings
 from types import SimpleNamespace
 
@@ -55,6 +56,31 @@ from torch.utils.data import DataLoader
 
 from utils import (get_dataset, get_network, DiffAugment, ParamDiffAug, get_time,
                    evaluate_synset, TensorDataset)
+
+
+# --------------------------------------------------------------------------- #
+# logging: tee stdout/stderr to a file, flushing every line (zero delay)
+# --------------------------------------------------------------------------- #
+class _Tee:
+    """Mirror writes to the console and a log file, flushing immediately so the
+    log is updated line-by-line with no buffering delay (good for tail -f)."""
+    def __init__(self, path, mode='a'):
+        self.file = open(path, mode, buffering=1)        # line-buffered text file
+        self.console = sys.__stdout__
+
+    def write(self, data):
+        self.console.write(data)
+        self.console.flush()
+        self.file.write(data)
+        self.file.flush()
+        return len(data)
+
+    def flush(self):
+        self.console.flush()
+        self.file.flush()
+
+    def isatty(self):
+        return False
 
 
 # --------------------------------------------------------------------------- #
@@ -400,12 +426,230 @@ def craft_gradmatch(surrogates, base01, x_t_norm, y_adv, norm, eps, step, iters,
 
 
 # --------------------------------------------------------------------------- #
+# victim training pipelines (ABLATIONS)
+# ---------------------------------------------------------------------------
+# The poison (selection + crafting) is produced ONCE per target; these
+# pipelines only change how a victim is trained on the already-poisoned set,
+# so we can re-use the same poison across every ablation.
+#
+# A pipeline is given as "name" or "name:k1=v1,k2=v2". Supported names:
+#   standard      plain SGD (no aug / no wd) -- the already-done baseline
+#   diffaug       DiffAugment (DSA) every batch          [strategy=...]
+#   mixup         input mixup                            [alpha=1.0]
+#   cutmix        CutMix                                 [alpha=1.0]
+#   advtrain      PGD/Madry adversarial training         [eps=,alpha=,steps=7]
+#   dpsgd         gradient shaping / approx DP-SGD       [clip=1.0,noise=0.01]
+#   labelsmooth   label-smoothing CE                     [smoothing=0.1]
+#   weightdecay   SGD with weight decay                  [wd=5e-4]
+#   gradclip      global grad-norm clipping              [max_norm=1.0]
+# Any pipeline also accepts base-schedule overrides: lr=, bs=, epochs=, decay=.
+# --------------------------------------------------------------------------- #
+def _num(v):
+    """Parse a CLI value to int if integral, else float, else leave as str."""
+    try:
+        return int(v)
+    except (TypeError, ValueError):
+        pass
+    try:
+        return float(v)
+    except (TypeError, ValueError):
+        return v
+
+
+def build_pipeline_cfg(spec, args):
+    """Turn a pipeline spec string into a normalized config dict."""
+    if ':' in spec:
+        name, rest = spec.split(':', 1)
+        overrides = {}
+        for kv in rest.split(','):
+            if not kv:
+                continue
+            k, v = kv.split('=')
+            overrides[k] = _num(v)
+    else:
+        name, overrides = spec, {}
+    name = name.lower()
+    cfg = {'name': name, 'spec': spec}
+
+    if name in ('standard', 'plain', 'simple'):
+        cfg['name'] = 'standard'
+    elif name in ('aug', 'diffaug', 'dsa'):
+        cfg['name'] = 'diffaug'
+        cfg['aug'] = True
+    elif name == 'mixup':
+        cfg['mixup_alpha'] = overrides.pop('alpha', 1.0)
+    elif name == 'cutmix':
+        cfg['cutmix_alpha'] = overrides.pop('alpha', 1.0)
+    elif name in ('advtrain', 'adv', 'madry'):
+        cfg['name'] = 'advtrain'
+        cfg['adv_eps'] = overrides.pop('eps', args.epsilon)
+        cfg['adv_alpha'] = overrides.pop('alpha', max(args.epsilon / 4.0, 1.0 / 255.0))
+        cfg['adv_steps'] = int(overrides.pop('steps', 7))
+    elif name in ('dpsgd', 'gradshaping', 'gradshape'):
+        cfg['name'] = 'dpsgd'
+        cfg['max_norm'] = overrides.pop('clip', 1.0)
+        cfg['noise'] = overrides.pop('noise', 0.01)
+    elif name in ('labelsmooth', 'ls'):
+        cfg['name'] = 'labelsmooth'
+        cfg['smoothing'] = overrides.pop('smoothing', 0.1)
+    elif name in ('weightdecay', 'wd'):
+        cfg['name'] = 'weightdecay'
+        cfg['wd'] = overrides.pop('wd', 5e-4)
+    elif name == 'gradclip':
+        cfg['max_norm'] = overrides.pop('max_norm', 1.0)
+    else:
+        raise ValueError('unknown victim pipeline: %r' % spec)
+
+    cfg.update(overrides)        # lr/bs/epochs/decay/strategy/aug pass-through
+    return cfg
+
+
+def _rand_bbox(H, W, lam):
+    r = np.sqrt(max(0.0, 1.0 - lam))
+    cut_w, cut_h = int(W * r), int(H * r)
+    cx, cy = np.random.randint(W), np.random.randint(H)
+    x1 = int(np.clip(cx - cut_w // 2, 0, W))
+    x2 = int(np.clip(cx + cut_w // 2, 0, W))
+    y1 = int(np.clip(cy - cut_h // 2, 0, H))
+    y2 = int(np.clip(cy + cut_h // 2, 0, H))
+    return x1, y1, x2, y2
+
+
+def _pgd_adv(net, x_norm, y, eps, alpha, steps, m, s):
+    """L_inf PGD adversarial examples (Madry) in [0,1] pixel space, returned
+    normalized. Generated with BN frozen (net.eval()) for stable statistics."""
+    x01 = (x_norm * s + m).detach()
+    delta = torch.empty_like(x01).uniform_(-eps, eps)
+    delta = (torch.clamp(x01 + delta, 0.0, 1.0) - x01).detach()
+    crit = nn.CrossEntropyLoss()
+    for _ in range(steps):
+        delta.requires_grad_(True)
+        x_adv_norm = (torch.clamp(x01 + delta, 0.0, 1.0) - m) / s
+        loss = crit(net(x_adv_norm), y)
+        grad = torch.autograd.grad(loss, delta)[0]
+        with torch.no_grad():
+            delta = (delta + alpha * grad.sign()).clamp_(-eps, eps)
+            delta = torch.clamp(x01 + delta, 0.0, 1.0) - x01
+    return ((torch.clamp(x01 + delta, 0.0, 1.0) - m) / s).detach()
+
+
+def train_victim(net, images, labels, cfg, args, m, s, device, dsa_param=None):
+    """From-scratch victim trainer with a configurable defense/training pipeline.
+    `images` are normalized and never mutated, so a single poisoned tensor can be
+    fed to every pipeline."""
+    epochs = int(cfg.get('epochs', args.victim_epochs))
+    lr = float(cfg.get('lr', args.victim_lr))
+    bs = int(cfg.get('bs', args.victim_bs))
+    decay_raw = cfg.get('decay', args.victim_decay)
+    decay_at = set(decay_raw if isinstance(decay_raw, (list, tuple, set)) else [int(decay_raw)])
+    wd = float(cfg.get('wd', 0.0))
+    smoothing = float(cfg.get('smoothing', 0.0))
+    grad_clip = float(cfg.get('max_norm', 0.0))     # gradclip / dpsgd
+    dp_noise = float(cfg.get('noise', 0.0))         # dpsgd
+    mixup_a = float(cfg.get('mixup_alpha', 0.0))
+    cutmix_a = float(cfg.get('cutmix_alpha', 0.0))
+    use_aug = bool(cfg.get('aug', False))
+    aug_strategy = cfg.get('strategy', args.dsa_strategy)
+    adv_eps = float(cfg.get('adv_eps', 0.0))
+    adv_alpha = float(cfg.get('adv_alpha', 0.0))
+    adv_steps = int(cfg.get('adv_steps', 0))
+
+    try:
+        crit = nn.CrossEntropyLoss(label_smoothing=smoothing).to(device)
+    except TypeError:                                # older torch w/o label_smoothing
+        crit = nn.CrossEntropyLoss().to(device)
+
+    net.train()
+    opt = torch.optim.SGD(net.parameters(), lr=lr, momentum=0.9, weight_decay=wd)
+    N = images.shape[0]
+    cur_lr = lr
+    for ep in range(epochs):
+        if ep in decay_at:
+            cur_lr *= 0.1
+            for gp in opt.param_groups:
+                gp['lr'] = cur_lr
+        perm = torch.randperm(N, device=device)
+        for i in range(0, N, bs):
+            idx = perm[i:i + bs]
+            img = images[idx]                        # advanced index -> fresh copy
+            lab = labels[idx]
+
+            if adv_steps > 0 and adv_eps > 0:
+                net.eval()
+                img = _pgd_adv(net, img, lab, adv_eps, adv_alpha, adv_steps, m, s)
+                net.train()
+
+            if use_aug and aug_strategy not in (None, '', 'none', 'None'):
+                img = DiffAugment(img, aug_strategy, param=dsa_param)
+
+            lab_b, lam = None, 1.0
+            if mixup_a > 0:
+                lam = float(np.random.beta(mixup_a, mixup_a))
+                ridx = torch.randperm(img.size(0), device=device)
+                img = lam * img + (1.0 - lam) * img[ridx]
+                lab_b = lab[ridx]
+            elif cutmix_a > 0:
+                lam = float(np.random.beta(cutmix_a, cutmix_a))
+                ridx = torch.randperm(img.size(0), device=device)
+                H, W = img.shape[2], img.shape[3]
+                x1, y1, x2, y2 = _rand_bbox(H, W, lam)
+                img[:, :, y1:y2, x1:x2] = img[ridx, :, y1:y2, x1:x2]
+                lam = 1.0 - ((x2 - x1) * (y2 - y1) / float(H * W))
+                lab_b = lab[ridx]
+
+            opt.zero_grad()
+            out = net(img)
+            if lab_b is not None:
+                loss = lam * crit(out, lab) + (1.0 - lam) * crit(out, lab_b)
+            else:
+                loss = crit(out, lab)
+            loss.backward()
+            if grad_clip > 0:
+                torch.nn.utils.clip_grad_norm_(net.parameters(), grad_clip)
+                if dp_noise > 0:
+                    with torch.no_grad():
+                        for p in net.parameters():
+                            if p.grad is not None:
+                                p.grad.add_(torch.randn_like(p.grad) * dp_noise * grad_clip)
+            opt.step()
+    net.eval()
+    return net
+
+
+def _poison_key(args, pair, tidx):
+    """Filename for caching a crafted poison so ablations can re-use it."""
+    sel = 'rand' if args.random_select else ('ml' if args.multilayer else 'sl')
+    ss = 'ss' if args.single_surrogate else 'ens'
+    return ('poison_%s_%s_%s_b%d_eps%d_st%d_ns%d_%s_%s_%s_t%d_seed%d.pt' % (
+        args.attack, args.surrogate_model, pair, round(args.budget * 1e4),
+        round(args.epsilon * 255), args.pgd_steps, args.num_surrogates,
+        args.base_dist, sel, ss, tidx, args.seed))
+
+
+def _safe_tag(spec):
+    """Filename-safe version of a pipeline spec (e.g. 'advtrain:alpha=0.015,steps=10')."""
+    return (spec.replace(':', '_').replace('=', '').replace(',', '_')
+                .replace('.', 'p').replace('/', '_'))
+
+
+# --------------------------------------------------------------------------- #
 # main
 # --------------------------------------------------------------------------- #
 def main(args):
+    if args.log_file:
+        os.makedirs(os.path.dirname(args.log_file) or '.', exist_ok=True)
+        tee = _Tee(args.log_file)
+        sys.stdout = tee
+        sys.stderr = tee
+        print('%s logging (line-buffered, no delay) -> %s' % (get_time(), args.log_file))
+
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     print('%s device=%s' % (get_time(), device))
     print('%s hyperparams: %s' % (get_time(), vars(args)))
+
+    pipelines = [build_pipeline_cfg(s, args) for s in args.victim_pipelines]
+    print('%s victim pipelines (ablations): %s'
+          % (get_time(), [c['spec'] for c in pipelines]))
     torch.manual_seed(args.seed)
     np.random.seed(args.seed)
     os.makedirs(args.out_dir, exist_ok=True)
@@ -481,45 +725,48 @@ def main(args):
                 torch.save(net.state_dict(), os.path.join(sur_cache, 'surrogate_%d.pt' % i))
             print('%s  saved surrogates to %s' % (get_time(), sur_cache))
 
-    # ---- clean victim pool (baseline CTA + per-target clean ASR) ----------
-    clean_victims = []
-    clean_cta = None
+    # ---- clean victim pool PER PIPELINE -----------------------------------
+    # Each training recipe (advtrain, dpsgd, diffaug, ...) has its own clean
+    # accuracy ceiling, so we train clean victims with the SAME recipe and use
+    # that as the method-specific baseline CTA (and per-target clean ASR).
+    clean_victims_by_pipe = {}
+    clean_cta_by_pipe = {}
+    n_clean = args.num_victims if args.num_clean_victims is None else args.num_clean_victims
     if args.clean_baseline:
-        vic_cache = os.path.join(args.cache_dir,
-            'clean_victims_%s_%dx%dep_seed%d' % (
-                args.model, args.num_victims, args.victim_epochs, args.seed)
-        ) if args.cache_dir else ''
-
-        if vic_cache and all(
-                os.path.exists(os.path.join(vic_cache, 'victim_%d.pt' % i))
-                for i in range(args.num_victims)):
-            print('\n%s === loading %d clean victims (%s) from cache: %s ==='
-                  % (get_time(), args.num_victims, args.model, vic_cache))
-            for i in range(args.num_victims):
-                net = get_network(args.model, channel, num_classes, im_size)
-                net.load_state_dict(torch.load(
-                    os.path.join(vic_cache, 'victim_%d.pt' % i), map_location=device))
-                net = net.to(device).eval()
-                clean_victims.append(net)
-        else:
-            print('\n%s === training %d clean victims (%s) from scratch on full clean data ==='
-                  % (get_time(), args.num_victims, args.model))
-            for i in range(args.num_victims):
-                net = get_network(args.model, channel, num_classes, im_size)
-                net = train_from_scratch(net, train_imgs, train_labs, args.victim_epochs,
-                                         args.victim_lr, args.victim_bs, args.victim_decay,
-                                         device, weight_decay=0.0, aug=args.victim_aug,
-                                         dsa_strategy=args.dsa_strategy, dsa_param=dsa_param)
-                clean_victims.append(net)
-            if vic_cache:
-                os.makedirs(vic_cache, exist_ok=True)
-                for i, net in enumerate(clean_victims):
-                    torch.save(net.state_dict(), os.path.join(vic_cache, 'victim_%d.pt' % i))
-                print('%s  saved clean victims to %s' % (get_time(), vic_cache))
-
-        clean_cta = float(np.mean([test_acc(n, test_imgs, test_labs, device)
-                                   for n in clean_victims]))
-        print('  clean baseline CTA = %.4f' % clean_cta)
+        for cfg in pipelines:
+            spec = cfg['spec']
+            vic_cache = os.path.join(args.cache_dir,
+                'clean_victims_%s_%s_%dx%dep_seed%d' % (
+                    args.model, _safe_tag(spec), n_clean, args.victim_epochs, args.seed)
+            ) if args.cache_dir else ''
+            cvs = []
+            if vic_cache and all(
+                    os.path.exists(os.path.join(vic_cache, 'victim_%d.pt' % i))
+                    for i in range(n_clean)):
+                print('\n%s === loading %d clean victim(s) [%s] (%s) from cache: %s ==='
+                      % (get_time(), n_clean, spec, args.model, vic_cache))
+                for i in range(n_clean):
+                    net = get_network(args.model, channel, num_classes, im_size)
+                    net.load_state_dict(torch.load(
+                        os.path.join(vic_cache, 'victim_%d.pt' % i), map_location=device))
+                    cvs.append(net.to(device).eval())
+            else:
+                print('\n%s === training %d clean victim(s) [%s] (%s) from scratch on clean data ==='
+                      % (get_time(), n_clean, spec, args.model))
+                for i in range(n_clean):
+                    net = get_network(args.model, channel, num_classes, im_size)
+                    net = train_victim(net, train_imgs, train_labs, cfg, args,
+                                       m, s, device, dsa_param=dsa_param)
+                    cvs.append(net)
+                if vic_cache:
+                    os.makedirs(vic_cache, exist_ok=True)
+                    for i, net in enumerate(cvs):
+                        torch.save(net.state_dict(), os.path.join(vic_cache, 'victim_%d.pt' % i))
+                    print('%s  saved clean victims to %s' % (get_time(), vic_cache))
+            clean_victims_by_pipe[spec] = cvs
+            clean_cta_by_pipe[spec] = float(np.mean(
+                [test_acc(n, test_imgs, test_labs, device) for n in cvs]))
+            print('  clean baseline CTA [%s] = %.4f' % (spec, clean_cta_by_pipe[spec]))
 
     if args.precompute_only:
         print('%s precompute_only: done, exiting.' % get_time())
@@ -546,102 +793,129 @@ def main(args):
             chosen = t_idx_all[:args.num_targets].tolist()
             print('  targets (first): %s' % chosen)
 
-        tally = np.zeros(num_classes, dtype=np.int64)
-        pair_poison_asr, pair_clean_asr, pair_poison_cta = [], [], []
+        # per-pipeline accumulators (each ablation reuses the same poisons);
+        # keyed by full spec so repeated names with different knobs stay distinct
+        pstat = {c['spec']: {'asr': [], 'cta': [], 'clean': [],
+                             'tally': np.zeros(num_classes, dtype=np.int64)}
+                 for c in pipelines}
 
         for ti, tidx in enumerate(chosen):
             x_t_norm = test_imgs[tidx]
 
-            if args.clean_baseline:
-                cpreds = [predict_target(n, x_t_norm) for n in clean_victims]
-                clean_asr = 100.0 * sum(p == y_adv for p in cpreds) / len(clean_victims)
+            # ---- selection + crafting: done ONCE per target (cache to disk) ----
+            pkey = (os.path.join(args.poison_cache_dir, _poison_key(args, pair, tidx))
+                    if args.poison_cache_dir else '')
+            if pkey and os.path.exists(pkey):
+                pc = torch.load(pkey, map_location=device)
+                base_idx = pc['base_idx'].to(device)
+                x_adv01 = pc['x_adv01'].to(device)
+                obj, linf = pc['obj'], pc['linf']
+                print('  [%s t%d/%d idx=%d] loaded cached poison (obj=%.4f linf=%.4f) %s'
+                      % (pair, ti + 1, len(chosen), tidx, obj, linf, pkey))
             else:
-                clean_asr = float('nan')
+                # 1) selection on the S-trained surrogates (or random ablation)
+                if args.random_select:
+                    base_idx = select_base_random(train_labs, y_adv, N_p, device)
+                else:
+                    base_idx = select_base(surrogates, train_imgs, train_labs, x_t_norm,
+                                           y_adv, N_p, args.lambda_margin, device,
+                                           base_dist=args.base_dist,
+                                           multilayer=args.multilayer)
+                # 2) craft on the same surrogates
+                base01 = denorm(train_imgs[base_idx]).clamp(0.0, 1.0).detach()
+                if args.attack == 'gradmatch':
+                    x_adv01, obj = craft_gradmatch(
+                        surrogates, base01, x_t_norm, y_adv, norm, args.epsilon,
+                        args.pgd_alpha, args.pgd_steps, args.restarts, device,
+                        dsa_strategy=args.dsa_strategy, dsa_param=dsa_param,
+                        single_surrogate=args.single_surrogate,
+                        fast=args.fast_gradmatch)
+                else:  # 'fc'
+                    x_adv01, obj = craft_fc(
+                        surrogates, base01, x_t_norm, norm, args.epsilon, args.pgd_steps,
+                        args.pgd_alpha, device, single_surrogate=args.single_surrogate)
+                linf = (x_adv01 - base01).abs().max().item()
+                if pkey:
+                    os.makedirs(args.poison_cache_dir, exist_ok=True)
+                    torch.save({'base_idx': base_idx.cpu(), 'x_adv01': x_adv01.detach().cpu(),
+                                'obj': obj, 'linf': linf}, pkey)
+                print('  [%s t%d/%d idx=%d] %s craft_obj=%.4f linf=%.4f'
+                      % (pair, ti + 1, len(chosen), tidx, args.attack, obj, linf))
 
-            # 1) selection on the S-trained surrogates (or random ablation)
-            if args.random_select:
-                base_idx = select_base_random(train_labs, y_adv, N_p, device)
-            else:
-                base_idx = select_base(surrogates, train_imgs, train_labs, x_t_norm,
-                                       y_adv, N_p, args.lambda_margin, device,
-                                       base_dist=args.base_dist,
-                                       multilayer=args.multilayer)
-            # 2) craft on the same surrogates
-            base01 = denorm(train_imgs[base_idx]).clamp(0.0, 1.0).detach()
-            if args.attack == 'gradmatch':
-                x_adv01, obj = craft_gradmatch(
-                    surrogates, base01, x_t_norm, y_adv, norm, args.epsilon,
-                    args.pgd_alpha, args.pgd_steps, args.restarts, device,
-                    dsa_strategy=args.dsa_strategy, dsa_param=dsa_param,
-                    single_surrogate=args.single_surrogate,
-                    fast=args.fast_gradmatch)
-            else:  # 'fc'
-                x_adv01, obj = craft_fc(
-                    surrogates, base01, x_t_norm, norm, args.epsilon, args.pgd_steps,
-                    args.pgd_alpha, device, single_surrogate=args.single_surrogate)
-            linf = (x_adv01 - base01).abs().max().item()
-            # 3) inject (clean-label) into a fresh clone of the full train set
+            # 3) inject (clean-label) into a fresh clone of the full train set;
+            #    one poisoned tensor is shared by every pipeline (none mutate it).
             poisoned = train_imgs.clone()
             poisoned[base_idx] = norm(x_adv01)
 
-            # 4) victims from scratch on the poisoned full set
-            victim_preds, victim_ctas = [], []
-            print('  victims: ', end='', flush=True)
-            for vi in range(args.num_victims):
-                net = get_network(args.model, channel, num_classes, im_size)
-                net = train_from_scratch(net, poisoned, train_labs, args.victim_epochs,
-                                         args.victim_lr, args.victim_bs, args.victim_decay,
-                                         device, weight_decay=0.0, aug=args.victim_aug,
-                                         dsa_strategy=args.dsa_strategy, dsa_param=dsa_param)
-                pred = predict_target(net, x_t_norm)
-                cta = test_acc(net, test_imgs, test_labs, device)
-                victim_preds.append(pred)
-                victim_ctas.append(cta)
-                tally[pred] += 1
-                del net
-                if device == 'cuda':
-                    torch.cuda.empty_cache()
-                sep = ', ' if vi < args.num_victims - 1 else '\n'
-                print(f'v{vi+1} done', end=sep, flush=True)
+            # 4) for each ABLATION pipeline: train victims, measure ASR/CTA
+            for cfg in pipelines:
+                pkey_stat = cfg['spec']
+                # method-specific clean ASR for this target (clean victims of same recipe)
+                if args.clean_baseline:
+                    cvs = clean_victims_by_pipe[pkey_stat]
+                    clean_asr = 100.0 * sum(predict_target(n, x_t_norm) == y_adv
+                                            for n in cvs) / len(cvs)
+                    clean_cta_m = clean_cta_by_pipe[pkey_stat]
+                else:
+                    clean_asr, clean_cta_m = float('nan'), float('nan')
+                victim_preds, victim_ctas = [], []
+                print('    [%s] victims: ' % cfg['spec'], end='', flush=True)
+                for vi in range(args.num_victims):
+                    net = get_network(args.model, channel, num_classes, im_size)
+                    net = train_victim(net, poisoned, train_labs, cfg, args,
+                                       m, s, device, dsa_param=dsa_param)
+                    pred = predict_target(net, x_t_norm)
+                    cta = test_acc(net, test_imgs, test_labs, device)
+                    victim_preds.append(pred)
+                    victim_ctas.append(cta)
+                    pstat[pkey_stat]['tally'][pred] += 1
+                    del net
+                    if device == 'cuda':
+                        torch.cuda.empty_cache()
+                    sep = ', ' if vi < args.num_victims - 1 else '\n'
+                    print(f'v{vi+1} done', end=sep, flush=True)
 
-            poison_asr = 100.0 * sum(p == y_adv for p in victim_preds) / args.num_victims
-            poison_cta = float(np.mean(victim_ctas))
-            pair_poison_asr.append(poison_asr)
-            pair_clean_asr.append(clean_asr)
-            pair_poison_cta.append(poison_cta)
+                poison_asr = 100.0 * sum(p == y_adv for p in victim_preds) / args.num_victims
+                poison_cta = float(np.mean(victim_ctas))
+                pstat[pkey_stat]['asr'].append(poison_asr)
+                pstat[pkey_stat]['cta'].append(poison_cta)
+                pstat[pkey_stat]['clean'].append(clean_asr)
 
-            print('  [%s t%d/%d idx=%d] %s craft_obj=%.4f linf=%.4f | clean_ASR=%s '
-                  'poison_CTA=%.4f poison_ASR=%.0f%%'
-                  % (pair, ti + 1, len(chosen), tidx, args.attack, obj, linf,
-                     ('%.0f%%' % clean_asr) if args.clean_baseline else 'n/a',
-                     poison_cta, poison_asr))
+                print('    [%s | %s t%d/%d idx=%d] poison_CTA=%.4f poison_ASR=%.0f%%%s'
+                      % (cfg['spec'], pair, ti + 1, len(chosen), tidx,
+                         poison_cta, poison_asr,
+                         ('  clean_CTA=%.4f clean_ASR=%.0f%%' % (clean_cta_m, clean_asr))
+                         if args.clean_baseline else ''))
 
-            all_rows.append({
-                'pair': pair, 'attack': args.attack, 'y_adv': y_adv,
-                'target_class': target_class, 'target_idx': tidx,
-                'clean_asr': clean_asr, 'poison_cta': poison_cta,
-                'poison_asr': poison_asr, 'craft_obj': obj,
-                'realized_linf': linf, 'N_p': N_p,
-            })
+                all_rows.append({
+                    'pair': pair, 'attack': args.attack, 'pipeline': cfg['spec'],
+                    'y_adv': y_adv, 'target_class': target_class, 'target_idx': tidx,
+                    'clean_cta': clean_cta_m, 'clean_asr': clean_asr,
+                    'poison_cta': poison_cta, 'poison_asr': poison_asr,
+                    'craft_obj': obj, 'realized_linf': linf, 'N_p': N_p,
+                })
 
-        pa = np.array(pair_poison_asr)
-        ct = np.array(pair_poison_cta)
-        print('\n  ---- pair %s (%s) summary over %d targets x %d victims = %d votes ----'
+        # ---- per-pipeline summary for this pair ----
+        print('\n  ==== pair %s (%s) summary over %d targets x %d victims = %d votes ===='
               % (pair, args.attack, len(chosen), args.num_victims,
                  len(chosen) * args.num_victims))
-        if args.clean_baseline:
-            print('    clean baseline CTA = %.4f   mean clean ASR = %.1f%%'
-                  % (clean_cta, float(np.nanmean(pair_clean_asr))))
-        print('    poison CTA = %.4f +/- %.4f' % (ct.mean(), ct.std()))
-        print('    poison ASR = %.1f%% +/- %.1f%%' % (pa.mean(), pa.std()))
-        print('    target-prediction tally (%s): %s' % (class_names, tally.tolist()))
+        for cfg in pipelines:
+            st = pstat[cfg['spec']]
+            pa, ct = np.array(st['asr']), np.array(st['cta'])
+            line = ('    [%-28s] poison CTA = %.4f +/- %.4f   poison ASR = %.1f%% +/- %.1f%%'
+                    % (cfg['spec'], ct.mean(), ct.std(), pa.mean(), pa.std()))
+            if args.clean_baseline:
+                line += ('   | clean CTA = %.4f   clean ASR = %.1f%%'
+                         % (clean_cta_by_pipe[cfg['spec']], float(np.nanmean(st['clean']))))
+            print(line)
+            print('      tally (%s): %s' % (class_names, st['tally'].tolist()))
 
     # ---- persist ----------------------------------------------------------
     tag = 'standard_nodistill_%s_%s_b%d_eps%d' % (
         args.attack, args.model, round(args.budget * 1e4), round(args.epsilon * 255))
     with open(os.path.join(args.out_dir, 'results_%s.json' % tag), 'w') as f:
-        json.dump({'clean_cta': clean_cta, 'rows': all_rows, 'args': vars(args)},
-                  f, indent=2)
+        json.dump({'clean_cta_by_pipeline': clean_cta_by_pipe,
+                   'rows': all_rows, 'args': vars(args)}, f, indent=2)
     if all_rows:
         with open(os.path.join(args.out_dir, 'results_%s.csv' % tag), 'w', newline='') as f:
             w = csv.DictWriter(f, fieldnames=list(all_rows[0].keys()))
@@ -704,6 +978,9 @@ if __name__ == '__main__':
     p.add_argument('--victim_aug', action='store_true', default=False,
                    help="MetaPoison default is NO augmentation; leave off to match")
     p.add_argument('--clean_baseline', action='store_true', default=False)
+    p.add_argument('--num_clean_victims', type=int, default=None,
+                   help='# clean victims per pipeline for the baseline (default: num_victims). '
+                        '1 is enough to read each method clean-accuracy ceiling.')
     p.add_argument('--cache_dir', type=str, default='',
                    help='directory to save/load surrogate and clean-victim checkpoints')
     p.add_argument('--precompute_only', action='store_true', default=False,
@@ -722,5 +999,18 @@ if __name__ == '__main__':
                         '(~2-3x faster per iteration; approximates the exact second-order gradient)')
     p.add_argument('--surrogate_on_full_data', action='store_true', default=False,
                    help='train surrogates on the full real training set instead of the distilled S')
+    # ablations: alternate victim training pipelines (poison reused across all)
+    p.add_argument('--victim_pipelines', nargs='+',
+                   default=['diffaug', 'mixup', 'cutmix', 'advtrain', 'dpsgd'],
+                   help='victim training ablations applied to the SAME crafted poison. '
+                        'Each is "name" or "name:k=v,k=v". Names: standard, diffaug, '
+                        'mixup, cutmix, advtrain, dpsgd, labelsmooth, weightdecay, gradclip. '
+                        'e.g. advtrain:eps=0.0314,steps=7  dpsgd:clip=1.0,noise=0.01  '
+                        'mixup:alpha=1.0  labelsmooth:smoothing=0.1')
+    p.add_argument('--poison_cache_dir', type=str, default='',
+                   help='dir to save/load crafted poisons (base_idx + perturbed image) '
+                        'so ablations can be re-run without re-selecting/re-crafting')
+    p.add_argument('--log_file', type=str, default='',
+                   help='tee all stdout/stderr to this file, flushed line-by-line (no delay)')
     main(p.parse_args())
 

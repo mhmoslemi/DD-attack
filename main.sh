@@ -32,43 +32,71 @@
 # --surrogate_model ResNet20BN --model ResNet20BN \
 
 BUDGETS=(0.1 0.05 0.02 0.01 0.005 0.002 0.001 0.0005)
+BUDGETS=(0.02 0.01 0.005 0.002)
 
 # BUDGETS=(0.005 0.002 0.001 0.0005)
 
 
 # BUDGETS=(0.0005)
 
+# ----------------------------------------------------------------------------
+# Training-pipeline ablations.
+#
+# The poison (selection + crafting) is optimized ONCE per target and cached in
+# $POISON_CACHE; every pipeline below trains victims from scratch on that SAME
+# poisoned set, so we only measure how robust each training recipe is.
+# Plain/standard training is already done, so it is NOT in this list.
+#
+# Tune any pipeline inline, e.g. advtrain:eps=0.0314,steps=7  mixup:alpha=1.0
+# ----------------------------------------------------------------------------
+# PIPELINES=(diffaug mixup cutmix advtrain dpsgd labelsmooth)
+PIPELINES=(standard diffaug cutmix advtrain:alpha=0.0156863,steps=7 dpsgd)
+
+MODEL=ConvNetBN
+PAIR=dog-bird
+ATTACK=fc
+POISON_CACHE=result/poison_cache
+LOG_DIR=logs/ablation
+mkdir -p "$LOG_DIR"
+
 for budget in "${BUDGETS[@]}"; do
-    # CUDA_VISIBLE_DEVICES=5 python main_IF.py \
-    #     --syn_data_path result/res_DM_CIFAR10_ConvNet_100ipc.pt \
-    #     --surrogate_model ResNet20BN --model ResNet20BN \
-    #     --class_pairs dog-bird \
-    #     --attack gradmatch --restarts 4 \
-    #     --budget "$budget" --epsilon 0.0313725 --pgd_steps 75 --pgd_alpha 0.0039216 \
-    #     --lambda_margin 1 \
-    #     --num_surrogates 1 --surrogate_epochs 45 \
-    #     --num_targets 10 --num_victims 5  \
-    #     --victim_epochs 45 --victim_lr 0.1 --victim_bs 125 --victim_decay 30 \
-    #     --target_select random --seed 0  --single_surrogate --multilayer --surrogate_on_full_data --random_select
-        
-        # --random_select
-        
-    CUDA_VISIBLE_DEVICES=5 python main_IF.py \
+  # Run each budget twice: scored selection (ours), then random selection (ablation).
+  # The poison cache key already distinguishes the two, so each crafts its own
+  # poison once and reuses it across every pipeline.
+  for SELECT in scored random; do
+    if [ "$SELECT" = random ]; then
+        SELECT_FLAG="--random_select"
+        TAG="random"
+    else
+        SELECT_FLAG=""
+        TAG="scored"
+    fi
+    LOG_FILE="$LOG_DIR/${MODEL}_${PAIR}_${ATTACK}_b${budget}_ablation_${TAG}_seed0.log"
+
+    CUDA_VISIBLE_DEVICES=6 python -u main_IF.py \
         --syn_data_path result/res_DM_CIFAR10_ConvNet_100ipc.pt \
-        --surrogate_model ResNet20BN --model ResNet20BN \
-        --class_pairs dog-bird \
-        --attack fc --restarts 1 \
+        --surrogate_model ConvNet --model ConvNetBN \
+        --class_pairs "$PAIR" \
+        --attack "$ATTACK" --restarts 1 \
         --budget "$budget" --epsilon 0.0313725 --pgd_steps 150 --pgd_alpha 0.0039216 \
         --lambda_margin 1 \
-        --num_surrogates 6 --surrogate_epochs 40 \
-        --num_targets 10 --num_victims 5  \
-        --victim_epochs 40 --victim_lr 0.1 --victim_bs 125 --victim_decay 35 \
-        --target_select random --seed 0 --multilayer --surrogate_on_full_data \
-        --cache_dir result/cache
-        
+        --num_surrogates 10 --surrogate_epochs 1000 \
+        --num_targets 8 --num_victims 5 --num_clean_victims 1 \
+        --victim_epochs 45 --victim_lr 0.1 --victim_bs 125 --victim_decay 35 \
+        --target_select random --seed 0  \
+        --cache_dir result/cache \
+        --out_dir "result/ablation_${TAG}" \
+        --victim_pipelines "${PIPELINES[@]}" \
+        --poison_cache_dir "$POISON_CACHE" \
+        --log_file "$LOG_FILE" --single_surrogate --clean_baseline \
+        $SELECT_FLAG
+  done
+
+
 
         #  --single_surrogate  
         #  --random_select
+        # --multilayer
         
         #  --surrogate_on_full_data
         

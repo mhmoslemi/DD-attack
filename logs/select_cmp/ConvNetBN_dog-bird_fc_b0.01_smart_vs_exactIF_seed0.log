@@ -1,0 +1,48 @@
+[2026-06-29 06:37:57] logging (line-buffered, no delay) -> logs/select_cmp/ConvNetBN_dog-bird_fc_b0.01_smart_vs_exactIF_seed0.log
+[2026-06-29 06:37:57] device=cuda
+[2026-06-29 06:37:57] hyperparams: {'dataset': 'CIFAR10', 'data_path': 'data', 'model': 'ConvNetBN', 'out_dir': 'result/select_cmp', 'seed': 0, 'dsa_strategy': 'color_crop_cutout_flip_scale_rotate', 'syn_data_path': 'result/res_DM_CIFAR10_ConvNet_100ipc.pt', 'surrogate_model': 'ConvNet', 'num_surrogates': 10, 'surrogate_epochs': 1000, 'surrogate_lr': 0.01, 'surrogate_bs': 256, 'surrogate_on_full_data': False, 'class_pairs': ['dog-bird'], 'budget': 0.01, 'epsilon': 0.0313725, 'pgd_steps': 250, 'pgd_alpha': 0.0039216, 'single_surrogate': True, 'lambda_margin': 1.0, 'base_dist': 'l2', 'multilayer': False, 'num_targets': 10, 'num_victims': 6, 'target_select': 'random', 'victim_epochs': 50, 'victim_lr': 0.1, 'victim_bs': 125, 'victim_decay': [40], 'victim_aug': False, 'cache_dir': 'result/cache', 'methods': ['smart', 'exact'], 'if_damping': 0.01, 'if_cg_iters': 100, 'if_cg_tol': 0.0001, 'if_fd_h': 0.01, 'if_last_layer': False, 'if_hess_source': 'syn', 'if_hess_size': 0, 'if_max_surrogates': 0, 'log_file': 'logs/select_cmp/ConvNetBN_dog-bird_fc_b0.01_smart_vs_exactIF_seed0.log', 'verbose': True}
+[2026-06-29 06:37:57] methods: ['smart', 'exact']
+[2026-06-29 06:38:24] N_total=50000 budget=0.0100 -> N_p=500 poisons
+
+[2026-06-29 06:38:24] === loading 10 surrogates from cache: result/cache/surrogates_ConvNet_syn_10x1000ep_seed0 ===
+[2026-06-29 06:38:25] exact-IF Hessian set = distilled S (1000 images)
+
+[2026-06-29 06:38:25] ########## pair dog-bird : y_adv=5(dog) target=2(bird) ##########
+  targets: [430, 387, 6715, 7670, 9467, 2100, 7171, 4833, 5599, 2544]
+  [smart  | dog-bird t1/10 idx=430] select=1.895s craft_obj=0.2451 linf=0.0314 ASR=67% CTA=0.7999
+      [exact] CG iters used per surrogate: [29, 28, 31, 26, 25, 29, 25, 26, 25, 29]
+  [exact  | dog-bird t1/10 idx=430] select=33.616s craft_obj=0.2455 linf=0.0314 ASR=83% CTA=0.7974
+  [smart  | dog-bird t2/10 idx=387] select=1.455s craft_obj=0.2335 linf=0.0314 ASR=0% CTA=0.8019
+      [exact] CG iters used per surrogate: [29, 28, 31, 26, 25, 29, 25, 27, 25, 30]
+  [exact  | dog-bird t2/10 idx=387] select=33.772s craft_obj=0.2393 linf=0.0314 ASR=67% CTA=0.8015
+  [smart  | dog-bird t3/10 idx=6715] select=0.994s craft_obj=0.2369 linf=0.0314 ASR=100% CTA=0.8018
+      [exact] CG iters used per surrogate: [28, 27, 30, 25, 25, 27, 25, 27, 24, 28]
+  [exact  | dog-bird t3/10 idx=6715] select=13.009s craft_obj=0.2485 linf=0.0314 ASR=100% CTA=0.7997
+  [smart  | dog-bird t4/10 idx=7670] select=0.589s craft_obj=0.2356 linf=0.0314 ASR=83% CTA=0.8038
+      [exact] CG iters used per surrogate: [29, 29, 31, 26, 25, 28, 25, 27, 25, 28]
+  [exact  | dog-bird t4/10 idx=7670] select=15.123s craft_obj=0.2422 linf=0.0314 ASR=67% CTA=0.8023
+  [smart  | dog-bird t5/10 idx=9467] select=0.504s craft_obj=0.2496 linf=0.0314 ASR=33% CTA=0.7959
+      [exact] CG iters used per surrogate: [28, 28, 32, 26, 25, 27, 25, 27, 25, 29]
+  [exact  | dog-bird t5/10 idx=9467] select=12.962s craft_obj=0.2511 linf=0.0314 ASR=50% CTA=0.8037
+  [smart  | dog-bird t6/10 idx=2100] select=0.463s craft_obj=0.2314 linf=0.0314 ASR=0% CTA=0.7987
+      [exact] CG iters used per surrogate: [29, 28, 33, 26, 25, 27, 25, 26, 25, 29]
+  [exact  | dog-bird t6/10 idx=2100] select=14.058s craft_obj=0.2302 linf=0.0314 ASR=0% CTA=0.7991
+  [smart  | dog-bird t7/10 idx=7171] select=0.492s craft_obj=0.2204 linf=0.0314 ASR=17% CTA=0.8039
+      [exact] CG iters used per surrogate: [28, 28, 31, 26, 25, 27, 25, 27, 24, 28]
+  [exact  | dog-bird t7/10 idx=7171] select=13.321s craft_obj=0.2211 linf=0.0314 ASR=0% CTA=0.8063
+  [smart  | dog-bird t8/10 idx=4833] select=0.563s craft_obj=0.2285 linf=0.0314 ASR=50% CTA=0.8029
+      [exact] CG iters used per surrogate: [28, 27, 30, 26, 25, 26, 25, 27, 25, 29]
+  [exact  | dog-bird t8/10 idx=4833] select=12.975s craft_obj=0.2322 linf=0.0314 ASR=83% CTA=0.7932
+  [smart  | dog-bird t9/10 idx=5599] select=1.201s craft_obj=0.2793 linf=0.0314 ASR=0% CTA=0.7946
+      [exact] CG iters used per surrogate: [29, 29, 31, 27, 25, 27, 25, 27, 25, 29]
+  [exact  | dog-bird t9/10 idx=5599] select=28.642s craft_obj=0.2795 linf=0.0314 ASR=0% CTA=0.7968
+  [smart  | dog-bird t10/10 idx=2544] select=1.180s craft_obj=0.2306 linf=0.0314 ASR=17% CTA=0.7979
+      [exact] CG iters used per surrogate: [28, 28, 30, 26, 25, 28, 25, 26, 25, 29]
+  [exact  | dog-bird t10/10 idx=2544] select=23.440s craft_obj=0.2315 linf=0.0314 ASR=17% CTA=0.8009
+
+[2026-06-29 09:09:00] ===================== SELECTION COMPARISON (fc) =====================
+  method  |    10 targets x 6 victims | ASR mean | CTA mean | sel-time mean / median / total
+  smart   | ASR=36.7% +/- 34.8 | CTA=0.8001 | sel 0.934s / 0.792s / 9.3s
+  exact   | ASR=46.7% +/- 37.1 | CTA=0.8001 | sel 20.092s / 14.590s / 200.9s
+  exact / smart selection time ratio = 21.5x
+[2026-06-29 09:09:00] wrote results_select_cmp_fc_ConvNetBN_b100_eps8.{json,csv} to result/select_cmp

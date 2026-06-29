@@ -1,0 +1,324 @@
+[2026-06-28 07:42:20] logging (line-buffered, no delay) -> logs/ablation/ConvNetBN_dog-bird_fc_b0.02_ablation_scored_seed0.log
+[2026-06-28 07:42:20] device=cuda
+[2026-06-28 07:42:20] hyperparams: {'dataset': 'CIFAR10', 'data_path': 'data', 'model': 'ConvNetBN', 'out_dir': 'result/ablation_scored', 'seed': 0, 'target_idx_file': None, 'dsa_strategy': 'color_crop_cutout_flip_scale_rotate', 'syn_data_path': 'result/res_DM_CIFAR10_ConvNet_100ipc.pt', 'surrogate_model': 'ConvNet', 'num_surrogates': 10, 'surrogate_epochs': 1000, 'surrogate_lr': 0.01, 'surrogate_bs': 256, 'attack': 'fc', 'class_pairs': ['dog-bird'], 'budget': 0.02, 'epsilon': 0.0313725, 'pgd_steps': 150, 'pgd_alpha': 0.0039216, 'restarts': 1, 'lambda_margin': 1.0, 'num_targets': 10, 'num_victims': 5, 'target_select': 'random', 'victim_epochs': 50, 'victim_lr': 0.1, 'victim_bs': 125, 'victim_decay': [40], 'victim_aug': False, 'clean_baseline': False, 'cache_dir': 'result/cache', 'precompute_only': False, 'base_dist': 'l2', 'random_select': False, 'multilayer': False, 'single_surrogate': True, 'fast_gradmatch': False, 'surrogate_on_full_data': False, 'victim_pipelines': ['diffaug', 'mixup', 'cutmix', 'advtrain', 'dpsgd', 'labelsmooth'], 'poison_cache_dir': 'result/poison_cache', 'log_file': 'logs/ablation/ConvNetBN_dog-bird_fc_b0.02_ablation_scored_seed0.log'}
+[2026-06-28 07:42:20] victim pipelines (ablations): ['diffaug', 'mixup', 'cutmix', 'advtrain', 'dpsgd', 'labelsmooth']
+[2026-06-28 07:42:35] N_total=50000  budget=0.0200 -> N_p=1000 poisons (all in y_adv class)
+
+[2026-06-28 07:42:35] === training 10 surrogates (ConvNet) on distilled S (1000 ep each) ===
+[2026-06-28 07:43:48] Evaluate_00: epoch = 1000 train time = 72 s train loss = 0.007763 train acc = 0.9980, test acc = 0.6454
+[2026-06-28 07:45:26] Evaluate_01: epoch = 1000 train time = 98 s train loss = 0.006478 train acc = 0.9990, test acc = 0.6495
+[2026-06-28 07:46:51] Evaluate_02: epoch = 1000 train time = 85 s train loss = 0.013102 train acc = 1.0000, test acc = 0.6531
+[2026-06-28 07:47:10] Evaluate_03: epoch = 1000 train time = 18 s train loss = 0.012745 train acc = 0.9990, test acc = 0.6543
+[2026-06-28 07:47:29] Evaluate_04: epoch = 1000 train time = 18 s train loss = 0.006018 train acc = 1.0000, test acc = 0.6417
+[2026-06-28 07:49:59] Evaluate_05: epoch = 1000 train time = 149 s train loss = 0.012418 train acc = 1.0000, test acc = 0.6505
+[2026-06-28 07:51:52] Evaluate_06: epoch = 1000 train time = 113 s train loss = 0.011002 train acc = 0.9980, test acc = 0.6550
+[2026-06-28 07:53:36] Evaluate_07: epoch = 1000 train time = 103 s train loss = 0.008197 train acc = 1.0000, test acc = 0.6501
+[2026-06-28 07:55:14] Evaluate_08: epoch = 1000 train time = 98 s train loss = 0.012295 train acc = 1.0000, test acc = 0.6541
+[2026-06-28 07:56:04] Evaluate_09: epoch = 1000 train time = 49 s train loss = 0.012728 train acc = 1.0000, test acc = 0.6541
+[2026-06-28 07:56:04]  saved surrogates to result/cache/surrogates_ConvNet_syn_10x1000ep_seed0
+
+[2026-06-28 07:56:04] ################ pair dog-bird : y_adv=5(dog)  target_class=2(bird) ################
+  targets (random): [430, 387, 6715, 7670, 9467, 2100, 7171, 4833, 5599, 2544]
+  [dog-bird t1/10 idx=430] fc craft_obj=0.2522 linf=0.0314 | clean_ASR=n/a
+    [diffaug] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [diffaug | dog-bird t1/10 idx=430] poison_CTA=0.8457 poison_ASR=100%
+    [mixup] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [mixup | dog-bird t1/10 idx=430] poison_CTA=0.8037 poison_ASR=100%
+    [cutmix] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [cutmix | dog-bird t1/10 idx=430] poison_CTA=0.8302 poison_ASR=80%
+    [advtrain] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [advtrain | dog-bird t1/10 idx=430] poison_CTA=0.5916 poison_ASR=20%
+    [dpsgd] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [dpsgd | dog-bird t1/10 idx=430] poison_CTA=0.7197 poison_ASR=100%
+    [labelsmooth] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [labelsmooth | dog-bird t1/10 idx=430] poison_CTA=0.7899 poison_ASR=40%
+  [dog-bird t2/10 idx=387] fc craft_obj=0.2479 linf=0.0314 | clean_ASR=n/a
+    [diffaug] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [diffaug | dog-bird t2/10 idx=387] poison_CTA=0.8490 poison_ASR=60%
+    [mixup] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [mixup | dog-bird t2/10 idx=387] poison_CTA=0.8019 poison_ASR=0%
+    [cutmix] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [cutmix | dog-bird t2/10 idx=387] poison_CTA=0.8342 poison_ASR=40%
+    [advtrain] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [advtrain | dog-bird t2/10 idx=387] poison_CTA=0.5411 poison_ASR=40%
+    [dpsgd] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [dpsgd | dog-bird t2/10 idx=387] poison_CTA=0.7259 poison_ASR=0%
+    [labelsmooth] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [labelsmooth | dog-bird t2/10 idx=387] poison_CTA=0.7899 poison_ASR=40%
+  [dog-bird t3/10 idx=6715] fc craft_obj=0.2432 linf=0.0314 | clean_ASR=n/a
+    [diffaug] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [diffaug | dog-bird t3/10 idx=6715] poison_CTA=0.8504 poison_ASR=100%
+    [mixup] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [mixup | dog-bird t3/10 idx=6715] poison_CTA=0.8116 poison_ASR=100%
+    [cutmix] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [cutmix | dog-bird t3/10 idx=6715] poison_CTA=0.8169 poison_ASR=100%
+    [advtrain] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [advtrain | dog-bird t3/10 idx=6715] poison_CTA=0.6179 poison_ASR=0%
+    [dpsgd] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [dpsgd | dog-bird t3/10 idx=6715] poison_CTA=0.7227 poison_ASR=100%
+    [labelsmooth] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [labelsmooth | dog-bird t3/10 idx=6715] poison_CTA=0.7903 poison_ASR=80%
+  [dog-bird t4/10 idx=7670] fc craft_obj=0.2449 linf=0.0314 | clean_ASR=n/a
+    [diffaug] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [diffaug | dog-bird t4/10 idx=7670] poison_CTA=0.8530 poison_ASR=100%
+    [mixup] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [mixup | dog-bird t4/10 idx=7670] poison_CTA=0.8056 poison_ASR=80%
+    [cutmix] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [cutmix | dog-bird t4/10 idx=7670] poison_CTA=0.8314 poison_ASR=100%
+    [advtrain] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [advtrain | dog-bird t4/10 idx=7670] poison_CTA=0.6266 poison_ASR=0%
+    [dpsgd] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [dpsgd | dog-bird t4/10 idx=7670] poison_CTA=0.7235 poison_ASR=40%
+    [labelsmooth] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [labelsmooth | dog-bird t4/10 idx=7670] poison_CTA=0.7864 poison_ASR=80%
+  [dog-bird t5/10 idx=9467] fc craft_obj=0.2568 linf=0.0314 | clean_ASR=n/a
+    [diffaug] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [diffaug | dog-bird t5/10 idx=9467] poison_CTA=0.8494 poison_ASR=60%
+    [mixup] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [mixup | dog-bird t5/10 idx=9467] poison_CTA=0.8105 poison_ASR=60%
+    [cutmix] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [cutmix | dog-bird t5/10 idx=9467] poison_CTA=0.6529 poison_ASR=80%
+    [advtrain] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [advtrain | dog-bird t5/10 idx=9467] poison_CTA=0.6054 poison_ASR=0%
+    [dpsgd] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [dpsgd | dog-bird t5/10 idx=9467] poison_CTA=0.7208 poison_ASR=80%
+    [labelsmooth] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [labelsmooth | dog-bird t5/10 idx=9467] poison_CTA=0.7850 poison_ASR=80%
+  [dog-bird t6/10 idx=2100] fc craft_obj=0.2423 linf=0.0314 | clean_ASR=n/a
+    [diffaug] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [diffaug | dog-bird t6/10 idx=2100] poison_CTA=0.8565 poison_ASR=0%
+    [mixup] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [mixup | dog-bird t6/10 idx=2100] poison_CTA=0.8135 poison_ASR=0%
+    [cutmix] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [cutmix | dog-bird t6/10 idx=2100] poison_CTA=0.8399 poison_ASR=0%
+    [advtrain] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [advtrain | dog-bird t6/10 idx=2100] poison_CTA=0.5979 poison_ASR=0%
+    [dpsgd] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [dpsgd | dog-bird t6/10 idx=2100] poison_CTA=0.7225 poison_ASR=20%
+    [labelsmooth] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [labelsmooth | dog-bird t6/10 idx=2100] poison_CTA=0.7907 poison_ASR=0%
+  [dog-bird t7/10 idx=7171] fc craft_obj=0.2326 linf=0.0314 | clean_ASR=n/a
+    [diffaug] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [diffaug | dog-bird t7/10 idx=7171] poison_CTA=0.8485 poison_ASR=0%
+    [mixup] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [mixup | dog-bird t7/10 idx=7171] poison_CTA=0.7946 poison_ASR=0%
+    [cutmix] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [cutmix | dog-bird t7/10 idx=7171] poison_CTA=0.8295 poison_ASR=0%
+    [advtrain] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [advtrain | dog-bird t7/10 idx=7171] poison_CTA=0.6525 poison_ASR=0%
+    [dpsgd] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [dpsgd | dog-bird t7/10 idx=7171] poison_CTA=0.7174 poison_ASR=0%
+    [labelsmooth] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [labelsmooth | dog-bird t7/10 idx=7171] poison_CTA=0.7852 poison_ASR=0%
+  [dog-bird t8/10 idx=4833] fc craft_obj=0.2391 linf=0.0314 | clean_ASR=n/a
+    [diffaug] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [diffaug | dog-bird t8/10 idx=4833] poison_CTA=0.8510 poison_ASR=80%
+    [mixup] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [mixup | dog-bird t8/10 idx=4833] poison_CTA=0.7952 poison_ASR=100%
+    [cutmix] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [cutmix | dog-bird t8/10 idx=4833] poison_CTA=0.8351 poison_ASR=80%
+    [advtrain] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [advtrain | dog-bird t8/10 idx=4833] poison_CTA=0.6524 poison_ASR=0%
+    [dpsgd] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [dpsgd | dog-bird t8/10 idx=4833] poison_CTA=0.7201 poison_ASR=80%
+    [labelsmooth] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [labelsmooth | dog-bird t8/10 idx=4833] poison_CTA=0.7851 poison_ASR=100%
+  [dog-bird t9/10 idx=5599] fc craft_obj=0.2876 linf=0.0314 | clean_ASR=n/a
+    [diffaug] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [diffaug | dog-bird t9/10 idx=5599] poison_CTA=0.8475 poison_ASR=0%
+    [mixup] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [mixup | dog-bird t9/10 idx=5599] poison_CTA=0.7969 poison_ASR=0%
+    [cutmix] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [cutmix | dog-bird t9/10 idx=5599] poison_CTA=0.8360 poison_ASR=0%
+    [advtrain] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [advtrain | dog-bird t9/10 idx=5599] poison_CTA=0.6043 poison_ASR=0%
+    [dpsgd] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [dpsgd | dog-bird t9/10 idx=5599] poison_CTA=0.7217 poison_ASR=0%
+    [labelsmooth] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [labelsmooth | dog-bird t9/10 idx=5599] poison_CTA=0.7921 poison_ASR=0%
+  [dog-bird t10/10 idx=2544] fc craft_obj=0.2391 linf=0.0314 | clean_ASR=n/a
+    [diffaug] victims: v1 done, Traceback (most recent call last):
+  File "/work/mohammad/DD-attack/main_IF.py", line 1001, in <module>
+    help='victim training ablations applied to the SAME crafted poison. '
+^^^^^^^^^
+  File "/work/mohammad/DD-attack/main_IF.py", line 855, in main
+    clean_asr = 100.0 * sum(predict_target(n, x_t_norm) == y_adv
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/mohammad/DD-attack/main_IF.py", line 583, in train_victim
+    img = DiffAugment(img, aug_strategy, param=dsa_param)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/mohammad/DD-attack/utils.py", line 549, in DiffAugment
+    x = f(x, param)
+        ^^^^^^^^^^^
+  File "/work/mohammad/DD-attack/utils.py", line 584, in rand_rotate
+    grid = F.affine_grid(theta, x.shape).to(x.device)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/mohammad/DD-attack/ENV/lib/python3.12/site-packages/torch/nn/functional.py", line 5371, in affine_grid
+    return torch.affine_grid_generator(theta, size, align_corners)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+KeyboardInterrupt
+[2026-06-28 17:51:53] logging (line-buffered, no delay) -> logs/ablation/ConvNetBN_dog-bird_fc_b0.02_ablation_scored_seed0.log
+[2026-06-28 17:51:54] device=cuda
+[2026-06-28 17:51:54] hyperparams: {'dataset': 'CIFAR10', 'data_path': 'data', 'model': 'ConvNetBN', 'out_dir': 'result/ablation_scored', 'seed': 0, 'target_idx_file': None, 'dsa_strategy': 'color_crop_cutout_flip_scale_rotate', 'syn_data_path': 'result/res_DM_CIFAR10_ConvNet_100ipc.pt', 'surrogate_model': 'ConvNet', 'num_surrogates': 10, 'surrogate_epochs': 1000, 'surrogate_lr': 0.01, 'surrogate_bs': 256, 'attack': 'fc', 'class_pairs': ['dog-bird'], 'budget': 0.02, 'epsilon': 0.0313725, 'pgd_steps': 150, 'pgd_alpha': 0.0039216, 'restarts': 1, 'lambda_margin': 1.0, 'num_targets': 8, 'num_victims': 5, 'target_select': 'random', 'victim_epochs': 45, 'victim_lr': 0.1, 'victim_bs': 125, 'victim_decay': [35], 'victim_aug': False, 'clean_baseline': True, 'cache_dir': 'result/cache', 'precompute_only': False, 'base_dist': 'l2', 'random_select': False, 'multilayer': False, 'single_surrogate': True, 'fast_gradmatch': False, 'surrogate_on_full_data': False, 'victim_pipelines': ['standard', 'diffaug', 'cutmix', 'advtrain:alpha=0.0156863,steps=7', 'dpsgd'], 'poison_cache_dir': 'result/poison_cache', 'log_file': 'logs/ablation/ConvNetBN_dog-bird_fc_b0.02_ablation_scored_seed0.log'}
+[2026-06-28 17:51:54] victim pipelines (ablations): ['standard', 'diffaug', 'cutmix', 'advtrain:alpha=0.0156863,steps=7', 'dpsgd']
+[2026-06-28 17:52:12] N_total=50000  budget=0.0200 -> N_p=1000 poisons (all in y_adv class)
+
+[2026-06-28 17:52:12] === loading 10 surrogates from cache: result/cache/surrogates_ConvNet_syn_10x1000ep_seed0 ===
+
+[2026-06-28 17:52:12] === training 5 clean victims [standard] (ConvNetBN) from scratch on clean data ===
+[2026-06-28 17:55:06]  saved clean victims to result/cache/clean_victims_ConvNetBN_standard_5x45ep_seed0
+  clean baseline CTA [standard] = 0.8031
+
+[2026-06-28 17:55:06] === training 5 clean victims [diffaug] (ConvNetBN) from scratch on clean data ===
+Traceback (most recent call last):
+  File "/work/mohammad/DD-attack/main_IF.py", line 1011, in <module>
+    help='dir to save/load crafted poisons (base_idx + perturbed image) '
+^^^^^^^^^
+  File "/work/mohammad/DD-attack/main_IF.py", line 757, in main
+    net = get_network(args.model, channel, num_classes, im_size)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/mohammad/DD-attack/main_IF.py", line 583, in train_victim
+    img = DiffAugment(img, aug_strategy, param=dsa_param)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/mohammad/DD-attack/utils.py", line 549, in DiffAugment
+    x = f(x, param)
+        ^^^^^^^^^^^
+  File "/work/mohammad/DD-attack/utils.py", line 584, in rand_rotate
+    grid = F.affine_grid(theta, x.shape).to(x.device)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/mohammad/DD-attack/ENV/lib/python3.12/site-packages/torch/nn/functional.py", line 5371, in affine_grid
+    return torch.affine_grid_generator(theta, size, align_corners)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+KeyboardInterrupt
+[2026-06-28 18:26:59] logging (line-buffered, no delay) -> logs/ablation/ConvNetBN_dog-bird_fc_b0.02_ablation_scored_seed0.log
+[2026-06-28 18:26:59] device=cuda
+[2026-06-28 18:26:59] hyperparams: {'dataset': 'CIFAR10', 'data_path': 'data', 'model': 'ConvNetBN', 'out_dir': 'result/ablation_scored', 'seed': 0, 'target_idx_file': None, 'dsa_strategy': 'color_crop_cutout_flip_scale_rotate', 'syn_data_path': 'result/res_DM_CIFAR10_ConvNet_100ipc.pt', 'surrogate_model': 'ConvNet', 'num_surrogates': 10, 'surrogate_epochs': 1000, 'surrogate_lr': 0.01, 'surrogate_bs': 256, 'attack': 'fc', 'class_pairs': ['dog-bird'], 'budget': 0.02, 'epsilon': 0.0313725, 'pgd_steps': 150, 'pgd_alpha': 0.0039216, 'restarts': 1, 'lambda_margin': 1.0, 'num_targets': 8, 'num_victims': 5, 'target_select': 'random', 'victim_epochs': 45, 'victim_lr': 0.1, 'victim_bs': 125, 'victim_decay': [35], 'victim_aug': False, 'clean_baseline': True, 'num_clean_victims': 1, 'cache_dir': 'result/cache', 'precompute_only': False, 'base_dist': 'l2', 'random_select': False, 'multilayer': False, 'single_surrogate': True, 'fast_gradmatch': False, 'surrogate_on_full_data': False, 'victim_pipelines': ['standard', 'diffaug', 'cutmix', 'advtrain:alpha=0.0156863,steps=7', 'dpsgd'], 'poison_cache_dir': 'result/poison_cache', 'log_file': 'logs/ablation/ConvNetBN_dog-bird_fc_b0.02_ablation_scored_seed0.log'}
+[2026-06-28 18:26:59] victim pipelines (ablations): ['standard', 'diffaug', 'cutmix', 'advtrain:alpha=0.0156863,steps=7', 'dpsgd']
+[2026-06-28 18:27:14] N_total=50000  budget=0.0200 -> N_p=1000 poisons (all in y_adv class)
+
+[2026-06-28 18:27:14] === loading 10 surrogates from cache: result/cache/surrogates_ConvNet_syn_10x1000ep_seed0 ===
+
+[2026-06-28 18:27:14] === training 1 clean victim(s) [standard] (ConvNetBN) from scratch on clean data ===
+[2026-06-28 18:27:49]  saved clean victims to result/cache/clean_victims_ConvNetBN_standard_1x45ep_seed0
+  clean baseline CTA [standard] = 0.8050
+
+[2026-06-28 18:27:49] === training 1 clean victim(s) [diffaug] (ConvNetBN) from scratch on clean data ===
+[2026-06-28 18:31:44]  saved clean victims to result/cache/clean_victims_ConvNetBN_diffaug_1x45ep_seed0
+  clean baseline CTA [diffaug] = 0.8546
+
+[2026-06-28 18:31:44] === training 1 clean victim(s) [cutmix] (ConvNetBN) from scratch on clean data ===
+[2026-06-28 18:32:20]  saved clean victims to result/cache/clean_victims_ConvNetBN_cutmix_1x45ep_seed0
+  clean baseline CTA [cutmix] = 0.8280
+
+[2026-06-28 18:32:20] === training 1 clean victim(s) [advtrain:alpha=0.0156863,steps=7] (ConvNetBN) from scratch on clean data ===
+[2026-06-28 18:36:03]  saved clean victims to result/cache/clean_victims_ConvNetBN_advtrain_alpha0p0156863_steps7_1x45ep_seed0
+  clean baseline CTA [advtrain:alpha=0.0156863,steps=7] = 0.5230
+
+[2026-06-28 18:36:03] === training 1 clean victim(s) [dpsgd] (ConvNetBN) from scratch on clean data ===
+[2026-06-28 18:36:48]  saved clean victims to result/cache/clean_victims_ConvNetBN_dpsgd_1x45ep_seed0
+  clean baseline CTA [dpsgd] = 0.7211
+
+[2026-06-28 18:36:48] ################ pair dog-bird : y_adv=5(dog)  target_class=2(bird) ################
+  targets (random): [430, 387, 6715, 7670, 9467, 2100, 7171, 4833]
+  [dog-bird t1/8 idx=430] loaded cached poison (obj=0.2522 linf=0.0314) result/poison_cache/poison_fc_ConvNet_dog-bird_b200_eps8_st150_ns10_l2_sl_ss_t430_seed0.pt
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | dog-bird t1/8 idx=430] poison_CTA=0.7998 poison_ASR=80%  clean_CTA=0.8050 clean_ASR=0%
+    [diffaug] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [diffaug | dog-bird t1/8 idx=430] poison_CTA=0.8499 poison_ASR=80%  clean_CTA=0.8546 clean_ASR=0%
+    [cutmix] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [cutmix | dog-bird t1/8 idx=430] poison_CTA=0.6723 poison_ASR=60%  clean_CTA=0.8280 clean_ASR=0%
+    [advtrain:alpha=0.0156863,steps=7] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [advtrain:alpha=0.0156863,steps=7 | dog-bird t1/8 idx=430] poison_CTA=0.5474 poison_ASR=20%  clean_CTA=0.5230 clean_ASR=0%
+    [dpsgd] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [dpsgd | dog-bird t1/8 idx=430] poison_CTA=0.7222 poison_ASR=100%  clean_CTA=0.7211 clean_ASR=0%
+  [dog-bird t2/8 idx=387] loaded cached poison (obj=0.2479 linf=0.0314) result/poison_cache/poison_fc_ConvNet_dog-bird_b200_eps8_st150_ns10_l2_sl_ss_t387_seed0.pt
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | dog-bird t2/8 idx=387] poison_CTA=0.7959 poison_ASR=0%  clean_CTA=0.8050 clean_ASR=0%
+    [diffaug] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [diffaug | dog-bird t2/8 idx=387] poison_CTA=0.8485 poison_ASR=60%  clean_CTA=0.8546 clean_ASR=0%
+    [cutmix] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [cutmix | dog-bird t2/8 idx=387] poison_CTA=0.8312 poison_ASR=60%  clean_CTA=0.8280 clean_ASR=100%
+    [advtrain:alpha=0.0156863,steps=7] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [advtrain:alpha=0.0156863,steps=7 | dog-bird t2/8 idx=387] poison_CTA=0.6257 poison_ASR=100%  clean_CTA=0.5230 clean_ASR=0%
+    [dpsgd] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [dpsgd | dog-bird t2/8 idx=387] poison_CTA=0.7218 poison_ASR=20%  clean_CTA=0.7211 clean_ASR=0%
+  [dog-bird t3/8 idx=6715] loaded cached poison (obj=0.2432 linf=0.0314) result/poison_cache/poison_fc_ConvNet_dog-bird_b200_eps8_st150_ns10_l2_sl_ss_t6715_seed0.pt
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | dog-bird t3/8 idx=6715] poison_CTA=0.8062 poison_ASR=100%  clean_CTA=0.8050 clean_ASR=0%
+    [diffaug] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [diffaug | dog-bird t3/8 idx=6715] poison_CTA=0.8419 poison_ASR=100%  clean_CTA=0.8546 clean_ASR=0%
+    [cutmix] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [cutmix | dog-bird t3/8 idx=6715] poison_CTA=0.8337 poison_ASR=100%  clean_CTA=0.8280 clean_ASR=0%
+    [advtrain:alpha=0.0156863,steps=7] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [advtrain:alpha=0.0156863,steps=7 | dog-bird t3/8 idx=6715] poison_CTA=0.5778 poison_ASR=0%  clean_CTA=0.5230 clean_ASR=0%
+    [dpsgd] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [dpsgd | dog-bird t3/8 idx=6715] poison_CTA=0.7212 poison_ASR=100%  clean_CTA=0.7211 clean_ASR=100%
+  [dog-bird t4/8 idx=7670] loaded cached poison (obj=0.2449 linf=0.0314) result/poison_cache/poison_fc_ConvNet_dog-bird_b200_eps8_st150_ns10_l2_sl_ss_t7670_seed0.pt
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | dog-bird t4/8 idx=7670] poison_CTA=0.7963 poison_ASR=80%  clean_CTA=0.8050 clean_ASR=0%
+    [diffaug] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [diffaug | dog-bird t4/8 idx=7670] poison_CTA=0.8486 poison_ASR=100%  clean_CTA=0.8546 clean_ASR=0%
+    [cutmix] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [cutmix | dog-bird t4/8 idx=7670] poison_CTA=0.8063 poison_ASR=80%  clean_CTA=0.8280 clean_ASR=0%
+    [advtrain:alpha=0.0156863,steps=7] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [advtrain:alpha=0.0156863,steps=7 | dog-bird t4/8 idx=7670] poison_CTA=0.5782 poison_ASR=0%  clean_CTA=0.5230 clean_ASR=0%
+    [dpsgd] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [dpsgd | dog-bird t4/8 idx=7670] poison_CTA=0.7204 poison_ASR=80%  clean_CTA=0.7211 clean_ASR=0%
+  [dog-bird t5/8 idx=9467] loaded cached poison (obj=0.2568 linf=0.0314) result/poison_cache/poison_fc_ConvNet_dog-bird_b200_eps8_st150_ns10_l2_sl_ss_t9467_seed0.pt
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | dog-bird t5/8 idx=9467] poison_CTA=0.8023 poison_ASR=80%  clean_CTA=0.8050 clean_ASR=0%
+    [diffaug] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [diffaug | dog-bird t5/8 idx=9467] poison_CTA=0.8434 poison_ASR=80%  clean_CTA=0.8546 clean_ASR=0%
+    [cutmix] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [cutmix | dog-bird t5/8 idx=9467] poison_CTA=0.7846 poison_ASR=20%  clean_CTA=0.8280 clean_ASR=0%
+    [advtrain:alpha=0.0156863,steps=7] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [advtrain:alpha=0.0156863,steps=7 | dog-bird t5/8 idx=9467] poison_CTA=0.5929 poison_ASR=0%  clean_CTA=0.5230 clean_ASR=0%
+    [dpsgd] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [dpsgd | dog-bird t5/8 idx=9467] poison_CTA=0.7203 poison_ASR=100%  clean_CTA=0.7211 clean_ASR=0%
+  [dog-bird t6/8 idx=2100] loaded cached poison (obj=0.2423 linf=0.0314) result/poison_cache/poison_fc_ConvNet_dog-bird_b200_eps8_st150_ns10_l2_sl_ss_t2100_seed0.pt
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | dog-bird t6/8 idx=2100] poison_CTA=0.8029 poison_ASR=0%  clean_CTA=0.8050 clean_ASR=0%
+    [diffaug] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [diffaug | dog-bird t6/8 idx=2100] poison_CTA=0.8501 poison_ASR=0%  clean_CTA=0.8546 clean_ASR=0%
+    [cutmix] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [cutmix | dog-bird t6/8 idx=2100] poison_CTA=0.6831 poison_ASR=0%  clean_CTA=0.8280 clean_ASR=0%
+    [advtrain:alpha=0.0156863,steps=7] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [advtrain:alpha=0.0156863,steps=7 | dog-bird t6/8 idx=2100] poison_CTA=0.5148 poison_ASR=0%  clean_CTA=0.5230 clean_ASR=0%
+    [dpsgd] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [dpsgd | dog-bird t6/8 idx=2100] poison_CTA=0.7190 poison_ASR=0%  clean_CTA=0.7211 clean_ASR=0%
+  [dog-bird t7/8 idx=7171] loaded cached poison (obj=0.2326 linf=0.0314) result/poison_cache/poison_fc_ConvNet_dog-bird_b200_eps8_st150_ns10_l2_sl_ss_t7171_seed0.pt
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | dog-bird t7/8 idx=7171] poison_CTA=0.7930 poison_ASR=0%  clean_CTA=0.8050 clean_ASR=0%
+    [diffaug] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [diffaug | dog-bird t7/8 idx=7171] poison_CTA=0.8482 poison_ASR=0%  clean_CTA=0.8546 clean_ASR=0%
+    [cutmix] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [cutmix | dog-bird t7/8 idx=7171] poison_CTA=0.8300 poison_ASR=0%  clean_CTA=0.8280 clean_ASR=0%
+    [advtrain:alpha=0.0156863,steps=7] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [advtrain:alpha=0.0156863,steps=7 | dog-bird t7/8 idx=7171] poison_CTA=0.5703 poison_ASR=0%  clean_CTA=0.5230 clean_ASR=0%
+    [dpsgd] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [dpsgd | dog-bird t7/8 idx=7171] poison_CTA=0.7212 poison_ASR=0%  clean_CTA=0.7211 clean_ASR=0%
+  [dog-bird t8/8 idx=4833] loaded cached poison (obj=0.2391 linf=0.0314) result/poison_cache/poison_fc_ConvNet_dog-bird_b200_eps8_st150_ns10_l2_sl_ss_t4833_seed0.pt
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | dog-bird t8/8 idx=4833] poison_CTA=0.8014 poison_ASR=100%  clean_CTA=0.8050 clean_ASR=0%
+    [diffaug] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [diffaug | dog-bird t8/8 idx=4833] poison_CTA=0.8415 poison_ASR=100%  clean_CTA=0.8546 clean_ASR=0%
+    [cutmix] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [cutmix | dog-bird t8/8 idx=4833] poison_CTA=0.8149 poison_ASR=80%  clean_CTA=0.8280 clean_ASR=0%
+    [advtrain:alpha=0.0156863,steps=7] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [advtrain:alpha=0.0156863,steps=7 | dog-bird t8/8 idx=4833] poison_CTA=0.6303 poison_ASR=0%  clean_CTA=0.5230 clean_ASR=0%
+    [dpsgd] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [dpsgd | dog-bird t8/8 idx=4833] poison_CTA=0.7211 poison_ASR=100%  clean_CTA=0.7211 clean_ASR=0%
+
+  ==== pair dog-bird (fc) summary over 8 targets x 5 victims = 40 votes ====
+    [standard                    ] poison CTA = 0.7997 +/- 0.0041   poison ASR = 55.0% +/- 43.3%   | clean CTA = 0.8050   clean ASR = 0.0%
+      tally (['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']): [0, 0, 13, 0, 4, 22, 0, 1, 0, 0]
+    [diffaug                     ] poison CTA = 0.8465 +/- 0.0034   poison ASR = 65.0% +/- 39.7%   | clean CTA = 0.8546   clean ASR = 0.0%
+      tally (['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']): [0, 0, 12, 0, 1, 26, 0, 1, 0, 0]
+    [cutmix                      ] poison CTA = 0.7820 +/- 0.0621   poison ASR = 50.0% +/- 36.1%   | clean CTA = 0.8280   clean ASR = 12.5%
+      tally (['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']): [0, 0, 13, 0, 3, 20, 0, 3, 0, 1]
+    [advtrain:alpha=0.0156863,steps=7] poison CTA = 0.5797 +/- 0.0357   poison ASR = 15.0% +/- 32.8%   | clean CTA = 0.5230   clean ASR = 0.0%
+      tally (['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']): [0, 0, 6, 0, 8, 6, 13, 7, 0, 0]
+    [dpsgd                       ] poison CTA = 0.7209 +/- 0.0009   poison ASR = 62.5% +/- 44.1%   | clean CTA = 0.7211   clean ASR = 12.5%
+      tally (['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']): [0, 0, 15, 0, 0, 25, 0, 0, 0, 0]
+
+[2026-06-29 05:39:19] wrote results_standard_nodistill_fc_ConvNetBN_b200_eps8.{json,csv} to result/ablation_scored

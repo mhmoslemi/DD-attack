@@ -562,7 +562,7 @@ N_total=50000  budget=0.0100 -> N_p=500 poisons
 ==========
 VGG13
 
-
+gradma
 random
 [2026-06-19 18:58:22] hyperparams: {'dataset': 'CIFAR10', 'data_path': 'data', 'model': 'VGG13BN', 'out_dir': 'result/standard_nodistill', 'seed': 0, 'target_idx_file': None, 'dsa_strategy': 'color_crop_cutout_flip_scale_rotate', 'syn_data_path': 'result/res_DM_CIFAR10_ConvNet_100ipc.pt', 'surrogate_model': 'VGG13BN', 'num_surrogates': 1, 'surrogate_epochs': 40, 'surrogate_lr': 0.01, 'surrogate_bs': 256, 'attack': 'fc', 'class_pairs': ['dog-bird'], 'budget': 0.05, 'epsilon': 0.0313725, 'pgd_steps': 150, 'pgd_alpha': 0.0039216, 'restarts': 1, 'lambda_margin': 1.0, 'num_targets': 10, 'num_victims': 5, 'target_select': 'random', 'victim_epochs': 40, 'victim_lr': 0.1, 'victim_bs': 125, 'victim_decay': [35], 'victim_aug': False, 'clean_baseline': False, 'cache_dir': '', 'precompute_only': False, 'base_dist': 'l2', 'random_select': True, 'multilayer': False, 'single_surrogate': True, 'fast_gradmatch': False, 'surrogate_on_full_data': True}
 [2026-06-19 18:58:36] N_total=50000  budget=0.0500 -> N_p=2500 poisons (all in y_adv class)
