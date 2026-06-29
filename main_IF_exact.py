@@ -313,38 +313,46 @@ def main(args):
                 if device == 'cuda':
                     torch.cuda.synchronize()
                 sel_t = time.perf_counter() - t0
+                agg[mth]['sel_t'].append(sel_t)
 
-                # ---------------- craft (identical fc) -------------------------
-                base01 = denorm(train_imgs[base_idx]).clamp(0.0, 1.0).detach()
-                x_adv01, obj = M.craft_fc(surrogates, base01, x_t_norm, norm,
-                                          args.epsilon, args.pgd_steps, args.pgd_alpha,
-                                          device, single_surrogate=args.single_surrogate)
-                linf = (x_adv01 - base01).abs().max().item()
-                poisoned = train_imgs.clone()
-                poisoned[base_idx] = norm(x_adv01)
-
-                # ---------------- victims from scratch (identical) -------------
-                preds, ctas = [], []
-                for vi in range(args.num_victims):
-                    net = get_network(args.model, channel, num_classes, im_size)
-                    net = M.train_from_scratch(net, poisoned, train_labs, args.victim_epochs,
-                                               args.victim_lr, args.victim_bs, args.victim_decay,
-                                               device, weight_decay=0.0, aug=args.victim_aug,
-                                               dsa_strategy=args.dsa_strategy, dsa_param=dsa_param)
-                    preds.append(M.predict_target(net, x_t_norm))
-                    ctas.append(M.test_acc(net, test_imgs, test_labs, device))
-                    del net
+                if args.select_only:
+                    # SELECTION-ONLY: skip craft + victims; just time the selection.
+                    obj, linf, asr, cta = (float('nan'),) * 4
                     if device == 'cuda':
                         torch.cuda.empty_cache()
+                    print('  [%-6s | %s t%d/%d idx=%d] select=%.3fs (N_p=%d, select-only)'
+                          % (mth, pair, ti + 1, len(chosen), tidx, sel_t, N_p))
+                else:
+                    # ---------------- craft (identical fc) ---------------------
+                    base01 = denorm(train_imgs[base_idx]).clamp(0.0, 1.0).detach()
+                    x_adv01, obj = M.craft_fc(surrogates, base01, x_t_norm, norm,
+                                              args.epsilon, args.pgd_steps, args.pgd_alpha,
+                                              device, single_surrogate=args.single_surrogate)
+                    linf = (x_adv01 - base01).abs().max().item()
+                    poisoned = train_imgs.clone()
+                    poisoned[base_idx] = norm(x_adv01)
 
-                asr = 100.0 * sum(p == y_adv for p in preds) / args.num_victims
-                cta = float(np.mean(ctas))
-                agg[mth]['asr'].append(asr)
-                agg[mth]['cta'].append(cta)
-                agg[mth]['sel_t'].append(sel_t)
-                print('  [%-6s | %s t%d/%d idx=%d] select=%.3fs craft_obj=%.4f linf=%.4f '
-                      'ASR=%.0f%% CTA=%.4f'
-                      % (mth, pair, ti + 1, len(chosen), tidx, sel_t, obj, linf, asr, cta))
+                    # ---------------- victims from scratch (identical) ---------
+                    preds, ctas = [], []
+                    for vi in range(args.num_victims):
+                        net = get_network(args.model, channel, num_classes, im_size)
+                        net = M.train_from_scratch(net, poisoned, train_labs, args.victim_epochs,
+                                                   args.victim_lr, args.victim_bs, args.victim_decay,
+                                                   device, weight_decay=0.0, aug=args.victim_aug,
+                                                   dsa_strategy=args.dsa_strategy, dsa_param=dsa_param)
+                        preds.append(M.predict_target(net, x_t_norm))
+                        ctas.append(M.test_acc(net, test_imgs, test_labs, device))
+                        del net
+                        if device == 'cuda':
+                            torch.cuda.empty_cache()
+                    asr = 100.0 * sum(p == y_adv for p in preds) / args.num_victims
+                    cta = float(np.mean(ctas))
+                    agg[mth]['asr'].append(asr)
+                    agg[mth]['cta'].append(cta)
+                    print('  [%-6s | %s t%d/%d idx=%d] select=%.3fs craft_obj=%.4f linf=%.4f '
+                          'ASR=%.0f%% CTA=%.4f'
+                          % (mth, pair, ti + 1, len(chosen), tidx, sel_t, obj, linf, asr, cta))
+
                 all_rows.append({
                     'pair': pair, 'method': mth, 'target_idx': tidx, 'y_adv': y_adv,
                     'select_time_s': sel_t, 'asr': asr, 'cta': cta,
@@ -352,15 +360,19 @@ def main(args):
                 })
 
     # ---- summary ----
-    print('\n%s ===================== SELECTION COMPARISON (fc) =====================' % get_time())
-    print('  %-7s | %5s targets x %d victims | ASR mean | CTA mean | sel-time mean / median / total'
-          % ('method', args.num_targets * len(args.class_pairs), args.num_victims))
+    ntar = args.num_targets * len(args.class_pairs)
+    print('\n%s ============ SELECTION %s (fc, %s) ============'
+          % (get_time(), 'TIMING (select-only)' if args.select_only else 'COMPARISON', args.surrogate_model))
     for mth in args.methods:
-        a, c, t = (np.array(agg[mth]['asr']), np.array(agg[mth]['cta']), np.array(agg[mth]['sel_t']))
-        if len(a) == 0:
+        t = np.array(agg[mth]['sel_t'])
+        if len(t) == 0:
             continue
-        print('  %-7s | ASR=%.1f%% +/- %.1f | CTA=%.4f | sel %.3fs / %.3fs / %.1fs'
-              % (mth, a.mean(), a.std(), c.mean(), t.mean(), np.median(t), t.sum()))
+        line = ('  %-7s | %2d targets | sel-time mean / median / total = %.3fs / %.3fs / %.1fs'
+                % (mth, ntar, t.mean(), np.median(t), t.sum()))
+        if not args.select_only and agg[mth]['asr']:
+            a, c = np.array(agg[mth]['asr']), np.array(agg[mth]['cta'])
+            line += '   | ASR=%.1f%% +/- %.1f | CTA=%.4f' % (a.mean(), a.std(), c.mean())
+        print(line)
     # head-to-head time speedup
     if 'smart' in agg and 'exact' in agg and agg['smart']['sel_t'] and agg['exact']['sel_t']:
         sm, ex = np.mean(agg['smart']['sel_t']), np.mean(agg['exact']['sel_t'])
@@ -425,6 +437,9 @@ if __name__ == '__main__':
     p.add_argument('--methods', nargs='+', default=['smart', 'exact'],
                    choices=['smart', 'exact', 'random'],
                    help='selection rules to compare (everything else identical)')
+    p.add_argument('--select_only', action='store_true', default=False,
+                   help='only run + time the SELECTION step (skip craft and victim '
+                        'training); use to compare selection cost across architectures')
     p.add_argument('--if_damping', type=float, default=0.01,
                    help='Hessian damping (H + damping*I) for CG stability / non-PD nets')
     p.add_argument('--if_cg_iters', type=int, default=100, help='max conjugate-gradient iterations')

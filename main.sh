@@ -152,3 +152,29 @@ done
 # margin 1.0 --> ASR = 46.7%
 # margin 0.1 --> ASR = 23.3%
 
+
+
+
+# VGG13
+#     'attack': 'fc':
+#         'num_surrogates': 6, 'surrogate_epochs': 40, 
+#         'pgd_steps': 150, 
+#         'restarts': 1, 
+#         'num_targets': 10, 'num_victims': 5,
+#         'victim_epochs': 40, 'victim_decay': [35],
+#         'base_dist': 'l2', 
+#         'multilayer': True, 
+#         'single_surrogate': False,
+#         'surrogate_on_full_data': True
+
+
+#     'attack': 'gradmatch',
+#         'num_surrogates': 1, 'surrogate_epochs': 45,
+#         'pgd_steps': 75,
+#         'restarts': 4,
+#         'num_targets': 10,'num_victims': 5,
+#         'victim_epochs': 45, 'victim_decay': [30],
+#         'base_dist': 'l2',
+#         'multilayer': True,
+#         'single_surrogate': True,
+#         'surrogate_on_full_data': True

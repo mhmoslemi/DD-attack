@@ -1,0 +1,42 @@
+[2026-06-29 17:08:49] logging (line-buffered, no delay) -> logs/ablation/ConvNetBN_dog-bird_fc_b0.01_ablation_scored_seed0.log
+[2026-06-29 17:08:49] device=cuda
+[2026-06-29 17:08:49] hyperparams: {'dataset': 'CIFAR10', 'data_path': 'data', 'model': 'ConvNetBN', 'out_dir': 'result/ablation_scored', 'seed': 0, 'target_idx_file': None, 'dsa_strategy': 'color_crop_cutout_flip_scale_rotate', 'syn_data_path': 'result/res_DM_CIFAR10_ConvNet_100ipc.pt', 'surrogate_model': 'ConvNet', 'num_surrogates': 10, 'surrogate_epochs': 1000, 'surrogate_lr': 0.01, 'surrogate_bs': 256, 'attack': 'fc', 'class_pairs': ['dog-bird'], 'budget': 0.01, 'epsilon': 0.0313725, 'pgd_steps': 150, 'pgd_alpha': 0.0039216, 'restarts': 1, 'lambda_margin': 1.0, 'num_targets': 8, 'num_victims': 5, 'target_select': 'random', 'victim_epochs': 45, 'victim_lr': 0.1, 'victim_bs': 125, 'victim_decay': [35], 'victim_aug': False, 'clean_baseline': True, 'num_clean_victims': 1, 'cache_dir': 'result/cache', 'precompute_only': False, 'base_dist': 'l2', 'random_select': False, 'multilayer': False, 'single_surrogate': True, 'fast_gradmatch': False, 'surrogate_on_full_data': False, 'victim_pipelines': ['standard', 'diffaug', 'cutmix', 'advtrain:alpha=0.0156863,steps=7', 'dpsgd'], 'poison_cache_dir': 'result/poison_cache', 'log_file': 'logs/ablation/ConvNetBN_dog-bird_fc_b0.01_ablation_scored_seed0.log'}
+[2026-06-29 17:08:49] victim pipelines (ablations): ['standard', 'diffaug', 'cutmix', 'advtrain:alpha=0.0156863,steps=7', 'dpsgd']
+[2026-06-29 17:09:02] N_total=50000  budget=0.0100 -> N_p=500 poisons (all in y_adv class)
+
+[2026-06-29 17:09:02] === loading 10 surrogates from cache: result/cache/surrogates_ConvNet_syn_10x1000ep_seed0 ===
+
+[2026-06-29 17:09:02] === loading 1 clean victim(s) [standard] (ConvNetBN) from cache: result/cache/clean_victims_ConvNetBN_standard_1x45ep_seed0 ===
+  clean baseline CTA [standard] = 0.8050
+
+[2026-06-29 17:09:03] === loading 1 clean victim(s) [diffaug] (ConvNetBN) from cache: result/cache/clean_victims_ConvNetBN_diffaug_1x45ep_seed0 ===
+  clean baseline CTA [diffaug] = 0.8546
+
+[2026-06-29 17:09:03] === loading 1 clean victim(s) [cutmix] (ConvNetBN) from cache: result/cache/clean_victims_ConvNetBN_cutmix_1x45ep_seed0 ===
+  clean baseline CTA [cutmix] = 0.8280
+
+[2026-06-29 17:09:03] === loading 1 clean victim(s) [advtrain:alpha=0.0156863,steps=7] (ConvNetBN) from cache: result/cache/clean_victims_ConvNetBN_advtrain_alpha0p0156863_steps7_1x45ep_seed0 ===
+  clean baseline CTA [advtrain:alpha=0.0156863,steps=7] = 0.5230
+
+[2026-06-29 17:09:03] === loading 1 clean victim(s) [dpsgd] (ConvNetBN) from cache: result/cache/clean_victims_ConvNetBN_dpsgd_1x45ep_seed0 ===
+  clean baseline CTA [dpsgd] = 0.7211
+
+[2026-06-29 17:09:03] ################ pair dog-bird : y_adv=5(dog)  target_class=2(bird) ################
+  targets (random): [430, 387, 6715, 7670, 9467, 2100, 7171, 4833]
+  [dog-bird t1/8 idx=430] fc craft_obj=0.2455 linf=0.0314
+    [standard] victims: Traceback (most recent call last):
+  File "/work/mohammad/DD-attack/main_IF.py", line 1015, in <module>
+    main(p.parse_args())
+  File "/work/mohammad/DD-attack/main_IF.py", line 865, in main
+    net = train_victim(net, poisoned, train_labs, cfg, args,
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/mohammad/DD-attack/main_IF.py", line 606, in train_victim
+    loss.backward()
+  File "/work/mohammad/DD-attack/ENV/lib/python3.12/site-packages/torch/_tensor.py", line 631, in backward
+    torch.autograd.backward(
+  File "/work/mohammad/DD-attack/ENV/lib/python3.12/site-packages/torch/autograd/__init__.py", line 379, in backward
+    _engine_run_backward(
+  File "/work/mohammad/DD-attack/ENV/lib/python3.12/site-packages/torch/autograd/graph.py", line 882, in _engine_run_backward
+    return Variable._execution_engine.run_backward(  # Calls into the C++ engine to run the backward pass
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+KeyboardInterrupt

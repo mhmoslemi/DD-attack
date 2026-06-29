@@ -1,0 +1,49 @@
+[2026-06-29 15:32:27] logging (line-buffered, no delay) -> logs/select_cmp/VGG13BN_dog-bird_b0.01_smart_vs_exactIF_selectonly_seed0.log
+[2026-06-29 15:32:27] device=cuda
+[2026-06-29 15:32:27] hyperparams: {'dataset': 'CIFAR10', 'data_path': 'data', 'model': 'VGG13BN', 'out_dir': 'result/select_cmp', 'seed': 0, 'dsa_strategy': 'color_crop_cutout_flip_scale_rotate', 'syn_data_path': 'result/res_DM_CIFAR10_ConvNet_100ipc.pt', 'surrogate_model': 'VGG13BN', 'num_surrogates': 1, 'surrogate_epochs': 1000, 'surrogate_lr': 0.01, 'surrogate_bs': 256, 'surrogate_on_full_data': False, 'class_pairs': ['dog-bird'], 'budget': 0.01, 'epsilon': 0.0313725, 'pgd_steps': 250, 'pgd_alpha': 0.00392156862745098, 'single_surrogate': False, 'lambda_margin': 1.0, 'base_dist': 'l2', 'multilayer': True, 'num_targets': 10, 'num_victims': 6, 'target_select': 'random', 'victim_epochs': 60, 'victim_lr': 0.1, 'victim_bs': 125, 'victim_decay': [40], 'victim_aug': False, 'cache_dir': 'result/cache', 'methods': ['smart', 'exact'], 'select_only': True, 'if_damping': 0.01, 'if_cg_iters': 100, 'if_cg_tol': 0.0001, 'if_fd_h': 0.01, 'if_last_layer': False, 'if_hess_source': 'syn', 'if_hess_size': 512, 'if_max_surrogates': 0, 'log_file': 'logs/select_cmp/VGG13BN_dog-bird_b0.01_smart_vs_exactIF_selectonly_seed0.log', 'verbose': True}
+[2026-06-29 15:32:27] methods: ['smart', 'exact']
+[2026-06-29 15:32:51] N_total=50000 budget=0.0100 -> N_p=500 poisons
+
+[2026-06-29 15:32:51] === training 1 surrogates (VGG13BN) on distilled S ===
+[2026-06-29 15:36:06] Evaluate_00: epoch = 1000 train time = 193 s train loss = 0.000440 train acc = 1.0000, test acc = 0.6285
+[2026-06-29 15:36:06]  saved surrogates to result/cache/surrogates_VGG13BN_syn_1x1000ep_seed0
+[2026-06-29 15:36:06] exact-IF Hessian set = distilled S (1000 images)
+
+[2026-06-29 15:36:06] ########## pair dog-bird : y_adv=5(dog) target=2(bird) ##########
+  targets: [430, 387, 6715, 7670, 9467, 2100, 7171, 4833, 5599, 2544]
+  [smart  | dog-bird t1/10 idx=430] select=0.197s (N_p=500, select-only)
+      [exact] CG iters used per surrogate: [4]
+  [exact  | dog-bird t1/10 idx=430] select=0.542s (N_p=500, select-only)
+  [smart  | dog-bird t2/10 idx=387] select=0.134s (N_p=500, select-only)
+      [exact] CG iters used per surrogate: [4]
+  [exact  | dog-bird t2/10 idx=387] select=0.353s (N_p=500, select-only)
+  [smart  | dog-bird t3/10 idx=6715] select=0.131s (N_p=500, select-only)
+      [exact] CG iters used per surrogate: [3]
+  [exact  | dog-bird t3/10 idx=6715] select=0.253s (N_p=500, select-only)
+  [smart  | dog-bird t4/10 idx=7670] select=0.124s (N_p=500, select-only)
+      [exact] CG iters used per surrogate: [4]
+  [exact  | dog-bird t4/10 idx=7670] select=0.372s (N_p=500, select-only)
+  [smart  | dog-bird t5/10 idx=9467] select=0.131s (N_p=500, select-only)
+      [exact] CG iters used per surrogate: [4]
+  [exact  | dog-bird t5/10 idx=9467] select=0.309s (N_p=500, select-only)
+  [smart  | dog-bird t6/10 idx=2100] select=0.128s (N_p=500, select-only)
+      [exact] CG iters used per surrogate: [3]
+  [exact  | dog-bird t6/10 idx=2100] select=0.308s (N_p=500, select-only)
+  [smart  | dog-bird t7/10 idx=7171] select=0.154s (N_p=500, select-only)
+      [exact] CG iters used per surrogate: [4]
+  [exact  | dog-bird t7/10 idx=7171] select=0.346s (N_p=500, select-only)
+  [smart  | dog-bird t8/10 idx=4833] select=0.137s (N_p=500, select-only)
+      [exact] CG iters used per surrogate: [4]
+  [exact  | dog-bird t8/10 idx=4833] select=0.335s (N_p=500, select-only)
+  [smart  | dog-bird t9/10 idx=5599] select=0.138s (N_p=500, select-only)
+      [exact] CG iters used per surrogate: [4]
+  [exact  | dog-bird t9/10 idx=5599] select=0.369s (N_p=500, select-only)
+  [smart  | dog-bird t10/10 idx=2544] select=0.142s (N_p=500, select-only)
+      [exact] CG iters used per surrogate: [4]
+  [exact  | dog-bird t10/10 idx=2544] select=0.346s (N_p=500, select-only)
+
+[2026-06-29 15:36:11] ============ SELECTION TIMING (select-only) (fc, VGG13BN) ============
+  smart   | 10 targets | sel-time mean / median / total = 0.142s / 0.136s / 1.4s
+  exact   | 10 targets | sel-time mean / median / total = 0.353s / 0.346s / 3.5s
+  exact / smart selection time ratio = 2.5x
+[2026-06-29 15:36:11] wrote results_select_cmp_fc_VGG13BN_b100_eps8.{json,csv} to result/select_cmp

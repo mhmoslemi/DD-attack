@@ -40,4 +40,22 @@
   [dog-bird t4/8 idx=7670] gradmatch craft_obj=0.1687 linf=0.0314
     [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
     [standard | dog-bird t4/8 idx=7670] poison_CTA=0.8380 poison_ASR=20%  clean_CTA=0.8436 clean_ASR=0%
-    [diffaug:wd=5e-4] victims: v1 done, 
+    [diffaug:wd=5e-4] victims: v1 done, v2 done, Traceback (most recent call last):
+  File "/work/mohammad/DD-attack/main_IF.py", line 1015, in <module>
+    main(p.parse_args())
+  File "/work/mohammad/DD-attack/main_IF.py", line 865, in main
+    net = train_victim(net, poisoned, train_labs, cfg, args,
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/mohammad/DD-attack/main_IF.py", line 583, in train_victim
+    img = DiffAugment(img, aug_strategy, param=dsa_param)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/mohammad/DD-attack/utils.py", line 549, in DiffAugment
+    x = f(x, param)
+        ^^^^^^^^^^^
+  File "/work/mohammad/DD-attack/utils.py", line 570, in rand_scale
+    grid = F.affine_grid(theta, x.shape).to(x.device)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/mohammad/DD-attack/ENV/lib/python3.12/site-packages/torch/nn/functional.py", line 5371, in affine_grid
+    return torch.affine_grid_generator(theta, size, align_corners)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+KeyboardInterrupt

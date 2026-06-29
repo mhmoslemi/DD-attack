@@ -81,4 +81,47 @@
   [dog-bird t6/8 idx=2100] fc craft_obj=0.2724 linf=0.0314
     [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
     [standard | dog-bird t6/8 idx=2100] poison_CTA=0.7954 poison_ASR=0%  clean_CTA=0.8050 clean_ASR=0%
-    [diffaug] victims: 
+    [diffaug] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [diffaug | dog-bird t6/8 idx=2100] poison_CTA=0.8495 poison_ASR=0%  clean_CTA=0.8546 clean_ASR=0%
+    [cutmix] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [cutmix | dog-bird t6/8 idx=2100] poison_CTA=0.8210 poison_ASR=0%  clean_CTA=0.8280 clean_ASR=0%
+    [advtrain:alpha=0.0156863,steps=7] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [advtrain:alpha=0.0156863,steps=7 | dog-bird t6/8 idx=2100] poison_CTA=0.5499 poison_ASR=0%  clean_CTA=0.5230 clean_ASR=0%
+    [dpsgd] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [dpsgd | dog-bird t6/8 idx=2100] poison_CTA=0.7198 poison_ASR=0%  clean_CTA=0.7211 clean_ASR=0%
+  [dog-bird t7/8 idx=7171] fc craft_obj=0.2682 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | dog-bird t7/8 idx=7171] poison_CTA=0.8005 poison_ASR=20%  clean_CTA=0.8050 clean_ASR=0%
+    [diffaug] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [diffaug | dog-bird t7/8 idx=7171] poison_CTA=0.8498 poison_ASR=0%  clean_CTA=0.8546 clean_ASR=0%
+    [cutmix] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [cutmix | dog-bird t7/8 idx=7171] poison_CTA=0.8249 poison_ASR=0%  clean_CTA=0.8280 clean_ASR=0%
+    [advtrain:alpha=0.0156863,steps=7] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [advtrain:alpha=0.0156863,steps=7 | dog-bird t7/8 idx=7171] poison_CTA=0.6042 poison_ASR=0%  clean_CTA=0.5230 clean_ASR=0%
+    [dpsgd] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [dpsgd | dog-bird t7/8 idx=7171] poison_CTA=0.7205 poison_ASR=0%  clean_CTA=0.7211 clean_ASR=0%
+  [dog-bird t8/8 idx=4833] fc craft_obj=0.2715 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | dog-bird t8/8 idx=4833] poison_CTA=0.7986 poison_ASR=60%  clean_CTA=0.8050 clean_ASR=0%
+    [diffaug] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [diffaug | dog-bird t8/8 idx=4833] poison_CTA=0.8481 poison_ASR=60%  clean_CTA=0.8546 clean_ASR=0%
+    [cutmix] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [cutmix | dog-bird t8/8 idx=4833] poison_CTA=0.8233 poison_ASR=100%  clean_CTA=0.8280 clean_ASR=0%
+    [advtrain:alpha=0.0156863,steps=7] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [advtrain:alpha=0.0156863,steps=7 | dog-bird t8/8 idx=4833] poison_CTA=0.6168 poison_ASR=0%  clean_CTA=0.5230 clean_ASR=0%
+    [dpsgd] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [dpsgd | dog-bird t8/8 idx=4833] poison_CTA=0.7205 poison_ASR=40%  clean_CTA=0.7211 clean_ASR=0%
+
+  ==== pair dog-bird (fc) summary over 8 targets x 5 victims = 40 votes ====
+    [standard                    ] poison CTA = 0.8021 +/- 0.0039   poison ASR = 32.5% +/- 24.4%   | clean CTA = 0.8050   clean ASR = 0.0%
+      tally (['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']): [0, 0, 18, 1, 4, 13, 0, 4, 0, 0]
+    [diffaug                     ] poison CTA = 0.8487 +/- 0.0025   poison ASR = 17.5% +/- 25.4%   | clean CTA = 0.8546   clean ASR = 0.0%
+      tally (['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']): [0, 0, 23, 0, 3, 7, 1, 6, 0, 0]
+    [cutmix                      ] poison CTA = 0.8173 +/- 0.0119   poison ASR = 30.0% +/- 34.6%   | clean CTA = 0.8280   clean ASR = 12.5%
+      tally (['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']): [0, 0, 20, 1, 2, 12, 2, 3, 0, 0]
+    [advtrain:alpha=0.0156863,steps=7] poison CTA = 0.5955 +/- 0.0349   poison ASR = 15.0% +/- 27.8%   | clean CTA = 0.5230   clean ASR = 0.0%
+      tally (['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']): [0, 0, 4, 0, 7, 6, 14, 9, 0, 0]
+    [dpsgd                       ] poison CTA = 0.7214 +/- 0.0018   poison ASR = 37.5% +/- 39.3%   | clean CTA = 0.7211   clean ASR = 12.5%
+      tally (['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']): [0, 0, 20, 0, 0, 15, 2, 3, 0, 0]
+
+[2026-06-29 17:08:43] wrote results_standard_nodistill_fc_ConvNetBN_b200_eps8.{json,csv} to result/ablation_random
