@@ -3190,4 +3190,976 @@ Files already downloaded and verified
     poison ASR = 4.0% +/- 8.0%
     target-prediction tally (['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']): [0, 0, 37, 2, 5, 2, 1, 3, 0, 0]
 
-[2026
+
+
+[2026-06-29 20:16:57] hyperparams: {'dataset': 'CIFAR10', 'data_path': 'data', 'model': 'ConvNetBN', 'out_dir': 'result/standard_nodistill', 'seed': 1, 'target_idx_file': None, 'dsa_strategy': 'color_crop_cutout_flip_scale_rotate', 'syn_data_path': 'result/res_DM_CIFAR10_ConvNet_100ipc.pt', 'surrogate_model': 'ConvNet', 'num_surrogates': 4, 'surrogate_epochs': 40, 'surrogate_lr': 0.01, 'surrogate_bs': 256, 'attack': 'fc', 'class_pairs': ['frog-airplane'], 'budget': 0.05, 'epsilon': 0.0313725, 'pgd_steps': 150, 'pgd_alpha': 0.0039216, 'restarts': 1, 'lambda_margin': 1.0, 'num_targets': 10, 'num_victims': 5, 'target_select': 'random', 'victim_epochs': 40, 'victim_lr': 0.1, 'victim_bs': 125, 'victim_decay': [35], 'victim_aug': False, 'clean_baseline': False, 'num_clean_victims': None, 'cache_dir': '', 'precompute_only': False, 'base_dist': 'l2', 'random_select': False, 'multilayer': False, 'single_surrogate': False, 'fast_gradmatch': False, 'surrogate_on_full_data': True, 'victim_pipelines': ['standard'], 'poison_cache_dir': '', 'log_file': ''}
+[2026-06-29 20:17:17] N_total=50000  budget=0.0500 -> N_p=2500 poisons (all in y_adv class)
+
+[2026-06-29 20:17:17] === training 4 surrogates (ConvNet) on FULL real data (40 ep each) ===
+[2026-06-29 20:17:48] Evaluate_00: epoch = 0040 train time = 30 s train loss = 0.006795 train acc = 1.0000, test acc = 0.8125
+[2026-06-29 20:18:20] Evaluate_01: epoch = 0040 train time = 31 s train loss = 0.006800 train acc = 1.0000, test acc = 0.8075
+[2026-06-29 20:18:50] Evaluate_02: epoch = 0040 train time = 29 s train loss = 0.006278 train acc = 1.0000, test acc = 0.8095
+[2026-06-29 20:19:19] Evaluate_03: epoch = 0040 train time = 28 s train loss = 0.006497 train acc = 1.0000, test acc = 0.8061
+
+[2026-06-29 20:19:19] ################ pair frog-airplane : y_adv=6(frog)  target_class=0(airplane) ################
+  targets (random): [8492, 3063, 602, 4415, 2388, 6036, 5806, 9991, 9256, 2680]
+  [frog-airplane t1/10 idx=8492] fc craft_obj=0.3990 linf=0.0314
+    [standard | frog-airplane t1/10 idx=8492] poison_CTA=0.7961 poison_ASR=100%
+  [frog-airplane t2/10 idx=3063] fc craft_obj=0.4751 linf=0.0314
+    [standard | frog-airplane t2/10 idx=3063] poison_CTA=0.7921 poison_ASR=100%
+  [frog-airplane t3/10 idx=602] fc craft_obj=0.4583 linf=0.0314
+    [standard | frog-airplane t3/10 idx=602] poison_CTA=0.7973 poison_ASR=0%
+  [frog-airplane t4/10 idx=4415] fc craft_obj=0.4463 linf=0.0314
+    [standard | frog-airplane t4/10 idx=4415] poison_CTA=0.7950 poison_ASR=0%
+  [frog-airplane t5/10 idx=2388] fc craft_obj=0.4117 linf=0.0314
+    [standard | frog-airplane t5/10 idx=2388] poison_CTA=0.8010 poison_ASR=20%
+  [frog-airplane t6/10 idx=6036] fc craft_obj=0.4584 linf=0.0314
+    [standard | frog-airplane t6/10 idx=6036] poison_CTA=0.7937 poison_ASR=0%
+  [frog-airplane t7/10 idx=5806] fc craft_obj=0.4716 linf=0.0314
+    [standard | frog-airplane t7/10 idx=5806] poison_CTA=0.8007 poison_ASR=0%
+  [frog-airplane t8/10 idx=9991] fc craft_obj=0.4454 linf=0.0314
+    [standard | frog-airplane t8/10 idx=9991] poison_CTA=0.7960 poison_ASR=0%
+  [frog-airplane t9/10 idx=9256] fc craft_obj=0.4299 linf=0.0314
+    [standard | frog-airplane t9/10 idx=9256] poison_CTA=0.7964 poison_ASR=0%
+  [frog-airplane t10/10 idx=2680] fc craft_obj=0.4608 linf=0.0314
+    [standard | frog-airplane t10/10 idx=2680] poison_CTA=0.7982 poison_ASR=0%
+
+  ==== pair frog-airplane (fc) summary over 10 targets x 5 victims = 50 votes ====
+    [standard                    ] poison CTA = 0.7967 +/- 0.0027   poison ASR = 22.0% +/- 39.4%
+      tally (['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']): [37, 0, 0, 0, 0, 0, 11, 0, 2, 0]
+
+
+
+
+[2026-06-29 20:57:24] hyperparams: {'dataset': 'CIFAR10', 'data_path': 'data', 'model': 'ConvNetBN', 'out_dir': 'result/standard_nodistill', 'seed': 1, 'target_idx_file': None, 'dsa_strategy': 'color_crop_cutout_flip_scale_rotate', 'syn_data_path': 'result/res_DM_CIFAR10_ConvNet_100ipc.pt', 'surrogate_model': 'ConvNet', 'num_surrogates': 4, 'surrogate_epochs': 40, 'surrogate_lr': 0.01, 'surrogate_bs': 256, 'attack': 'fc', 'class_pairs': ['frog-airplane'], 'budget': 0.05, 'epsilon': 0.0313725, 'pgd_steps': 150, 'pgd_alpha': 0.0039216, 'restarts': 1, 'lambda_margin': 1.0, 'num_targets': 10, 'num_victims': 5, 'target_select': 'random', 'victim_epochs': 40, 'victim_lr': 0.1, 'victim_bs': 125, 'victim_decay': [35], 'victim_aug': False, 'clean_baseline': False, 'num_clean_victims': None, 'cache_dir': '', 'precompute_only': False, 'base_dist': 'l2', 'random_select': True, 'multilayer': False, 'single_surrogate': False, 'fast_gradmatch': False, 'surrogate_on_full_data': True, 'victim_pipelines': ['standard'], 'poison_cache_dir': '', 'log_file': ''}
+[2026-06-29 20:57:24] victim pipelines (ablations): ['standard']
+[2026-06-29 20:57:40] N_total=50000  budget=0.0500 -> N_p=2500 poisons (all in y_adv class)
+
+[2026-06-29 20:57:40] === training 4 surrogates (ConvNet) on FULL real data (40 ep each) ===
+[2026-06-29 20:58:09] Evaluate_00: epoch = 0040 train time = 28 s train loss = 0.006222 train acc = 1.0000, test acc = 0.8058
+[2026-06-29 20:58:37] Evaluate_01: epoch = 0040 train time = 28 s train loss = 0.006380 train acc = 1.0000, test acc = 0.8050
+[2026-06-29 20:59:05] Evaluate_02: epoch = 0040 train time = 27 s train loss = 0.006612 train acc = 1.0000, test acc = 0.8047
+[2026-06-29 20:59:34] Evaluate_03: epoch = 0040 train time = 28 s train loss = 0.006782 train acc = 1.0000, test acc = 0.8077
+
+[2026-06-29 20:59:34] ################ pair frog-airplane : y_adv=6(frog)  target_class=0(airplane) ################
+  targets (random): [8492, 3063, 602, 4415, 2388, 6036, 5806, 9991, 9256, 2680]
+  [frog-airplane t1/10 idx=8492] fc craft_obj=0.4274 linf=0.0314
+    [standard | frog-airplane t1/10 idx=8492] poison_CTA=0.7939 poison_ASR=60%
+  [frog-airplane t2/10 idx=3063] fc craft_obj=0.5157 linf=0.0314
+    [standard | frog-airplane t2/10 idx=3063] poison_CTA=0.7967 poison_ASR=40%
+  [frog-airplane t3/10 idx=602] fc craft_obj=0.4787 linf=0.0314
+    [standard | frog-airplane t3/10 idx=602] poison_CTA=0.7977 poison_ASR=0%
+  [frog-airplane t4/10 idx=4415] fc craft_obj=0.4785 linf=0.0314
+    [standard | frog-airplane t4/10 idx=4415] poison_CTA=0.7966 poison_ASR=0%
+  [frog-airplane t5/10 idx=2388] fc craft_obj=0.4322 linf=0.0314
+    [standard | frog-airplane t5/10 idx=2388] poison_CTA=0.7982 poison_ASR=0%
+  [frog-airplane t6/10 idx=6036] fc craft_obj=0.4812 linf=0.0314
+    [standard | frog-airplane t6/10 idx=6036] poison_CTA=0.7903 poison_ASR=0%
+  [frog-airplane t7/10 idx=5806] fc craft_obj=0.4931 linf=0.0314
+    [standard | frog-airplane t7/10 idx=5806] poison_CTA=0.8066 poison_ASR=0%
+  [frog-airplane t8/10 idx=9991] fc craft_obj=0.4613 linf=0.0314
+    [standard | frog-airplane t8/10 idx=9991] poison_CTA=0.7957 poison_ASR=0%
+  [frog-airplane t9/10 idx=9256] fc craft_obj=0.4609 linf=0.0314
+    [standard | frog-airplane t9/10 idx=9256] poison_CTA=0.8045 poison_ASR=0%
+  [frog-airplane t10/10 idx=2680] fc craft_obj=0.4826 linf=0.0314
+    [standard | frog-airplane t10/10 idx=2680] poison_CTA=0.8036 poison_ASR=0%
+
+  ==== pair frog-airplane (fc) summary over 10 targets x 5 victims = 50 votes ====
+    [standard                    ] poison CTA = 0.7984 +/- 0.0048   poison ASR = 10.0% +/- 20.5%
+      tally (['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']): [37, 0, 3, 0, 0, 0, 5, 0, 3, 2]
+
+
+
+[2026-06-29 21:19:08] hyperparams: {'dataset': 'CIFAR10', 'data_path': 'data', 'model': 'ConvNetBN', 'out_dir': 'result/standard_nodistill', 'seed': 1, 'target_idx_file': None, 'dsa_strategy': 'color_crop_cutout_flip_scale_rotate', 'syn_data_path': 'result/res_DM_CIFAR10_ConvNet_100ipc.pt', 'surrogate_model': 'ConvNet', 'num_surrogates': 4, 'surrogate_epochs': 40, 'surrogate_lr': 0.01, 'surrogate_bs': 256, 'attack': 'fc', 'class_pairs': ['frog-airplane'], 'budget': 0.1, 'epsilon': 0.0313725, 'pgd_steps': 150, 'pgd_alpha': 0.0039216, 'restarts': 1, 'lambda_margin': 1.0, 'num_targets': 10, 'num_victims': 5, 'target_select': 'random', 'victim_epochs': 40, 'victim_lr': 0.1, 'victim_bs': 125, 'victim_decay': [35], 'victim_aug': False, 'clean_baseline': False, 'num_clean_victims': None, 'cache_dir': '', 'precompute_only': False, 'base_dist': 'l2', 'random_select': True, 'multilayer': False, 'single_surrogate': False, 'fast_gradmatch': False, 'surrogate_on_full_data': True, 'victim_pipelines': ['standard'], 'poison_cache_dir': '', 'log_file': ''}
+[2026-06-29 21:19:08] victim pipelines (ablations): ['standard']
+[2026-06-29 21:19:22] N_total=50000  budget=0.1000 -> N_p=5000 poisons (all in y_adv class)
+
+[2026-06-29 21:19:22] === training 4 surrogates (ConvNet) on FULL real data (40 ep each) ===
+[2026-06-29 21:19:50] Evaluate_00: epoch = 0040 train time = 27 s train loss = 0.006635 train acc = 1.0000, test acc = 0.8047
+[2026-06-29 21:20:18] Evaluate_01: epoch = 0040 train time = 27 s train loss = 0.006464 train acc = 1.0000, test acc = 0.8097
+[2026-06-29 21:20:45] Evaluate_02: epoch = 0040 train time = 27 s train loss = 0.006607 train acc = 1.0000, test acc = 0.8057
+[2026-06-29 21:21:13] Evaluate_03: epoch = 0040 train time = 27 s train loss = 0.006510 train acc = 1.0000, test acc = 0.8041
+
+[2026-06-29 21:21:13] ################ pair frog-airplane : y_adv=6(frog)  target_class=0(airplane) ################
+  targets (random): [8492, 3063, 602, 4415, 2388, 6036, 5806, 9991, 9256, 2680]
+  [frog-airplane t1/10 idx=8492] fc craft_obj=0.4282 linf=0.0314
+    [standard | frog-airplane t1/10 idx=8492] poison_CTA=0.7437 poison_ASR=100%
+  [frog-airplane t2/10 idx=3063] fc craft_obj=0.5167 linf=0.0314
+    [standard | frog-airplane t2/10 idx=3063] poison_CTA=0.7376 poison_ASR=20%
+  [frog-airplane t3/10 idx=602] fc craft_obj=0.4661 linf=0.0314
+    [standard | frog-airplane t3/10 idx=602] poison_CTA=0.7503 poison_ASR=40%
+  [frog-airplane t4/10 idx=4415] fc craft_obj=0.4673 linf=0.0314
+    [standard | frog-airplane t4/10 idx=4415] poison_CTA=0.7466 poison_ASR=20%
+  [frog-airplane t5/10 idx=2388] fc craft_obj=0.4270 linf=0.0314
+    [standard | frog-airplane t5/10 idx=2388] poison_CTA=0.7429 poison_ASR=60%
+  [frog-airplane t6/10 idx=6036] fc craft_obj=0.4809 linf=0.0314
+    [standard | frog-airplane t6/10 idx=6036] poison_CTA=0.7356 poison_ASR=0%
+  [frog-airplane t7/10 idx=5806] fc craft_obj=0.4958 linf=0.0314
+    [standard | frog-airplane t7/10 idx=5806] poison_CTA=0.7457 poison_ASR=0%
+  [frog-airplane t8/10 idx=9991] fc craft_obj=0.4611 linf=0.0314
+    [standard | frog-airplane t8/10 idx=9991] poison_CTA=0.7408 poison_ASR=20%
+  [frog-airplane t9/10 idx=9256] fc craft_obj=0.4497 linf=0.0314
+    [standard | frog-airplane t9/10 idx=9256] poison_CTA=0.7444 poison_ASR=0%
+  [frog-airplane t10/10 idx=2680] fc craft_obj=0.4815 linf=0.0314
+    [standard | frog-airplane t10/10 idx=2680] poison_CTA=0.7372 poison_ASR=0%
+
+  ==== pair frog-airplane (fc) summary over 10 targets x 5 victims = 50 votes ====
+    [standard                    ] poison CTA = 0.7425 +/- 0.0044   poison ASR = 26.0% +/- 31.0%
+      tally (['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']): [31, 0, 3, 0, 0, 0, 13, 0, 3, 0]
+
+
+[2026-06-29 22:19:38] hyperparams: {'dataset': 'CIFAR10', 'data_path': 'data', 'model': 'ConvNetBN', 'out_dir': 'result/standard_nodistill', 'seed': 1, 'target_idx_file': None, 'dsa_strategy': 'color_crop_cutout_flip_scale_rotate', 'syn_data_path': 'result/res_DM_CIFAR10_ConvNet_100ipc.pt', 'surrogate_model': 'ConvNet', 'num_surrogates': 4, 'surrogate_epochs': 40, 'surrogate_lr': 0.01, 'surrogate_bs': 256, 'attack': 'fc', 'class_pairs': ['frog-airplane'], 'budget': 0.02, 'epsilon': 0.0313725, 'pgd_steps': 150, 'pgd_alpha': 0.0039216, 'restarts': 1, 'lambda_margin': 1.0, 'num_targets': 10, 'num_victims': 5, 'target_select': 'random', 'victim_epochs': 40, 'victim_lr': 0.1, 'victim_bs': 125, 'victim_decay': [35], 'victim_aug': False, 'clean_baseline': False, 'num_clean_victims': None, 'cache_dir': '', 'precompute_only': False, 'base_dist': 'l2', 'random_select': False, 'multilayer': False, 'single_surrogate': False, 'fast_gradmatch': False, 'surrogate_on_full_data': True, 'victim_pipelines': ['standard'], 'poison_cache_dir': '', 'log_file': ''}
+[2026-06-29 22:19:38] victim pipelines (ablations): ['standard']
+[2026-06-29 22:19:51] N_total=50000  budget=0.0200 -> N_p=1000 poisons (all in y_adv class)
+
+[2026-06-29 22:19:51] === training 4 surrogates (ConvNet) on FULL real data (40 ep each) ===
+[2026-06-29 22:20:19] Evaluate_00: epoch = 0040 train time = 27 s train loss = 0.006399 train acc = 1.0000, test acc = 0.8073
+[2026-06-29 22:20:46] Evaluate_01: epoch = 0040 train time = 27 s train loss = 0.006476 train acc = 1.0000, test acc = 0.8042
+[2026-06-29 22:21:14] Evaluate_02: epoch = 0040 train time = 27 s train loss = 0.006661 train acc = 1.0000, test acc = 0.8055
+[2026-06-29 22:21:41] Evaluate_03: epoch = 0040 train time = 27 s train loss = 0.006483 train acc = 1.0000, test acc = 0.8048
+
+[2026-06-29 22:21:41] ################ pair frog-airplane : y_adv=6(frog)  target_class=0(airplane) ################
+  targets (random): [8492, 3063, 602, 4415, 2388, 6036, 5806, 9991, 9256, 2680]
+  [frog-airplane t1/10 idx=8492] fc craft_obj=0.3947 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t1/10 idx=8492] poison_CTA=0.7990 poison_ASR=80%
+  [frog-airplane t2/10 idx=3063] fc craft_obj=0.4457 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t2/10 idx=3063] poison_CTA=0.7942 poison_ASR=0%
+  [frog-airplane t3/10 idx=602] fc craft_obj=0.4269 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t3/10 idx=602] poison_CTA=0.8043 poison_ASR=0%
+  [frog-airplane t4/10 idx=4415] fc craft_obj=0.4039 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t4/10 idx=4415] poison_CTA=0.8021 poison_ASR=0%
+  [frog-airplane t5/10 idx=2388] fc craft_obj=0.3927 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t5/10 idx=2388] poison_CTA=0.8000 poison_ASR=0%
+  [frog-airplane t6/10 idx=6036] fc craft_obj=0.4211 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t6/10 idx=6036] poison_CTA=0.8013 poison_ASR=0%
+  [frog-airplane t7/10 idx=5806] fc craft_obj=0.4451 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t7/10 idx=5806] poison_CTA=0.8049 poison_ASR=0%
+  [frog-airplane t8/10 idx=9991] fc craft_obj=0.4203 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t8/10 idx=9991] poison_CTA=0.7956 poison_ASR=0%
+  [frog-airplane t9/10 idx=9256] fc craft_obj=0.4033 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t9/10 idx=9256] poison_CTA=0.7893 poison_ASR=0%
+  [frog-airplane t10/10 idx=2680] fc craft_obj=0.4373 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t10/10 idx=2680] poison_CTA=0.7984 poison_ASR=0%
+
+  ==== pair frog-airplane (fc) summary over 10 targets x 5 victims = 50 votes ====
+    [standard                    ] poison CTA = 0.7989 +/- 0.0045   poison ASR = 8.0% +/- 24.0%
+      tally (['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']): [38, 1, 5, 0, 0, 0, 4, 0, 2, 0]
+
+
+main.sh: line 167: dom_select: command not found
+(ENV) mhm@london-2-embody-ai-node-5:/work/mohammad/DD-attack$ bash main.sh
+[2026-06-29 21:40:36] device=cuda
+[2026-06-29 21:40:36] hyperparams: {'dataset': 'CIFAR10', 'data_path': 'data', 'model': 'ConvNetBN', 'out_dir': 'result/standard_nodistill', 'seed': 1, 'target_idx_file': None, 'dsa_strategy': 'color_crop_cutout_flip_scale_rotate', 'syn_data_path': 'result/res_DM_CIFAR10_ConvNet_100ipc.pt', 'surrogate_model': 'ConvNet', 'num_surrogates': 4, 'surrogate_epochs': 40, 'surrogate_lr': 0.01, 'surrogate_bs': 256, 'attack': 'fc', 'class_pairs': ['frog-airplane'], 'budget': 0.1, 'epsilon': 0.0313725, 'pgd_steps': 150, 'pgd_alpha': 0.0039216, 'restarts': 1, 'lambda_margin': 1.0, 'num_targets': 10, 'num_victims': 5, 'target_select': 'random', 'victim_epochs': 40, 'victim_lr': 0.1, 'victim_bs': 125, 'victim_decay': [35], 'victim_aug': False, 'clean_baseline': False, 'num_clean_victims': None, 'cache_dir': '', 'precompute_only': False, 'base_dist': 'l2', 'random_select': False, 'multilayer': False, 'single_surrogate': False, 'fast_gradmatch': False, 'surrogate_on_full_data': True, 'victim_pipelines': ['standard'], 'poison_cache_dir': '', 'log_file': ''}
+[2026-06-29 21:40:36] victim pipelines (ablations): ['standard']
+[2026-06-29 21:41:01] N_total=50000  budget=0.1000 -> N_p=5000 poisons (all in y_adv class)
+
+[2026-06-29 21:41:01] === training 4 surrogates (ConvNet) on FULL real data (40 ep each) ===
+[2026-06-29 21:42:03] Evaluate_00: epoch = 0040 train time = 60 s train loss = 0.006708 train acc = 1.0000, test acc = 0.8070
+[2026-06-29 21:43:05] Evaluate_01: epoch = 0040 train time = 60 s train loss = 0.006459 train acc = 1.0000, test acc = 0.8073
+[2026-06-29 21:44:06] Evaluate_02: epoch = 0040 train time = 60 s train loss = 0.006695 train acc = 1.0000, test acc = 0.8031
+[2026-06-29 21:45:08] Evaluate_03: epoch = 0040 train time = 60 s train loss = 0.006424 train acc = 1.0000, test acc = 0.8072
+
+[2026-06-29 21:45:08] ################ pair frog-airplane : y_adv=6(frog)  target_class=0(airplane) ################
+  targets (random): [8492, 3063, 602, 4415, 2388, 6036, 5806, 9991, 9256, 2680]
+  [frog-airplane t1/10 idx=8492] fc craft_obj=0.4272 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t1/10 idx=8492] poison_CTA=0.7337 poison_ASR=100%
+  [frog-airplane t2/10 idx=3063] fc craft_obj=0.5087 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t2/10 idx=3063] poison_CTA=0.7418 poison_ASR=60%
+  [frog-airplane t3/10 idx=602] fc craft_obj=0.4589 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t3/10 idx=602] poison_CTA=0.7433 poison_ASR=0%
+  [frog-airplane t4/10 idx=4415] fc craft_obj=0.4652 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t4/10 idx=4415] poison_CTA=0.7469 poison_ASR=0%
+  [frog-airplane t5/10 idx=2388] fc craft_obj=0.4244 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t5/10 idx=2388] poison_CTA=0.7418 poison_ASR=80%
+  [frog-airplane t6/10 idx=6036] fc craft_obj=0.4812 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t6/10 idx=6036] poison_CTA=0.7491 poison_ASR=0%
+  [frog-airplane t7/10 idx=5806] fc craft_obj=0.4954 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t7/10 idx=5806] poison_CTA=0.7477 poison_ASR=0%
+  [frog-airplane t8/10 idx=9991] fc craft_obj=0.4544 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t8/10 idx=9991] poison_CTA=0.7480 poison_ASR=20%
+  [frog-airplane t9/10 idx=9256] fc craft_obj=0.4565 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t9/10 idx=9256] poison_CTA=0.7434 poison_ASR=0%
+  [frog-airplane t10/10 idx=2680] fc craft_obj=0.4794 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t10/10 idx=2680] poison_CTA=0.7486 poison_ASR=0%
+
+  ==== pair frog-airplane (fc) summary over 10 targets x 5 victims = 50 votes ====
+    [standard                    ] poison CTA = 0.7444 +/- 0.0045   poison ASR = 26.0% +/- 36.9%
+      tally (['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']): [35, 0, 0, 0, 0, 0, 13, 0, 2, 0]
+
+[2026-06-30 00:29:49] device=cuda
+[2026-06-30 00:29:49] hyperparams: {'dataset': 'CIFAR10', 'data_path': 'data', 'model': 'ConvNetBN', 'out_dir': 'result/standard_nodistill', 'seed': 1, 'target_idx_file': None, 'dsa_strategy': 'color_crop_cutout_flip_scale_rotate', 'syn_data_path': 'result/res_DM_CIFAR10_ConvNet_100ipc.pt', 'surrogate_model': 'ConvNet', 'num_surrogates': 4, 'surrogate_epochs': 40, 'surrogate_lr': 0.01, 'surrogate_bs': 256, 'attack': 'fc', 'class_pairs': ['frog-airplane'], 'budget': 0.01, 'epsilon': 0.0313725, 'pgd_steps': 150, 'pgd_alpha': 0.0039216, 'restarts': 1, 'lambda_margin': 1.0, 'num_targets': 10, 'num_victims': 5, 'target_select': 'random', 'victim_epochs': 40, 'victim_lr': 0.1, 'victim_bs': 125, 'victim_decay': [35], 'victim_aug': False, 'clean_baseline': False, 'num_clean_victims': None, 'cache_dir': '', 'precompute_only': False, 'base_dist': 'l2', 'random_select': True, 'multilayer': False, 'single_surrogate': False, 'fast_gradmatch': False, 'surrogate_on_full_data': True, 'victim_pipelines': ['standard'], 'poison_cache_dir': '', 'log_file': ''}
+[2026-06-30 00:29:49] victim pipelines (ablations): ['standard']
+[2026-06-30 00:30:00] N_total=50000  budget=0.0100 -> N_p=500 poisons (all in y_adv class)
+
+[2026-06-30 00:30:00] === training 4 surrogates (ConvNet) on FULL real data (40 ep each) ===
+[2026-06-30 00:30:28] Evaluate_00: epoch = 0040 train time = 27 s train loss = 0.006516 train acc = 1.0000, test acc = 0.8107
+[2026-06-30 00:30:56] Evaluate_01: epoch = 0040 train time = 27 s train loss = 0.006529 train acc = 1.0000, test acc = 0.8080
+[2026-06-30 00:31:24] Evaluate_02: epoch = 0040 train time = 27 s train loss = 0.006324 train acc = 1.0000, test acc = 0.8078
+[2026-06-30 00:31:52] Evaluate_03: epoch = 0040 train time = 27 s train loss = 0.006649 train acc = 1.0000, test acc = 0.8076
+
+[2026-06-30 00:31:52] ################ pair frog-airplane : y_adv=6(frog)  target_class=0(airplane) ################
+  targets (random): [8492, 3063, 602, 4415, 2388, 6036, 5806, 9991, 9256, 2680]
+  [frog-airplane t1/10 idx=8492] fc craft_obj=0.4174 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t1/10 idx=8492] poison_CTA=0.8036 poison_ASR=0%
+  [frog-airplane t2/10 idx=3063] fc craft_obj=0.5119 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t2/10 idx=3063] poison_CTA=0.8049 poison_ASR=0%
+  [frog-airplane t3/10 idx=602] fc craft_obj=0.4646 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t3/10 idx=602] poison_CTA=0.8015 poison_ASR=0%
+  [frog-airplane t4/10 idx=4415] fc craft_obj=0.4545 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t4/10 idx=4415] poison_CTA=0.8064 poison_ASR=0%
+  [frog-airplane t5/10 idx=2388] fc craft_obj=0.4267 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t5/10 idx=2388] poison_CTA=0.7977 poison_ASR=0%
+  [frog-airplane t6/10 idx=6036] fc craft_obj=0.4712 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t6/10 idx=6036] poison_CTA=0.7899 poison_ASR=0%
+  [frog-airplane t7/10 idx=5806] fc craft_obj=0.4859 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t7/10 idx=5806] poison_CTA=0.8041 poison_ASR=0%
+  [frog-airplane t8/10 idx=9991] fc craft_obj=0.4464 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t8/10 idx=9991] poison_CTA=0.8026 poison_ASR=0%
+  [frog-airplane t9/10 idx=9256] fc craft_obj=0.4560 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t9/10 idx=9256] poison_CTA=0.8034 poison_ASR=0%
+  [frog-airplane t10/10 idx=2680] fc craft_obj=0.4633 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t10/10 idx=2680] poison_CTA=0.8019 poison_ASR=0%
+
+  ==== pair frog-airplane (fc) summary over 10 targets x 5 victims = 50 votes ====
+    [standard                    ] poison CTA = 0.8016 +/- 0.0045   poison ASR = 0.0% +/- 0.0%
+      tally (['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']): [40, 0, 2, 0, 0, 0, 0, 0, 3, 5]
+
+[2026-06-30 00:58:26] wrote results_standard_nodistill_fc_ConvNetBN_b100_eps8.{json,csv} to result/standard_nodistill
+
+
+
+[2026-06-30 00:29:19] device=cuda
+[2026-06-30 00:29:19] hyperparams: {'dataset': 'CIFAR10', 'data_path': 'data', 'model': 'ConvNetBN', 'out_dir': 'result/standard_nodistill', 'seed': 1, 'target_idx_file': None, 'dsa_strategy': 'color_crop_cutout_flip_scale_rotate', 'syn_data_path': 'result/res_DM_CIFAR10_ConvNet_100ipc.pt', 'surrogate_model': 'ConvNet', 'num_surrogates': 4, 'surrogate_epochs': 40, 'surrogate_lr': 0.01, 'surrogate_bs': 256, 'attack': 'fc', 'class_pairs': ['frog-airplane'], 'budget': 0.02, 'epsilon': 0.0313725, 'pgd_steps': 150, 'pgd_alpha': 0.0039216, 'restarts': 1, 'lambda_margin': 1.0, 'num_targets': 10, 'num_victims': 5, 'target_select': 'random', 'victim_epochs': 40, 'victim_lr': 0.1, 'victim_bs': 125, 'victim_decay': [35], 'victim_aug': False, 'clean_baseline': False, 'num_clean_victims': None, 'cache_dir': '', 'precompute_only': False, 'base_dist': 'l2', 'random_select': True, 'multilayer': False, 'single_surrogate': False, 'fast_gradmatch': False, 'surrogate_on_full_data': True, 'victim_pipelines': ['standard'], 'poison_cache_dir': '', 'log_file': ''}
+[2026-06-30 00:29:19] victim pipelines (ablations): ['standard']
+[2026-06-30 00:29:33] N_total=50000  budget=0.0200 -> N_p=1000 poisons (all in y_adv class)
+
+[2026-06-30 00:29:33] === training 4 surrogates (ConvNet) on FULL real data (40 ep each) ===
+[2026-06-30 00:30:01] Evaluate_00: epoch = 0040 train time = 27 s train loss = 0.006895 train acc = 1.0000, test acc = 0.8100
+[2026-06-30 00:30:29] Evaluate_01: epoch = 0040 train time = 27 s train loss = 0.006581 train acc = 1.0000, test acc = 0.8065
+[2026-06-30 00:30:57] Evaluate_02: epoch = 0040 train time = 27 s train loss = 0.006341 train acc = 1.0000, test acc = 0.8072
+[2026-06-30 00:31:24] Evaluate_03: epoch = 0040 train time = 27 s train loss = 0.006577 train acc = 1.0000, test acc = 0.8063
+
+[2026-06-30 00:31:24] ################ pair frog-airplane : y_adv=6(frog)  target_class=0(airplane) ################
+  targets (random): [8492, 3063, 602, 4415, 2388, 6036, 5806, 9991, 9256, 2680]
+  [frog-airplane t1/10 idx=8492] fc craft_obj=0.4179 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t1/10 idx=8492] poison_CTA=0.8012 poison_ASR=0%
+  [frog-airplane t2/10 idx=3063] fc craft_obj=0.5156 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t2/10 idx=3063] poison_CTA=0.8049 poison_ASR=0%
+  [frog-airplane t3/10 idx=602] fc craft_obj=0.4726 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t3/10 idx=602] poison_CTA=0.8050 poison_ASR=0%
+  [frog-airplane t4/10 idx=4415] fc craft_obj=0.4723 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t4/10 idx=4415] poison_CTA=0.7875 poison_ASR=0%
+  [frog-airplane t5/10 idx=2388] fc craft_obj=0.4324 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t5/10 idx=2388] poison_CTA=0.8058 poison_ASR=0%
+  [frog-airplane t6/10 idx=6036] fc craft_obj=0.4771 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t6/10 idx=6036] poison_CTA=0.8015 poison_ASR=0%
+  [frog-airplane t7/10 idx=5806] fc craft_obj=0.4923 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t7/10 idx=5806] poison_CTA=0.8059 poison_ASR=0%
+  [frog-airplane t8/10 idx=9991] fc craft_obj=0.4583 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t8/10 idx=9991] poison_CTA=0.8038 poison_ASR=0%
+  [frog-airplane t9/10 idx=9256] fc craft_obj=0.4513 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t9/10 idx=9256] poison_CTA=0.8054 poison_ASR=0%
+  [frog-airplane t10/10 idx=2680] fc craft_obj=0.4869 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t10/10 idx=2680] poison_CTA=0.8025 poison_ASR=0%
+
+  ==== pair frog-airplane (fc) summary over 10 targets x 5 victims = 50 votes ====
+    [standard                    ] poison CTA = 0.8024 +/- 0.0052   poison ASR = 0.0% +/- 0.0%
+      tally (['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']): [37, 1, 5, 0, 0, 0, 0, 0, 4, 3]
+
+
+    [2026-06-30 01:39:26] hyperparams: {'dataset': 'CIFAR10', 'data_path': 'data', 'model': 'ConvNetBN', 'out_dir': 'result/standard_nodistill', 'seed': 1, 'target_idx_file': None, 'dsa_strategy': 'color_crop_cutout_flip_scale_rotate', 'syn_data_path': 'result/res_DM_CIFAR10_ConvNet_100ipc.pt', 'surrogate_model': 'ConvNet', 'num_surrogates': 4, 'surrogate_epochs': 40, 'surrogate_lr': 0.01, 'surrogate_bs': 256, 'attack': 'fc', 'class_pairs': ['frog-airplane'], 'budget': 0.01, 'epsilon': 0.0313725, 'pgd_steps': 150, 'pgd_alpha': 0.0039216, 'restarts': 1, 'lambda_margin': 1.0, 'num_targets': 10, 'num_victims': 5, 'target_select': 'random', 'victim_epochs': 40, 'victim_lr': 0.1, 'victim_bs': 125, 'victim_decay': [35], 'victim_aug': False, 'clean_baseline': False, 'num_clean_victims': None, 'cache_dir': '', 'precompute_only': False, 'base_dist': 'l2', 'random_select': False, 'multilayer': False, 'single_surrogate': False, 'fast_gradmatch': False, 'surrogate_on_full_data': True, 'victim_pipelines': ['standard'], 'poison_cache_dir': '', 'log_file': ''}
+[2026-06-30 01:39:26] victim pipelines (ablations): ['standard']
+[2026-06-30 01:39:47] N_total=50000  budget=0.0100 -> N_p=500 poisons (all in y_adv class)
+
+[2026-06-30 01:39:47] === training 4 surrogates (ConvNet) on FULL real data (40 ep each) ===
+[2026-06-30 01:40:15] Evaluate_00: epoch = 0040 train time = 27 s train loss = 0.006535 train acc = 1.0000, test acc = 0.8085
+[2026-06-30 01:40:43] Evaluate_01: epoch = 0040 train time = 27 s train loss = 0.006511 train acc = 1.0000, test acc = 0.8037
+[2026-06-30 01:41:10] Evaluate_02: epoch = 0040 train time = 27 s train loss = 0.006553 train acc = 1.0000, test acc = 0.8084
+[2026-06-30 01:41:38] Evaluate_03: epoch = 0040 train time = 27 s train loss = 0.006605 train acc = 1.0000, test acc = 0.8089
+
+[2026-06-30 01:41:38] ################ pair frog-airplane : y_adv=6(frog)  target_class=0(airplane) ################
+  targets (random): [8492, 3063, 602, 4415, 2388, 6036, 5806, 9991, 9256, 2680]
+  [frog-airplane t1/10 idx=8492] fc craft_obj=0.3837 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t1/10 idx=8492] poison_CTA=0.8072 poison_ASR=40%
+  [frog-airplane t2/10 idx=3063] fc craft_obj=0.4224 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t2/10 idx=3063] poison_CTA=0.8053 poison_ASR=20%
+  [frog-airplane t3/10 idx=602] fc craft_obj=0.4159 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t3/10 idx=602] poison_CTA=0.8023 poison_ASR=0%
+  [frog-airplane t4/10 idx=4415] fc craft_obj=0.3840 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t4/10 idx=4415] poison_CTA=0.7980 poison_ASR=0%
+  [frog-airplane t5/10 idx=2388] fc craft_obj=0.3757 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t5/10 idx=2388] poison_CTA=0.8035 poison_ASR=0%
+  [frog-airplane t6/10 idx=6036] fc craft_obj=0.4063 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t6/10 idx=6036] poison_CTA=0.7997 poison_ASR=0%
+  [frog-airplane t7/10 idx=5806] fc craft_obj=0.4315 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t7/10 idx=5806] poison_CTA=0.8028 poison_ASR=0%
+  [frog-airplane t8/10 idx=9991] fc craft_obj=0.4026 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t8/10 idx=9991] poison_CTA=0.7992 poison_ASR=0%
+  [frog-airplane t9/10 idx=9256] fc craft_obj=0.3859 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t9/10 idx=9256] poison_CTA=0.8021 poison_ASR=0%
+  [frog-airplane t10/10 idx=2680] fc craft_obj=0.4229 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t10/10 idx=2680] poison_CTA=0.7963 poison_ASR=0%
+
+  ==== pair frog-airplane (fc) summary over 10 targets x 5 victims = 50 votes ====
+    [standard                    ] poison CTA = 0.8016 +/- 0.0032   poison ASR = 6.0% +/- 12.8%
+      tally (['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']): [41, 0, 2, 0, 0, 0, 3, 0, 3, 1]
+
+
+
+
+      [2026-06-30 03:02:26] device=cuda
+[2026-06-30 03:02:26] hyperparams: {'dataset': 'CIFAR10', 'data_path': 'data', 'model': 'ConvNetBN', 'out_dir': 'result/standard_nodistill', 'seed': 1, 'target_idx_file': None, 'dsa_strategy': 'color_crop_cutout_flip_scale_rotate', 'syn_data_path': 'result/res_DM_CIFAR10_ConvNet_100ipc.pt', 'surrogate_model': 'ConvNet', 'num_surrogates': 4, 'surrogate_epochs': 45, 'surrogate_lr': 0.01, 'surrogate_bs': 256, 'attack': 'gradmatch', 'class_pairs': ['frog-airplane'], 'budget': 0.1, 'epsilon': 0.0313725, 'pgd_steps': 75, 'pgd_alpha': 0.0039216, 'restarts': 7, 'lambda_margin': 1.0, 'num_targets': 10, 'num_victims': 5, 'target_select': 'random', 'victim_epochs': 45, 'victim_lr': 0.1, 'victim_bs': 125, 'victim_decay': [30], 'victim_aug': False, 'clean_baseline': False, 'num_clean_victims': None, 'cache_dir': '', 'precompute_only': False, 'base_dist': 'l2', 'random_select': False, 'multilayer': True, 'single_surrogate': False, 'fast_gradmatch': False, 'surrogate_on_full_data': True, 'victim_pipelines': ['standard'], 'poison_cache_dir': '', 'log_file': ''}
+[2026-06-30 03:02:26] victim pipelines (ablations): ['standard']
+[2026-06-30 03:02:46] N_total=50000  budget=0.1000 -> N_p=5000 poisons (all in y_adv class)
+
+[2026-06-30 03:02:46] === training 4 surrogates (ConvNet) on FULL real data (45 ep each) ===
+[2026-06-30 03:03:17] Evaluate_00: epoch = 0045 train time = 31 s train loss = 0.004851 train acc = 1.0000, test acc = 0.8013
+[2026-06-30 03:03:48] Evaluate_01: epoch = 0045 train time = 30 s train loss = 0.004911 train acc = 1.0000, test acc = 0.8074
+[2026-06-30 03:04:19] Evaluate_02: epoch = 0045 train time = 30 s train loss = 0.005027 train acc = 1.0000, test acc = 0.8014
+[2026-06-30 03:04:50] Evaluate_03: epoch = 0045 train time = 30 s train loss = 0.004860 train acc = 1.0000, test acc = 0.8064
+
+[2026-06-30 03:04:50] ################ pair frog-airplane : y_adv=6(frog)  target_class=0(airplane) ################
+  targets (random): [8492, 3063, 602, 4415, 2388, 6036, 5806, 9991, 9256, 2680]
+  [frog-airplane t1/10 idx=8492] gradmatch craft_obj=0.2280 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t1/10 idx=8492] poison_CTA=0.7675 poison_ASR=100%
+  [frog-airplane t2/10 idx=3063] gradmatch craft_obj=0.2403 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t2/10 idx=3063] poison_CTA=0.7635 poison_ASR=40%
+  [frog-airplane t3/10 idx=602] gradmatch craft_obj=0.2808 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t3/10 idx=602] poison_CTA=0.7698 poison_ASR=0%
+  [frog-airplane t4/10 idx=4415] gradmatch craft_obj=0.1890 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t4/10 idx=4415] poison_CTA=0.7703 poison_ASR=40%
+  [frog-airplane t5/10 idx=2388] gradmatch craft_obj=0.2363 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t5/10 idx=2388] poison_CTA=0.7707 poison_ASR=0%
+  [frog-airplane t6/10 idx=6036] gradmatch craft_obj=0.2563 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t6/10 idx=6036] poison_CTA=0.7703 poison_ASR=0%
+  [frog-airplane t7/10 idx=5806] gradmatch craft_obj=0.2505 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t7/10 idx=5806] poison_CTA=0.7654 poison_ASR=0%
+  [frog-airplane t8/10 idx=9991] gradmatch craft_obj=0.2429 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t8/10 idx=9991] poison_CTA=0.7696 poison_ASR=20%
+  [frog-airplane t9/10 idx=9256] gradmatch craft_obj=0.2698 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t9/10 idx=9256] poison_CTA=0.7660 poison_ASR=0%
+  [frog-airplane t10/10 idx=2680] gradmatch craft_obj=0.3018 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t10/10 idx=2680] poison_CTA=0.7638 poison_ASR=0%
+
+  ==== pair frog-airplane (gradmatch) summary over 10 targets x 5 victims = 50 votes ====
+    [standard                    ] poison CTA = 0.7677 +/- 0.0027   poison ASR = 20.0% +/- 31.0%
+      tally (['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']): [33, 0, 1, 0, 0, 0, 10, 0, 6, 0]
+
+[2026-06-30 05:01:56] wrote results_standard_nodistill_gradmatch_ConvNetBN_b1000_eps8.{json,csv} to result/standard_nodistill
+
+
+(ENV) mhm@london-2-embody-ai-node-5:/work/mohammad/DD-attack$ bash main.sh
+[2026-06-30 03:02:43] device=cuda
+[2026-06-30 03:02:43] hyperparams: {'dataset': 'CIFAR10', 'data_path': 'data', 'model': 'ConvNetBN', 'out_dir': 'result/standard_nodistill', 'seed': 1, 'target_idx_file': None, 'dsa_strategy': 'color_crop_cutout_flip_scale_rotate', 'syn_data_path': 'result/res_DM_CIFAR10_ConvNet_100ipc.pt', 'surrogate_model': 'ConvNet', 'num_surrogates': 4, 'surrogate_epochs': 45, 'surrogate_lr': 0.01, 'surrogate_bs': 256, 'attack': 'gradmatch', 'class_pairs': ['frog-airplane'], 'budget': 0.1, 'epsilon': 0.0313725, 'pgd_steps': 75, 'pgd_alpha': 0.0039216, 'restarts': 7, 'lambda_margin': 1.0, 'num_targets': 10, 'num_victims': 5, 'target_select': 'random', 'victim_epochs': 45, 'victim_lr': 0.1, 'victim_bs': 125, 'victim_decay': [30], 'victim_aug': False, 'clean_baseline': False, 'num_clean_victims': None, 'cache_dir': '', 'precompute_only': False, 'base_dist': 'l2', 'random_select': True, 'multilayer': True, 'single_surrogate': False, 'fast_gradmatch': False, 'surrogate_on_full_data': True, 'victim_pipelines': ['standard'], 'poison_cache_dir': '', 'log_file': ''}
+[2026-06-30 03:02:43] victim pipelines (ablations): ['standard']
+[2026-06-30 03:03:01] N_total=50000  budget=0.1000 -> N_p=5000 poisons (all in y_adv class)
+
+[2026-06-30 03:03:01] === training 4 surrogates (ConvNet) on FULL real data (45 ep each) ===
+[2026-06-30 03:03:33] Evaluate_00: epoch = 0045 train time = 31 s train loss = 0.005030 train acc = 1.0000, test acc = 0.8075
+[2026-06-30 03:04:04] Evaluate_01: epoch = 0045 train time = 30 s train loss = 0.005013 train acc = 1.0000, test acc = 0.8093
+[2026-06-30 03:04:35] Evaluate_02: epoch = 0045 train time = 30 s train loss = 0.004919 train acc = 1.0000, test acc = 0.8080
+[2026-06-30 03:05:06] Evaluate_03: epoch = 0045 train time = 30 s train loss = 0.004968 train acc = 1.0000, test acc = 0.8092
+
+[2026-06-30 03:05:06] ################ pair frog-airplane : y_adv=6(frog)  target_class=0(airplane) ################
+  targets (random): [8492, 3063, 602, 4415, 2388, 6036, 5806, 9991, 9256, 2680]
+  [frog-airplane t1/10 idx=8492] gradmatch craft_obj=0.2081 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t1/10 idx=8492] poison_CTA=0.7646 poison_ASR=100%
+  [frog-airplane t2/10 idx=3063] gradmatch craft_obj=0.2375 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t2/10 idx=3063] poison_CTA=0.7568 poison_ASR=0%
+  [frog-airplane t3/10 idx=602] gradmatch craft_obj=0.2776 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t3/10 idx=602] poison_CTA=0.7740 poison_ASR=0%
+  [frog-airplane t4/10 idx=4415] gradmatch craft_obj=0.1844 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t4/10 idx=4415] poison_CTA=0.7660 poison_ASR=20%
+  [frog-airplane t5/10 idx=2388] gradmatch craft_obj=0.2426 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t5/10 idx=2388] poison_CTA=0.7642 poison_ASR=40%
+  [frog-airplane t6/10 idx=6036] gradmatch craft_obj=0.2454 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t6/10 idx=6036] poison_CTA=0.7721 poison_ASR=0%
+  [frog-airplane t7/10 idx=5806] gradmatch craft_obj=0.2431 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t7/10 idx=5806] poison_CTA=0.7630 poison_ASR=20%
+  [frog-airplane t8/10 idx=9991] gradmatch craft_obj=0.2581 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t8/10 idx=9991] poison_CTA=0.7718 poison_ASR=0%
+  [frog-airplane t9/10 idx=9256] gradmatch craft_obj=0.2668 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t9/10 idx=9256] poison_CTA=0.7659 poison_ASR=0%
+  [frog-airplane t10/10 idx=2680] gradmatch craft_obj=0.2991 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t10/10 idx=2680] poison_CTA=0.7649 poison_ASR=0%
+
+  ==== pair frog-airplane (gradmatch) summary over 10 targets x 5 victims = 50 votes ====
+    [standard                    ] poison CTA = 0.7663 +/- 0.0048   poison ASR = 18.0% +/- 30.3%
+      tally (['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']): [37, 0, 2, 0, 0, 0, 9, 0, 2, 0]
+
+[2026-06-30 05:03:26] wrote results_standard_nodistill_gradmatch_ConvNetBN_b1000_eps8.{json,csv} to result/standard_nodistill
+[2026-06-30 05:03:35] device=cuda
+[2026-06-30 05:03:35] hyperparams: {'dataset': 'CIFAR10', 'data_path': 'data', 'model': 'ConvNetBN', 'out_dir': 'result/standard_nodistill', 'seed': 1, 'target_idx_file': None, 'dsa_strategy': 'color_crop_cutout_flip_scale_rotate', 'syn_data_path': 'result/res_DM_CIFAR10_ConvNet_100ipc.pt', 'surrogate_model': 'ConvNet', 'num_surrogates': 4, 'surrogate_epochs': 45, 'surrogate_lr': 0.01, 'surrogate_bs': 256, 'attack': 'gradmatch', 'class_pairs': ['frog-airplane'], 'budget': 0.05, 'epsilon': 0.0313725, 'pgd_steps': 75, 'pgd_alpha': 0.0039216, 'restarts': 7, 'lambda_margin': 1.0, 'num_targets': 10, 'num_victims': 5, 'target_select': 'random', 'victim_epochs': 45, 'victim_lr': 0.1, 'victim_bs': 125, 'victim_decay': [30], 'victim_aug': False, 'clean_baseline': False, 'num_clean_victims': None, 'cache_dir': '', 'precompute_only': False, 'base_dist': 'l2', 'random_select': True, 'multilayer': True, 'single_surrogate': False, 'fast_gradmatch': False, 'surrogate_on_full_data': True, 'victim_pipelines': ['standard'], 'poison_cache_dir': '', 'log_file': ''}
+[2026-06-30 05:03:35] victim pipelines (ablations): ['standard']
+[2026-06-30 05:03:47] N_total=50000  budget=0.0500 -> N_p=2500 poisons (all in y_adv class)
+
+
+
+==========
+
+
+
+[2026-06-30 05:03:35] hyperparams: {'dataset': 'CIFAR10', 'data_path': 'data', 'model': 'ConvNetBN', 'out_dir': 'result/standard_nodistill', 'seed': 1, 'target_idx_file': None, 'dsa_strategy': 'color_crop_cutout_flip_scale_rotate', 'syn_data_path': 'result/res_DM_CIFAR10_ConvNet_100ipc.pt', 'surrogate_model': 'ConvNet', 'num_surrogates': 4, 'surrogate_epochs': 45, 'surrogate_lr': 0.01, 'surrogate_bs': 256, 'attack': 'gradmatch', 'class_pairs': ['frog-airplane'], 'budget': 0.05, 'epsilon': 0.0313725, 'pgd_steps': 75, 'pgd_alpha': 0.0039216, 'restarts': 7, 'lambda_margin': 1.0, 'num_targets': 10, 'num_victims': 5, 'target_select': 'random', 'victim_epochs': 45, 'victim_lr': 0.1, 'victim_bs': 125, 'victim_decay': [30], 'victim_aug': False, 'clean_baseline': False, 'num_clean_victims': None, 'cache_dir': '', 'precompute_only': False, 'base_dist': 'l2', 'random_select': True, 'multilayer': True, 'single_surrogate': False, 'fast_gradmatch': False, 'surrogate_on_full_data': True, 'victim_pipelines': ['standard'], 'poison_cache_dir': '', 'log_file': ''}
+[2026-06-30 05:03:35] victim pipelines (ablations): ['standard']
+[2026-06-30 05:03:47] N_total=50000  budget=0.0500 -> N_p=2500 poisons (all in y_adv class)
+
+[2026-06-30 05:03:47] === training 4 surrogates (ConvNet) on FULL real data (45 ep each) ===
+[2026-06-30 05:04:19] Evaluate_00: epoch = 0045 train time = 30 s train loss = 0.004977 train acc = 1.0000, test acc = 0.8032
+[2026-06-30 05:04:49] Evaluate_01: epoch = 0045 train time = 30 s train loss = 0.004954 train acc = 1.0000, test acc = 0.8059
+[2026-06-30 05:05:20] Evaluate_02: epoch = 0045 train time = 30 s train loss = 0.004999 train acc = 1.0000, test acc = 0.8049
+[2026-06-30 05:05:51] Evaluate_03: epoch = 0045 train time = 30 s train loss = 0.004838 train acc = 1.0000, test acc = 0.8052
+
+[2026-06-30 05:05:51] ################ pair frog-airplane : y_adv=6(frog)  target_class=0(airplane) ################
+  targets (random): [8492, 3063, 602, 4415, 2388, 6036, 5806, 9991, 9256, 2680]
+  [frog-airplane t1/10 idx=8492] gradmatch craft_obj=0.2376 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t1/10 idx=8492] poison_CTA=0.8024 poison_ASR=80%
+  [frog-airplane t2/10 idx=3063] gradmatch craft_obj=0.2476 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t2/10 idx=3063] poison_CTA=0.8037 poison_ASR=0%
+  [frog-airplane t3/10 idx=602] gradmatch craft_obj=0.2908 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t3/10 idx=602] poison_CTA=0.8056 poison_ASR=0%
+  [frog-airplane t4/10 idx=4415] gradmatch craft_obj=0.1950 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t4/10 idx=4415] poison_CTA=0.8009 poison_ASR=0%
+  [frog-airplane t5/10 idx=2388] gradmatch craft_obj=0.2471 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t5/10 idx=2388] poison_CTA=0.8026 poison_ASR=0%
+  [frog-airplane t6/10 idx=6036] gradmatch craft_obj=0.2699 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t6/10 idx=6036] poison_CTA=0.8034 poison_ASR=0%
+  [frog-airplane t7/10 idx=5806] gradmatch craft_obj=0.2672 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t7/10 idx=5806] poison_CTA=0.8064 poison_ASR=0%
+  [frog-airplane t8/10 idx=9991] gradmatch craft_obj=0.2561 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t8/10 idx=9991] poison_CTA=0.7959 poison_ASR=0%
+  [frog-airplane t9/10 idx=9256] gradmatch craft_obj=0.2731 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t9/10 idx=9256] poison_CTA=0.7995 poison_ASR=0%
+  [frog-airplane t10/10 idx=2680] gradmatch craft_obj=0.3188 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t10/10 idx=2680] poison_CTA=0.7988 poison_ASR=0%
+
+  ==== pair frog-airplane (gradmatch) summary over 10 targets x 5 victims = 50 votes ====
+    [standard                    ] poison CTA = 0.8019 +/- 0.0030   poison ASR = 8.0% +/- 24.0%
+      tally (['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']): [38, 0, 4, 0, 0, 0, 4, 0, 3, 1]
+
+[2026-06-30 06:17:25] wrote results_standard_nodistill_gradmatch_ConvNetBN_b500_eps8.{json,csv} to result/standard_nodistill
+[2026-06-30 06:17:32] device=cuda
+[2026-06-30 06:17:32] hyperparams: {'dataset': 'CIFAR10', 'data_path': 'data', 'model': 'ConvNetBN', 'out_dir': 'result/standard_nodistill', 'seed': 1, 'target_idx_file': None, 'dsa_strategy': 'color_crop_cutout_flip_scale_rotate', 'syn_data_path': 'result/res_DM_CIFAR10_ConvNet_100ipc.pt', 'surrogate_model': 'ConvNet', 'num_surrogates': 4, 'surrogate_epochs': 45, 'surrogate_lr': 0.01, 'surrogate_bs': 256, 'attack': 'gradmatch', 'class_pairs': ['frog-airplane'], 'budget': 0.02, 'epsilon': 0.0313725, 'pgd_steps': 75, 'pgd_alpha': 0.0039216, 'restarts': 7, 'lambda_margin': 1.0, 'num_targets': 10, 'num_victims': 5, 'target_select': 'random', 'victim_epochs': 45, 'victim_lr': 0.1, 'victim_bs': 125, 'victim_decay': [30], 'victim_aug': False, 'clean_baseline': False, 'num_clean_victims': None, 'cache_dir': '', 'precompute_only': False, 'base_dist': 'l2', 'random_select': True, 'multilayer': True, 'single_surrogate': False, 'fast_gradmatch': False, 'surrogate_on_full_data': True, 'victim_pipelines': ['standard'], 'poison_cache_dir': '', 'log_file': ''}
+[2026-06-30 06:17:32] victim pipelines (ablations): ['standard']
+[2026-06-30 06:17:45] N_total=50000  budget=0.0200 -> N_p=1000 poisons (all in y_adv class)
+
+[2026-06-30 06:17:45] === training 4 surrogates (ConvNet) on FULL real data (45 ep each) ===
+[2026-06-30 06:18:16] Evaluate_00: epoch = 0045 train time = 30 s train loss = 0.004872 train acc = 1.0000, test acc = 0.8006
+[2026-06-30 06:18:47] Evaluate_01: epoch = 0045 train time = 30 s train loss = 0.004856 train acc = 1.0000, test acc = 0.8051
+[2026-06-30 06:19:18] Evaluate_02: epoch = 0045 train time = 30 s train loss = 0.004873 train acc = 1.0000, test acc = 0.8070
+[2026-06-30 06:19:49] Evaluate_03: epoch = 0045 train time = 30 s train loss = 0.005082 train acc = 1.0000, test acc = 0.8133
+
+[2026-06-30 06:19:49] ################ pair frog-airplane : y_adv=6(frog)  target_class=0(airplane) ################
+  targets (random): [8492, 3063, 602, 4415, 2388, 6036, 5806, 9991, 9256, 2680]
+  [frog-airplane t1/10 idx=8492] gradmatch craft_obj=0.2601 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t1/10 idx=8492] poison_CTA=0.7950 poison_ASR=0%
+  [frog-airplane t2/10 idx=3063] gradmatch craft_obj=0.2801 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t2/10 idx=3063] poison_CTA=0.8031 poison_ASR=0%
+  [frog-airplane t3/10 idx=602] gradmatch craft_obj=0.3280 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t3/10 idx=602] poison_CTA=0.8004 poison_ASR=0%
+  [frog-airplane t4/10 idx=4415] gradmatch craft_obj=0.2427 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t4/10 idx=4415] poison_CTA=0.8001 poison_ASR=0%
+  [frog-airplane t5/10 idx=2388] gradmatch craft_obj=0.2894 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t5/10 idx=2388] poison_CTA=0.8032 poison_ASR=0%
+  [frog-airplane t6/10 idx=6036] gradmatch craft_obj=0.2956 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t6/10 idx=6036] poison_CTA=0.7966 poison_ASR=0%
+  [frog-airplane t7/10 idx=5806] gradmatch craft_obj=0.2561 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t7/10 idx=5806] poison_CTA=0.8020 poison_ASR=0%
+  [frog-airplane t8/10 idx=9991] gradmatch craft_obj=0.2813 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t8/10 idx=9991] poison_CTA=0.8002 poison_ASR=0%
+  [frog-airplane t9/10 idx=9256] gradmatch craft_obj=0.2838 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t9/10 idx=9256] poison_CTA=0.8002 poison_ASR=0%
+  [frog-airplane t10/10 idx=2680] gradmatch craft_obj=0.3038 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t10/10 idx=2680] poison_CTA=0.8065 poison_ASR=0%
+
+  ==== pair frog-airplane (gradmatch) summary over 10 targets x 5 victims = 50 votes ====
+    [standard                    ] poison CTA = 0.8007 +/- 0.0031   poison ASR = 0.0% +/- 0.0%
+      tally (['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']): [43, 0, 4, 0, 0, 0, 0, 0, 2, 1]
+
+[2026-06-30 07:07:16] wrote results_standard_nodistill_gradmatch_ConvNetBN_b200_eps8.{json,csv} to result/standard_nodistill
+[2026-06-30 07:07:23] device=cuda
+[2026-06-30 07:07:23] hyperparams: {'dataset': 'CIFAR10', 'data_path': 'data', 'model': 'ConvNetBN', 'out_dir': 'result/standard_nodistill', 'seed': 1, 'target_idx_file': None, 'dsa_strategy': 'color_crop_cutout_flip_scale_rotate', 'syn_data_path': 'result/res_DM_CIFAR10_ConvNet_100ipc.pt', 'surrogate_model': 'ConvNet', 'num_surrogates': 4, 'surrogate_epochs': 45, 'surrogate_lr': 0.01, 'surrogate_bs': 256, 'attack': 'gradmatch', 'class_pairs': ['frog-airplane'], 'budget': 0.01, 'epsilon': 0.0313725, 'pgd_steps': 75, 'pgd_alpha': 0.0039216, 'restarts': 7, 'lambda_margin': 1.0, 'num_targets': 10, 'num_victims': 5, 'target_select': 'random', 'victim_epochs': 45, 'victim_lr': 0.1, 'victim_bs': 125, 'victim_decay': [30], 'victim_aug': False, 'clean_baseline': False, 'num_clean_victims': None, 'cache_dir': '', 'precompute_only': False, 'base_dist': 'l2', 'random_select': True, 'multilayer': True, 'single_surrogate': False, 'fast_gradmatch': False, 'surrogate_on_full_data': True, 'victim_pipelines': ['standard'], 'poison_cache_dir': '', 'log_file': ''}
+[2026-06-30 07:07:23] victim pipelines (ablations): ['standard']
+[2026-06-30 07:07:37] N_total=50000  budget=0.0100 -> N_p=500 poisons (all in y_adv class)
+
+[2026-06-30 07:07:37] === training 4 surrogates (ConvNet) on FULL real data (45 ep each) ===
+[2026-06-30 07:08:08] Evaluate_00: epoch = 0045 train time = 30 s train loss = 0.004848 train acc = 1.0000, test acc = 0.8070
+[2026-06-30 07:08:39] Evaluate_01: epoch = 0045 train time = 30 s train loss = 0.004947 train acc = 1.0000, test acc = 0.8079
+[2026-06-30 07:09:10] Evaluate_02: epoch = 0045 train time = 30 s train loss = 0.005097 train acc = 1.0000, test acc = 0.8108
+[2026-06-30 07:09:41] Evaluate_03: epoch = 0045 train time = 30 s train loss = 0.004970 train acc = 1.0000, test acc = 0.8060
+
+[2026-06-30 07:09:41] ################ pair frog-airplane : y_adv=6(frog)  target_class=0(airplane) ################
+  targets (random): [8492, 3063, 602, 4415, 2388, 6036, 5806, 9991, 9256, 2680]
+  [frog-airplane t1/10 idx=8492] gradmatch craft_obj=0.2773 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t1/10 idx=8492] poison_CTA=0.8016 poison_ASR=0%
+  [frog-airplane t2/10 idx=3063] gradmatch craft_obj=0.3032 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t2/10 idx=3063] poison_CTA=0.8008 poison_ASR=0%
+  [frog-airplane t3/10 idx=602] gradmatch craft_obj=0.3632 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t3/10 idx=602] poison_CTA=0.8017 poison_ASR=0%
+  [frog-airplane t4/10 idx=4415] gradmatch craft_obj=0.2474 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t4/10 idx=4415] poison_CTA=0.8032 poison_ASR=0%
+  [frog-airplane t5/10 idx=2388] gradmatch craft_obj=0.2989 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t5/10 idx=2388] poison_CTA=0.8027 poison_ASR=0%
+  [frog-airplane t6/10 idx=6036] gradmatch craft_obj=0.3129 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t6/10 idx=6036] poison_CTA=0.7940 poison_ASR=0%
+  [frog-airplane t7/10 idx=5806] gradmatch craft_obj=0.3099 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t7/10 idx=5806] poison_CTA=0.8033 poison_ASR=0%
+  [frog-airplane t8/10 idx=9991] gradmatch craft_obj=0.2908 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t8/10 idx=9991] poison_CTA=0.8027 poison_ASR=0%
+  [frog-airplane t9/10 idx=9256] gradmatch craft_obj=0.2982 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t9/10 idx=9256] poison_CTA=0.8030 poison_ASR=0%
+  [frog-airplane t10/10 idx=2680] gradmatch craft_obj=0.3610 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t10/10 idx=2680] poison_CTA=0.8044 poison_ASR=0%
+
+  ==== pair frog-airplane (gradmatch) summary over 10 targets x 5 victims = 50 votes ====
+    [standard                    ] poison CTA = 0.8017 +/- 0.0028   poison ASR = 0.0% +/- 0.0%
+      tally (['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']): [41, 0, 4, 0, 0, 0, 0, 0, 2, 3]
+
+[2026-06-30 07:49:34] wrote results_standard_nodistill_gradmatch_ConvNetBN_b100_eps8.{json,csv} to result/standard_nodistill
+[2026-06-30 07:49:39] device=cuda
+[2026-06-30 07:49:39] hyperparams: {'dataset': 'CIFAR10', 'data_path': 'data', 'model': 'ConvNetBN', 'out_dir': 'result/standard_nodistill', 'seed': 1, 'target_idx_file': None, 'dsa_strategy': 'color_crop_cutout_flip_scale_rotate', 'syn_data_path': 'result/res_DM_CIFAR10_ConvNet_100ipc.pt', 'surrogate_model': 'ConvNet', 'num_surrogates': 4, 'surrogate_epochs': 45, 'surrogate_lr': 0.01, 'surrogate_bs': 256, 'attack': 'gradmatch', 'class_pairs': ['frog-airplane'], 'budget': 0.005, 'epsilon': 0.0313725, 'pgd_steps': 75, 'pgd_alpha': 0.0039216, 'restarts': 7, 'lambda_margin': 1.0, 'num_targets': 10, 'num_victims': 5, 'target_select': 'random', 'victim_epochs': 45, 'victim_lr': 0.1, 'victim_bs': 125, 'victim_decay': [30], 'victim_aug': False, 'clean_baseline': False, 'num_clean_victims': None, 'cache_dir': '', 'precompute_only': False, 'base_dist': 'l2', 'random_select': True, 'multilayer': True, 'single_surrogate': False, 'fast_gradmatch': False, 'surrogate_on_full_data': True, 'victim_pipelines': ['standard'], 'poison_cache_dir': '', 'log_file': ''}
+[2026-06-30 07:49:39] victim pipelines (ablations): ['standard']
+[2026-06-30 07:49:50] N_total=50000  budget=0.0050 -> N_p=250 poisons (all in y_adv class)
+
+[2026-06-30 07:49:50] === training 4 surrogates (ConvNet) on FULL real data (45 ep each) ===
+[2026-06-30 07:50:21] Evaluate_00: epoch = 0045 train time = 31 s train loss = 0.004882 train acc = 1.0000, test acc = 0.8091
+[2026-06-30 07:50:52] Evaluate_01: epoch = 0045 train time = 30 s train loss = 0.005021 train acc = 1.0000, test acc = 0.8024
+[2026-06-30 07:51:23] Evaluate_02: epoch = 0045 train time = 30 s train loss = 0.005007 train acc = 1.0000, test acc = 0.8026
+[2026-06-30 07:51:55] Evaluate_03: epoch = 0045 train time = 30 s train loss = 0.004830 train acc = 1.0000, test acc = 0.8078
+
+[2026-06-30 07:51:55] ################ pair frog-airplane : y_adv=6(frog)  target_class=0(airplane) ################
+  targets (random): [8492, 3063, 602, 4415, 2388, 6036, 5806, 9991, 9256, 2680]
+  [frog-airplane t1/10 idx=8492] gradmatch craft_obj=0.3011 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t1/10 idx=8492] poison_CTA=0.8008 poison_ASR=0%
+  [frog-airplane t2/10 idx=3063] gradmatch craft_obj=0.3683 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t2/10 idx=3063] poison_CTA=0.7942 poison_ASR=0%
+  [frog-airplane t3/10 idx=602] gradmatch craft_obj=0.3743 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t3/10 idx=602] poison_CTA=0.8070 poison_ASR=0%
+  [frog-airplane t4/10 idx=4415] gradmatch craft_obj=0.2787 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t4/10 idx=4415] poison_CTA=0.7997 poison_ASR=0%
+  [frog-airplane t5/10 idx=2388] gradmatch craft_obj=0.3220 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t5/10 idx=2388] poison_CTA=0.8053 poison_ASR=0%
+  [frog-airplane t6/10 idx=6036] gradmatch craft_obj=0.3204 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t6/10 idx=6036] poison_CTA=0.8043 poison_ASR=0%
+  [frog-airplane t7/10 idx=5806] gradmatch craft_obj=0.3117 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t7/10 idx=5806] poison_CTA=0.8027 poison_ASR=0%
+  [frog-airplane t8/10 idx=9991] gradmatch craft_obj=0.3318 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t8/10 idx=9991] poison_CTA=0.7893 poison_ASR=0%
+  [frog-airplane t9/10 idx=9256] gradmatch craft_obj=0.3394 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t9/10 idx=9256] poison_CTA=0.8079 poison_ASR=0%
+  [frog-airplane t10/10 idx=2680] gradmatch craft_obj=0.3598 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t10/10 idx=2680] poison_CTA=0.8019 poison_ASR=0%
+
+  ==== pair frog-airplane (gradmatch) summary over 10 targets x 5 victims = 50 votes ====
+    [standard                    ] poison CTA = 0.8013 +/- 0.0055   poison ASR = 0.0% +/- 0.0%
+      tally (['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']): [43, 0, 3, 0, 0, 0, 0, 0, 2, 2]
+
+[2026-06-30 08:27:08] wrote results_standard_nodistill_gradmatch_ConvNetBN_b50_eps8.{json,csv} to result/standard_nodistill
+[2026-06-30 08:27:15] device=cuda
+[2026-06-30 08:27:15] hyperparams: {'dataset': 'CIFAR10', 'data_path': 'data', 'model': 'ConvNetBN', 'out_dir': 'result/standard_nodistill', 'seed': 1, 'target_idx_file': None, 'dsa_strategy': 'color_crop_cutout_flip_scale_rotate', 'syn_data_path': 'result/res_DM_CIFAR10_ConvNet_100ipc.pt', 'surrogate_model': 'ConvNet', 'num_surrogates': 4, 'surrogate_epochs': 45, 'surrogate_lr': 0.01, 'surrogate_bs': 256, 'attack': 'gradmatch', 'class_pairs': ['frog-airplane'], 'budget': 0.002, 'epsilon': 0.0313725, 'pgd_steps': 75, 'pgd_alpha': 0.0039216, 'restarts': 7, 'lambda_margin': 1.0, 'num_targets': 10, 'num_victims': 5, 'target_select': 'random', 'victim_epochs': 45, 'victim_lr': 0.1, 'victim_bs': 125, 'victim_decay': [30], 'victim_aug': False, 'clean_baseline': False, 'num_clean_victims': None, 'cache_dir': '', 'precompute_only': False, 'base_dist': 'l2', 'random_select': True, 'multilayer': True, 'single_surrogate': False, 'fast_gradmatch': False, 'surrogate_on_full_data': True, 'victim_pipelines': ['standard'], 'poison_cache_dir': '', 'log_file': ''}
+[2026-06-30 08:27:15] victim pipelines (ablations): ['standard']
+[2026-06-30 08:27:28] N_total=50000  budget=0.0020 -> N_p=100 poisons (all in y_adv class)
+
+[2026-06-30 08:27:28] === training 4 surrogates (ConvNet) on FULL real data (45 ep each) ===
+[2026-06-30 08:28:00] Evaluate_00: epoch = 0045 train time = 31 s train loss = 0.004948 train acc = 1.0000, test acc = 0.8152
+[2026-06-30 08:28:31] Evaluate_01: epoch = 0045 train time = 30 s train loss = 0.005061 train acc = 1.0000, test acc = 0.8070
+[2026-06-30 08:29:02] Evaluate_02: epoch = 0045 train time = 30 s train loss = 0.004887 train acc = 1.0000, test acc = 0.8085
+[2026-06-30 08:29:33] Evaluate_03: epoch = 0045 train time = 30 s train loss = 0.004964 train acc = 1.0000, test acc = 0.8074
+
+[2026-06-30 08:29:33] ################ pair frog-airplane : y_adv=6(frog)  target_class=0(airplane) ################
+  targets (random): [8492, 3063, 602, 4415, 2388, 6036, 5806, 9991, 9256, 2680]
+  [frog-airplane t1/10 idx=8492] gradmatch craft_obj=0.3494 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t1/10 idx=8492] poison_CTA=0.8086 poison_ASR=0%
+  [frog-airplane t2/10 idx=3063] gradmatch craft_obj=0.3769 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t2/10 idx=3063] poison_CTA=0.8039 poison_ASR=0%
+  [frog-airplane t3/10 idx=602] gradmatch craft_obj=0.4145 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t3/10 idx=602] poison_CTA=0.8020 poison_ASR=0%
+  [frog-airplane t4/10 idx=4415] gradmatch craft_obj=0.3160 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t4/10 idx=4415] poison_CTA=0.8024 poison_ASR=0%
+  [frog-airplane t5/10 idx=2388] gradmatch craft_obj=0.3959 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t5/10 idx=2388] poison_CTA=0.8024 poison_ASR=0%
+  [frog-airplane t6/10 idx=6036] gradmatch craft_obj=0.4025 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t6/10 idx=6036] poison_CTA=0.8071 poison_ASR=0%
+  [frog-airplane t7/10 idx=5806] gradmatch craft_obj=0.4039 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t7/10 idx=5806] poison_CTA=0.8030 poison_ASR=0%
+  [frog-airplane t8/10 idx=9991] gradmatch craft_obj=0.3487 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t8/10 idx=9991] poison_CTA=0.8044 poison_ASR=0%
+  [frog-airplane t9/10 idx=9256] gradmatch craft_obj=0.3929 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t9/10 idx=9256] poison_CTA=0.8078 poison_ASR=0%
+  [frog-airplane t10/10 idx=2680] gradmatch craft_obj=0.4092 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t10/10 idx=2680] poison_CTA=0.8012 poison_ASR=0%
+
+  ==== pair frog-airplane (gradmatch) summary over 10 targets x 5 victims = 50 votes ====
+    [standard                    ] poison CTA = 0.8043 +/- 0.0025   poison ASR = 0.0% +/- 0.0%
+      tally (['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']): [42, 1, 4, 0, 0, 0, 0, 0, 1, 2]
+
+[2026-06-30 09:03:58] wrote results_standard_nodistill_gradmatch_ConvNetBN_b20_eps8.{json,csv} to result/standard_nodistill
+
+
+<><><><><><><><><><<><>
+
+
+
+[2026-06-30 05:01:56] wrote results_standard_nodistill_gradmatch_ConvNetBN_b1000_eps8.{json,csv} to result/standard_nodistill
+[2026-06-30 05:02:02] device=cuda
+[2026-06-30 05:02:02] hyperparams: {'dataset': 'CIFAR10', 'data_path': 'data', 'model': 'ConvNetBN', 'out_dir': 'result/standard_nodistill', 'seed': 1, 'target_idx_file': None, 'dsa_strategy': 'color_crop_cutout_flip_scale_rotate', 'syn_data_path': 'result/res_DM_CIFAR10_ConvNet_100ipc.pt', 'surrogate_model': 'ConvNet', 'num_surrogates': 4, 'surrogate_epochs': 45, 'surrogate_lr': 0.01, 'surrogate_bs': 256, 'attack': 'gradmatch', 'class_pairs': ['frog-airplane'], 'budget': 0.05, 'epsilon': 0.0313725, 'pgd_steps': 75, 'pgd_alpha': 0.0039216, 'restarts': 7, 'lambda_margin': 1.0, 'num_targets': 10, 'num_victims': 5, 'target_select': 'random', 'victim_epochs': 45, 'victim_lr': 0.1, 'victim_bs': 125, 'victim_decay': [30], 'victim_aug': False, 'clean_baseline': False, 'num_clean_victims': None, 'cache_dir': '', 'precompute_only': False, 'base_dist': 'l2', 'random_select': False, 'multilayer': True, 'single_surrogate': False, 'fast_gradmatch': False, 'surrogate_on_full_data': True, 'victim_pipelines': ['standard'], 'poison_cache_dir': '', 'log_file': ''}
+[2026-06-30 05:02:02] victim pipelines (ablations): ['standard']
+[2026-06-30 05:02:17] N_total=50000  budget=0.0500 -> N_p=2500 poisons (all in y_adv class)
+
+[2026-06-30 05:02:17] === training 4 surrogates (ConvNet) on FULL real data (45 ep each) ===
+[2026-06-30 05:02:49] Evaluate_00: epoch = 0045 train time = 31 s train loss = 0.004875 train acc = 1.0000, test acc = 0.8097
+[2026-06-30 05:03:20] Evaluate_01: epoch = 0045 train time = 30 s train loss = 0.004897 train acc = 1.0000, test acc = 0.8060
+[2026-06-30 05:03:51] Evaluate_02: epoch = 0045 train time = 30 s train loss = 0.005131 train acc = 1.0000, test acc = 0.8077
+[2026-06-30 05:04:22] Evaluate_03: epoch = 0045 train time = 30 s train loss = 0.004972 train acc = 1.0000, test acc = 0.8062
+
+[2026-06-30 05:04:22] ################ pair frog-airplane : y_adv=6(frog)  target_class=0(airplane) ################
+  targets (random): [8492, 3063, 602, 4415, 2388, 6036, 5806, 9991, 9256, 2680]
+  [frog-airplane t1/10 idx=8492] gradmatch craft_obj=0.2342 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t1/10 idx=8492] poison_CTA=0.7999 poison_ASR=100%
+  [frog-airplane t2/10 idx=3063] gradmatch craft_obj=0.2431 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t2/10 idx=3063] poison_CTA=0.7981 poison_ASR=0%
+  [frog-airplane t3/10 idx=602] gradmatch craft_obj=0.2981 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t3/10 idx=602] poison_CTA=0.7975 poison_ASR=0%
+  [frog-airplane t4/10 idx=4415] gradmatch craft_obj=0.1888 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t4/10 idx=4415] poison_CTA=0.7925 poison_ASR=0%
+  [frog-airplane t5/10 idx=2388] gradmatch craft_obj=0.2450 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t5/10 idx=2388] poison_CTA=0.8008 poison_ASR=20%
+  [frog-airplane t6/10 idx=6036] gradmatch craft_obj=0.2535 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t6/10 idx=6036] poison_CTA=0.7945 poison_ASR=20%
+  [frog-airplane t7/10 idx=5806] gradmatch craft_obj=0.2263 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t7/10 idx=5806] poison_CTA=0.7929 poison_ASR=0%
+  [frog-airplane t8/10 idx=9991] gradmatch craft_obj=0.2658 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t8/10 idx=9991] poison_CTA=0.7948 poison_ASR=0%
+  [frog-airplane t9/10 idx=9256] gradmatch craft_obj=0.2700 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t9/10 idx=9256] poison_CTA=0.8026 poison_ASR=0%
+  [frog-airplane t10/10 idx=2680] gradmatch craft_obj=0.3142 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t10/10 idx=2680] poison_CTA=0.7826 poison_ASR=0%
+
+  ==== pair frog-airplane (gradmatch) summary over 10 targets x 5 victims = 50 votes ====
+    [standard                    ] poison CTA = 0.7956 +/- 0.0054   poison ASR = 14.0% +/- 29.7%
+      tally (['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']): [35, 0, 5, 0, 0, 0, 7, 0, 3, 0]
+
+[2026-06-30 06:16:21] wrote results_standard_nodistill_gradmatch_ConvNetBN_b500_eps8.{json,csv} to result/standard_nodistill
+[2026-06-30 06:16:27] device=cuda
+[2026-06-30 06:16:27] hyperparams: {'dataset': 'CIFAR10', 'data_path': 'data', 'model': 'ConvNetBN', 'out_dir': 'result/standard_nodistill', 'seed': 1, 'target_idx_file': None, 'dsa_strategy': 'color_crop_cutout_flip_scale_rotate', 'syn_data_path': 'result/res_DM_CIFAR10_ConvNet_100ipc.pt', 'surrogate_model': 'ConvNet', 'num_surrogates': 4, 'surrogate_epochs': 45, 'surrogate_lr': 0.01, 'surrogate_bs': 256, 'attack': 'gradmatch', 'class_pairs': ['frog-airplane'], 'budget': 0.02, 'epsilon': 0.0313725, 'pgd_steps': 75, 'pgd_alpha': 0.0039216, 'restarts': 7, 'lambda_margin': 1.0, 'num_targets': 10, 'num_victims': 5, 'target_select': 'random', 'victim_epochs': 45, 'victim_lr': 0.1, 'victim_bs': 125, 'victim_decay': [30], 'victim_aug': False, 'clean_baseline': False, 'num_clean_victims': None, 'cache_dir': '', 'precompute_only': False, 'base_dist': 'l2', 'random_select': False, 'multilayer': True, 'single_surrogate': False, 'fast_gradmatch': False, 'surrogate_on_full_data': True, 'victim_pipelines': ['standard'], 'poison_cache_dir': '', 'log_file': ''}
+[2026-06-30 06:16:27] victim pipelines (ablations): ['standard']
+[2026-06-30 06:16:41] N_total=50000  budget=0.0200 -> N_p=1000 poisons (all in y_adv class)
+
+[2026-06-30 06:16:41] === training 4 surrogates (ConvNet) on FULL real data (45 ep each) ===
+[2026-06-30 06:17:12] Evaluate_00: epoch = 0045 train time = 31 s train loss = 0.004717 train acc = 1.0000, test acc = 0.8039
+[2026-06-30 06:17:43] Evaluate_01: epoch = 0045 train time = 30 s train loss = 0.004848 train acc = 1.0000, test acc = 0.8067
+[2026-06-30 06:18:14] Evaluate_02: epoch = 0045 train time = 30 s train loss = 0.004890 train acc = 1.0000, test acc = 0.8100
+[2026-06-30 06:18:46] Evaluate_03: epoch = 0045 train time = 30 s train loss = 0.004909 train acc = 1.0000, test acc = 0.8083
+
+[2026-06-30 06:18:46] ################ pair frog-airplane : y_adv=6(frog)  target_class=0(airplane) ################
+  targets (random): [8492, 3063, 602, 4415, 2388, 6036, 5806, 9991, 9256, 2680]
+  [frog-airplane t1/10 idx=8492] gradmatch craft_obj=0.2376 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t1/10 idx=8492] poison_CTA=0.8028 poison_ASR=60%
+  [frog-airplane t2/10 idx=3063] gradmatch craft_obj=0.2461 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t2/10 idx=3063] poison_CTA=0.8016 poison_ASR=0%
+  [frog-airplane t3/10 idx=602] gradmatch craft_obj=0.2818 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t3/10 idx=602] poison_CTA=0.8074 poison_ASR=0%
+  [frog-airplane t4/10 idx=4415] gradmatch craft_obj=0.2136 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t4/10 idx=4415] poison_CTA=0.8050 poison_ASR=0%
+  [frog-airplane t5/10 idx=2388] gradmatch craft_obj=0.2570 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t5/10 idx=2388] poison_CTA=0.8056 poison_ASR=0%
+  [frog-airplane t6/10 idx=6036] gradmatch craft_obj=0.2492 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t6/10 idx=6036] poison_CTA=0.7882 poison_ASR=0%
+  [frog-airplane t7/10 idx=5806] gradmatch craft_obj=0.2335 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t7/10 idx=5806] poison_CTA=0.8041 poison_ASR=0%
+  [frog-airplane t8/10 idx=9991] gradmatch craft_obj=0.2689 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t8/10 idx=9991] poison_CTA=0.8088 poison_ASR=0%
+  [frog-airplane t9/10 idx=9256] gradmatch craft_obj=0.2771 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t9/10 idx=9256] poison_CTA=0.8026 poison_ASR=0%
+  [frog-airplane t10/10 idx=2680] gradmatch craft_obj=0.3201 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t10/10 idx=2680] poison_CTA=0.8047 poison_ASR=0%
+
+  ==== pair frog-airplane (gradmatch) summary over 10 targets x 5 victims = 50 votes ====
+    [standard                    ] poison CTA = 0.8031 +/- 0.0054   poison ASR = 6.0% +/- 18.0%
+      tally (['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']): [41, 0, 3, 0, 0, 0, 3, 0, 2, 1]
+
+[2026-06-30 07:06:47] wrote results_standard_nodistill_gradmatch_ConvNetBN_b200_eps8.{json,csv} to result/standard_nodistill
+[2026-06-30 07:06:54] device=cuda
+[2026-06-30 07:06:54] hyperparams: {'dataset': 'CIFAR10', 'data_path': 'data', 'model': 'ConvNetBN', 'out_dir': 'result/standard_nodistill', 'seed': 1, 'target_idx_file': None, 'dsa_strategy': 'color_crop_cutout_flip_scale_rotate', 'syn_data_path': 'result/res_DM_CIFAR10_ConvNet_100ipc.pt', 'surrogate_model': 'ConvNet', 'num_surrogates': 4, 'surrogate_epochs': 45, 'surrogate_lr': 0.01, 'surrogate_bs': 256, 'attack': 'gradmatch', 'class_pairs': ['frog-airplane'], 'budget': 0.01, 'epsilon': 0.0313725, 'pgd_steps': 75, 'pgd_alpha': 0.0039216, 'restarts': 7, 'lambda_margin': 1.0, 'num_targets': 10, 'num_victims': 5, 'target_select': 'random', 'victim_epochs': 45, 'victim_lr': 0.1, 'victim_bs': 125, 'victim_decay': [30], 'victim_aug': False, 'clean_baseline': False, 'num_clean_victims': None, 'cache_dir': '', 'precompute_only': False, 'base_dist': 'l2', 'random_select': False, 'multilayer': True, 'single_surrogate': False, 'fast_gradmatch': False, 'surrogate_on_full_data': True, 'victim_pipelines': ['standard'], 'poison_cache_dir': '', 'log_file': ''}
+[2026-06-30 07:06:54] victim pipelines (ablations): ['standard']
+[2026-06-30 07:07:05] N_total=50000  budget=0.0100 -> N_p=500 poisons (all in y_adv class)
+
+[2026-06-30 07:07:05] === training 4 surrogates (ConvNet) on FULL real data (45 ep each) ===
+[2026-06-30 07:07:37] Evaluate_00: epoch = 0045 train time = 30 s train loss = 0.005044 train acc = 1.0000, test acc = 0.8027
+[2026-06-30 07:08:08] Evaluate_01: epoch = 0045 train time = 30 s train loss = 0.004926 train acc = 1.0000, test acc = 0.8070
+[2026-06-30 07:08:39] Evaluate_02: epoch = 0045 train time = 30 s train loss = 0.004824 train acc = 1.0000, test acc = 0.8084
+[2026-06-30 07:09:10] Evaluate_03: epoch = 0045 train time = 30 s train loss = 0.004942 train acc = 1.0000, test acc = 0.8038
+
+[2026-06-30 07:09:10] ################ pair frog-airplane : y_adv=6(frog)  target_class=0(airplane) ################
+  targets (random): [8492, 3063, 602, 4415, 2388, 6036, 5806, 9991, 9256, 2680]
+  [frog-airplane t1/10 idx=8492] gradmatch craft_obj=0.2496 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t1/10 idx=8492] poison_CTA=0.8026 poison_ASR=20%
+  [frog-airplane t2/10 idx=3063] gradmatch craft_obj=0.2426 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t2/10 idx=3063] poison_CTA=0.8039 poison_ASR=0%
+  [frog-airplane t3/10 idx=602] gradmatch craft_obj=0.3102 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t3/10 idx=602] poison_CTA=0.8060 poison_ASR=0%
+  [frog-airplane t4/10 idx=4415] gradmatch craft_obj=0.1836 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t4/10 idx=4415] poison_CTA=0.8009 poison_ASR=0%
+  [frog-airplane t5/10 idx=2388] gradmatch craft_obj=0.2555 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t5/10 idx=2388] poison_CTA=0.8063 poison_ASR=0%
+  [frog-airplane t6/10 idx=6036] gradmatch craft_obj=0.2657 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t6/10 idx=6036] poison_CTA=0.8059 poison_ASR=0%
+  [frog-airplane t7/10 idx=5806] gradmatch craft_obj=0.2612 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t7/10 idx=5806] poison_CTA=0.8086 poison_ASR=0%
+  [frog-airplane t8/10 idx=9991] gradmatch craft_obj=0.2766 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t8/10 idx=9991] poison_CTA=0.8023 poison_ASR=0%
+  [frog-airplane t9/10 idx=9256] gradmatch craft_obj=0.2658 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t9/10 idx=9256] poison_CTA=0.8042 poison_ASR=0%
+  [frog-airplane t10/10 idx=2680] gradmatch craft_obj=0.3434 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t10/10 idx=2680] poison_CTA=0.7946 poison_ASR=0%
+
+  ==== pair frog-airplane (gradmatch) summary over 10 targets x 5 victims = 50 votes ====
+    [standard                    ] poison CTA = 0.8035 +/- 0.0037   poison ASR = 2.0% +/- 6.0%
+      tally (['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']): [42, 1, 4, 0, 0, 0, 1, 0, 2, 0]
+
+[2026-06-30 07:48:43] wrote results_standard_nodistill_gradmatch_ConvNetBN_b100_eps8.{json,csv} to result/standard_nodistill
+[2026-06-30 07:48:48] device=cuda
+[2026-06-30 07:48:48] hyperparams: {'dataset': 'CIFAR10', 'data_path': 'data', 'model': 'ConvNetBN', 'out_dir': 'result/standard_nodistill', 'seed': 1, 'target_idx_file': None, 'dsa_strategy': 'color_crop_cutout_flip_scale_rotate', 'syn_data_path': 'result/res_DM_CIFAR10_ConvNet_100ipc.pt', 'surrogate_model': 'ConvNet', 'num_surrogates': 4, 'surrogate_epochs': 45, 'surrogate_lr': 0.01, 'surrogate_bs': 256, 'attack': 'gradmatch', 'class_pairs': ['frog-airplane'], 'budget': 0.005, 'epsilon': 0.0313725, 'pgd_steps': 75, 'pgd_alpha': 0.0039216, 'restarts': 7, 'lambda_margin': 1.0, 'num_targets': 10, 'num_victims': 5, 'target_select': 'random', 'victim_epochs': 45, 'victim_lr': 0.1, 'victim_bs': 125, 'victim_decay': [30], 'victim_aug': False, 'clean_baseline': False, 'num_clean_victims': None, 'cache_dir': '', 'precompute_only': False, 'base_dist': 'l2', 'random_select': False, 'multilayer': True, 'single_surrogate': False, 'fast_gradmatch': False, 'surrogate_on_full_data': True, 'victim_pipelines': ['standard'], 'poison_cache_dir': '', 'log_file': ''}
+[2026-06-30 07:48:48] victim pipelines (ablations): ['standard']
+[2026-06-30 07:49:00] N_total=50000  budget=0.0050 -> N_p=250 poisons (all in y_adv class)
+
+[2026-06-30 07:49:00] === training 4 surrogates (ConvNet) on FULL real data (45 ep each) ===
+[2026-06-30 07:49:33] Evaluate_00: epoch = 0045 train time = 31 s train loss = 0.005016 train acc = 1.0000, test acc = 0.8116
+[2026-06-30 07:50:04] Evaluate_01: epoch = 0045 train time = 30 s train loss = 0.005056 train acc = 1.0000, test acc = 0.8062
+[2026-06-30 07:50:35] Evaluate_02: epoch = 0045 train time = 30 s train loss = 0.004940 train acc = 1.0000, test acc = 0.8031
+[2026-06-30 07:51:06] Evaluate_03: epoch = 0045 train time = 30 s train loss = 0.005048 train acc = 1.0000, test acc = 0.8051
+
+[2026-06-30 07:51:06] ################ pair frog-airplane : y_adv=6(frog)  target_class=0(airplane) ################
+  targets (random): [8492, 3063, 602, 4415, 2388, 6036, 5806, 9991, 9256, 2680]
+  [frog-airplane t1/10 idx=8492] gradmatch craft_obj=0.2706 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t1/10 idx=8492] poison_CTA=0.7990 poison_ASR=0%
+  [frog-airplane t2/10 idx=3063] gradmatch craft_obj=0.2404 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t2/10 idx=3063] poison_CTA=0.8003 poison_ASR=0%
+  [frog-airplane t3/10 idx=602] gradmatch craft_obj=0.3259 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t3/10 idx=602] poison_CTA=0.8004 poison_ASR=0%
+  [frog-airplane t4/10 idx=4415] gradmatch craft_obj=0.1937 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t4/10 idx=4415] poison_CTA=0.8057 poison_ASR=0%
+  [frog-airplane t5/10 idx=2388] gradmatch craft_obj=0.2841 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t5/10 idx=2388] poison_CTA=0.8019 poison_ASR=0%
+  [frog-airplane t6/10 idx=6036] gradmatch craft_obj=0.2836 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t6/10 idx=6036] poison_CTA=0.8066 poison_ASR=0%
+  [frog-airplane t7/10 idx=5806] gradmatch craft_obj=0.2685 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t7/10 idx=5806] poison_CTA=0.8035 poison_ASR=0%
+  [frog-airplane t8/10 idx=9991] gradmatch craft_obj=0.2790 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t8/10 idx=9991] poison_CTA=0.8076 poison_ASR=0%
+  [frog-airplane t9/10 idx=9256] gradmatch craft_obj=0.2786 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t9/10 idx=9256] poison_CTA=0.8030 poison_ASR=0%
+  [frog-airplane t10/10 idx=2680] gradmatch craft_obj=0.3448 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t10/10 idx=2680] poison_CTA=0.7974 poison_ASR=0%
+
+  ==== pair frog-airplane (gradmatch) summary over 10 targets x 5 victims = 50 votes ====
+    [standard                    ] poison CTA = 0.8026 +/- 0.0032   poison ASR = 0.0% +/- 0.0%
+      tally (['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']): [40, 1, 5, 0, 0, 0, 0, 0, 3, 1]
+
+[2026-06-30 08:26:46] wrote results_standard_nodistill_gradmatch_ConvNetBN_b50_eps8.{json,csv} to result/standard_nodistill
+[2026-06-30 08:26:55] device=cuda
+[2026-06-30 08:26:55] hyperparams: {'dataset': 'CIFAR10', 'data_path': 'data', 'model': 'ConvNetBN', 'out_dir': 'result/standard_nodistill', 'seed': 1, 'target_idx_file': None, 'dsa_strategy': 'color_crop_cutout_flip_scale_rotate', 'syn_data_path': 'result/res_DM_CIFAR10_ConvNet_100ipc.pt', 'surrogate_model': 'ConvNet', 'num_surrogates': 4, 'surrogate_epochs': 45, 'surrogate_lr': 0.01, 'surrogate_bs': 256, 'attack': 'gradmatch', 'class_pairs': ['frog-airplane'], 'budget': 0.002, 'epsilon': 0.0313725, 'pgd_steps': 75, 'pgd_alpha': 0.0039216, 'restarts': 7, 'lambda_margin': 1.0, 'num_targets': 10, 'num_victims': 5, 'target_select': 'random', 'victim_epochs': 45, 'victim_lr': 0.1, 'victim_bs': 125, 'victim_decay': [30], 'victim_aug': False, 'clean_baseline': False, 'num_clean_victims': None, 'cache_dir': '', 'precompute_only': False, 'base_dist': 'l2', 'random_select': False, 'multilayer': True, 'single_surrogate': False, 'fast_gradmatch': False, 'surrogate_on_full_data': True, 'victim_pipelines': ['standard'], 'poison_cache_dir': '', 'log_file': ''}
+[2026-06-30 08:26:55] victim pipelines (ablations): ['standard']
+[2026-06-30 08:27:07] N_total=50000  budget=0.0020 -> N_p=100 poisons (all in y_adv class)
+
+[2026-06-30 08:27:07] === training 4 surrogates (ConvNet) on FULL real data (45 ep each) ===
+[2026-06-30 08:27:38] Evaluate_00: epoch = 0045 train time = 31 s train loss = 0.004865 train acc = 1.0000, test acc = 0.8059
+[2026-06-30 08:28:09] Evaluate_01: epoch = 0045 train time = 30 s train loss = 0.004961 train acc = 1.0000, test acc = 0.8060
+[2026-06-30 08:28:41] Evaluate_02: epoch = 0045 train time = 30 s train loss = 0.004841 train acc = 1.0000, test acc = 0.8066
+[2026-06-30 08:29:12] Evaluate_03: epoch = 0045 train time = 30 s train loss = 0.004918 train acc = 1.0000, test acc = 0.8029
+
+[2026-06-30 08:29:12] ################ pair frog-airplane : y_adv=6(frog)  target_class=0(airplane) ################
+  targets (random): [8492, 3063, 602, 4415, 2388, 6036, 5806, 9991, 9256, 2680]
+  [frog-airplane t1/10 idx=8492] gradmatch craft_obj=0.3254 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t1/10 idx=8492] poison_CTA=0.8061 poison_ASR=0%
+  [frog-airplane t2/10 idx=3063] gradmatch craft_obj=0.2763 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t2/10 idx=3063] poison_CTA=0.7938 poison_ASR=0%
+  [frog-airplane t3/10 idx=602] gradmatch craft_obj=0.3758 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t3/10 idx=602] poison_CTA=0.8028 poison_ASR=0%
+  [frog-airplane t4/10 idx=4415] gradmatch craft_obj=0.1977 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t4/10 idx=4415] poison_CTA=0.8046 poison_ASR=0%
+  [frog-airplane t5/10 idx=2388] gradmatch craft_obj=0.2990 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t5/10 idx=2388] poison_CTA=0.8058 poison_ASR=0%
+  [frog-airplane t6/10 idx=6036] gradmatch craft_obj=0.2882 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t6/10 idx=6036] poison_CTA=0.8049 poison_ASR=0%
+  [frog-airplane t7/10 idx=5806] gradmatch craft_obj=0.3042 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t7/10 idx=5806] poison_CTA=0.7992 poison_ASR=0%
+  [frog-airplane t8/10 idx=9991] gradmatch craft_obj=0.3155 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t8/10 idx=9991] poison_CTA=0.8090 poison_ASR=0%
+  [frog-airplane t9/10 idx=9256] gradmatch craft_obj=0.2944 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t9/10 idx=9256] poison_CTA=0.8007 poison_ASR=0%
+  [frog-airplane t10/10 idx=2680] gradmatch craft_obj=0.4020 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t10/10 idx=2680] poison_CTA=0.8013 poison_ASR=0%
+
+  ==== pair frog-airplane (gradmatch) summary over 10 targets x 5 victims = 50 votes ====
+    [standard                    ] poison CTA = 0.8028 +/- 0.0041   poison ASR = 0.0% +/- 0.0%
+      tally (['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']): [42, 1, 4, 0, 0, 0, 0, 0, 1, 2]
