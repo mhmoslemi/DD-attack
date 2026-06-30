@@ -63,6 +63,7 @@ scikit_learn==1.7.1+computecanada
 scipy==1.11.2+computecanada
 seaborn==0.13.2+computecanada
 sentry_sdk==2.58.0+computecanada
+setproctitle==1.3.7
 shellingham==1.5.4+computecanada
 six==1.17.0+computecanada
 smmap==5.0.3+computecanada

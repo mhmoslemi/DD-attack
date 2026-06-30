@@ -42,7 +42,9 @@ import argparse
 import csv
 import json
 import os
+import queue
 import sys
+import time
 import warnings
 from types import SimpleNamespace
 
@@ -52,6 +54,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+import torch.multiprocessing as mp
 from torch.utils.data import DataLoader
 
 from utils import (get_dataset, get_network, DiffAugment, ParamDiffAug, get_time,
@@ -231,11 +234,105 @@ def train_surrogates_on_syn(image_syn, label_syn, test_imgs, test_labs,
 
 
 # --------------------------------------------------------------------------- #
+# curvature-leverage score (theory-based 3rd base-selection signal):
+#   curv(x) = || C_x^T (H + lambda I)^{-1} g_t ||_1
+# computed matrix-free via Hessian-vector products + conjugate gradient.
+# --------------------------------------------------------------------------- #
+def _flat_params_grad(loss, params, create_graph=False):
+    grads = torch.autograd.grad(loss, params, create_graph=create_graph)
+    return torch.cat([g.reshape(-1) for g in grads])
+
+
+def _conj_grad(matvec, b, iters, tol=1e-8):
+    """Solve A x = b for symmetric (ideally PD) A given only matvec(v) = A v,
+    via conjugate gradient. Stops early on convergence or on a non-positive
+    curvature direction (indefinite A), returning the best iterate so far."""
+    x = torch.zeros_like(b)
+    r = b.clone()
+    p = b.clone()
+    rs_old = torch.dot(r, r)
+    for _ in range(iters):
+        Ap = matvec(p)
+        pAp = torch.dot(p, Ap)
+        if pAp <= 1e-12:                       # indefinite / singular: stop here
+            break
+        alpha = rs_old / pAp
+        x = x + alpha * p
+        r = r - alpha * Ap
+        rs_new = torch.dot(r, r)
+        if rs_new.sqrt() <= tol:
+            break
+        p = r + (rs_new / rs_old) * p
+        rs_old = rs_new
+    return x
+
+
+def curvature_leverage_scores(net, cand, y_base, x_t_norm, y_adv,
+                              train_imgs, train_labs, damping, cg_iters,
+                              hessian_bs, cand_bs, device):
+    """Per-candidate  || C_x^T (H + lambda I)^{-1} g_t ||_1   (higher = better).
+
+      g_t = grad_theta CE(net(x_target), y_adv)        target adversarial gradient
+      H   = Hessian of the training CE loss w.r.t. theta (never formed: HVP + CG)
+      v_t = (H + lambda I)^{-1} g_t                     solved by conjugate gradient
+      C_x = grad_x grad_theta CE(net(x_base), y_base)   mixed input/param 2nd deriv
+      C_x^T v_t = grad_x ( grad_theta CE(net(x_base), y_base) . v_t )
+
+    A batch's SUMMED loss lets one input-gradient pass recover every sample's
+    C_x^T v_t at once (cross terms vanish), so curvature for cand_bs candidates
+    costs a single double-backward."""
+    crit_mean = nn.CrossEntropyLoss().to(device)
+    crit_sum = nn.CrossEntropyLoss(reduction='sum').to(device)
+    params = [p for p in net.parameters()]
+    orig_req = [p.requires_grad for p in params]
+    for p in params:
+        p.requires_grad_(True)
+    try:
+        with torch.enable_grad():
+            # target adversarial gradient g_t (constant w.r.t. candidates)
+            y_t = torch.full((1,), y_adv, dtype=torch.long, device=device)
+            g_t = _flat_params_grad(crit_mean(net(x_t_norm.unsqueeze(0)), y_t),
+                                    params).detach()
+
+            # fixed Hessian minibatch: keep g_train(theta) differentiable for HVPs
+            n_tr = train_imgs.shape[0]
+            hidx = torch.randperm(n_tr, device=device)[:min(hessian_bs, n_tr)]
+            g_train = _flat_params_grad(crit_mean(net(train_imgs[hidx]),
+                                                  train_labs[hidx]),
+                                        params, create_graph=True)
+
+            def hvp(v):                                  # (H + lambda I) v, matrix-free
+                Hv = torch.autograd.grad(g_train, params, grad_outputs=v,
+                                         retain_graph=True)
+                return torch.cat([h.reshape(-1) for h in Hv]) + damping * v
+
+            # inverse-Hessian-vector product  v_t = (H + lambda I)^{-1} g_t
+            v_t = _conj_grad(hvp, g_t, cg_iters).detach()
+
+            # per-candidate  || C_x^T v_t ||_1
+            scores = torch.empty(len(cand), device=device)
+            for i in range(0, len(cand), cand_bs):
+                xb = cand[i:i + cand_bs].detach().clone().requires_grad_(True)
+                yb = torch.full((xb.shape[0],), y_base, dtype=torch.long, device=device)
+                g_c = _flat_params_grad(crit_sum(net(xb), yb), params, create_graph=True)
+                cx_t_v = torch.autograd.grad(torch.dot(g_c, v_t), xb)[0]
+                scores[i:i + xb.shape[0]] = cx_t_v.abs().flatten(1).sum(1)
+    finally:
+        for p, req in zip(params, orig_req):
+            p.requires_grad_(req)
+        net.zero_grad(set_to_none=True)
+    return scores.detach()
+
+
+# --------------------------------------------------------------------------- #
 # selection (Eq.1): ensemble-averaged, standardized  d(x) + lambda * M(x)
+#                   (optional 3rd term: inverse-Hessian curvature leverage)
 # --------------------------------------------------------------------------- #
 @torch.no_grad()
 def select_base(surrogates, images_norm, labels, x_t_norm, y_adv, N_p, lam, device,
-                base_dist='l2', multilayer=False):
+                base_dist='l2', multilayer=False,
+                curv=False, lam_curv=1.0, curv_damping=1.0, curv_cg_iters=10,
+                curv_hessian_bs=512, curv_cand_bs=128):
     cls_idx = (labels == y_adv).nonzero(as_tuple=True)[0]
     if len(cls_idx) < N_p:
         raise ValueError('class %d has %d images < N_p=%d' % (y_adv, len(cls_idx), N_p))
@@ -273,6 +370,11 @@ def select_base(surrogates, images_norm, labels, x_t_norm, y_adv, N_p, lam, devi
             score += d_combined + lam * standardize(torch.cat(ms))
         else:
             score += standardize(torch.cat(ds)) + lam * standardize(torch.cat(ms))
+        if curv:
+            cs = curvature_leverage_scores(
+                net, cand, y_adv, x_t_norm, y_adv, images_norm, labels,
+                curv_damping, curv_cg_iters, curv_hessian_bs, curv_cand_bs, device)
+            score -= lam_curv * standardize(cs)   # higher leverage -> lower (better) score
     score /= len(surrogates)
     sel = torch.topk(score, k=N_p, largest=False).indices          # least conf + closest
     return cls_idx[sel]
@@ -663,6 +765,246 @@ def _safe_tag(spec):
 
 
 # --------------------------------------------------------------------------- #
+# parallel training across multiple GPUs (surrogates AND victims)
+#
+# The independent unit of work (one surrogate, or one full victim) is the unit of
+# parallelism. Each worker process is pinned to a SINGLE physical GPU by setting
+# CUDA_VISIBLE_DEVICES *before* CUDA initializes in the fresh (spawned) process;
+# this both routes the work to that GPU and stops get_network() from auto-wrapping
+# the net in nn.DataParallel (it only does so when it sees >1 GPU). Jobs are split
+# round-robin over the pool, e.g. 4 jobs on GPUs [6,7] -> GPU6 does {0,2}, GPU7 {1,3}.
+#
+# Victim workers return a scalar result; surrogate workers return a CPU state_dict
+# which the PARENT reloads onto its own GPU (the surrogates must live in the parent
+# afterwards for target selection and poison crafting).
+# --------------------------------------------------------------------------- #
+def _set_proc_name(name):
+    """Best-effort rename of this process so nvidia-smi / ps / top show `name`
+    instead of the long venv python path. Uses setproctitle if installed (this
+    rewrites /proc/<pid>/cmdline, which is what nvidia-smi reads), else falls back
+    to prctl(PR_SET_NAME) which sets the <=15 char /proc/<pid>/comm."""
+    try:
+        import setproctitle
+        setproctitle.setproctitle(name)
+        return
+    except Exception:
+        pass
+    try:
+        import ctypes
+        buf = ctypes.create_string_buffer(name.encode()[:15])
+        ctypes.CDLL('libc.so.6', use_errno=True).prctl(15, ctypes.byref(buf), 0, 0, 0)
+    except Exception:
+        pass
+
+
+def _round_robin(n_items, gpu_pool):
+    """Assign item indices 0..n_items-1 round-robin to GPUs; -> {gpu: [idx,...]}."""
+    assign = {g: [] for g in gpu_pool}
+    for k in range(n_items):
+        assign[gpu_pool[k % len(gpu_pool)]].append(k)
+    return assign
+
+
+def _drain_and_join(ret_q, procs, n_expected, what):
+    """Collect n_expected results off ret_q, then join. Times out + checks worker
+    liveness so a crashed worker raises instead of hanging the run forever."""
+    results = []
+    while len(results) < n_expected:
+        try:
+            results.append(ret_q.get(timeout=10))
+        except queue.Empty:
+            if all(not p.is_alive() for p in procs):
+                break
+    for p in procs:
+        p.join()
+    if len(results) < n_expected:
+        raise RuntimeError('%s: got %d/%d results; a worker crashed (see stderr above)'
+                           % (what, len(results), n_expected))
+    results.sort(key=lambda r: r[0])
+    return results
+
+
+def _start_workers(gpu_pool, n_items, worker, common_args):
+    """Round-robin n_items over gpu_pool and start one spawn process per used GPU.
+    Each worker is called as worker(phys_gpu, gpu_rank, item_idxs, *common_args, ret_q)."""
+    ctx = mp.get_context('spawn')
+    ret_q = ctx.Queue()
+    assign = _round_robin(n_items, gpu_pool)
+    procs = []
+    for rank, g in enumerate(gpu_pool):
+        idxs = assign[g]
+        if not idxs:
+            continue
+        p = ctx.Process(target=worker,
+                        args=(g, rank, idxs) + tuple(common_args) + (ret_q,))
+        p.start()
+        procs.append(p)
+    return ret_q, procs
+
+
+# ---- victims ---------------------------------------------------------------- #
+def _victim_worker(phys_gpu, gpu_rank, victim_idxs, model_name, channel,
+                   num_classes, im_size, poisoned_cpu, labels_cpu, x_t_cpu,
+                   test_imgs_cpu, test_labs_cpu, mean, std, cfg, args,
+                   dsa_param, ret_q):
+    # pin to one GPU BEFORE any CUDA call in this fresh process
+    os.environ['CUDA_VISIBLE_DEVICES'] = str(phys_gpu)
+    _set_proc_name('main_IF.vic.g%s' % phys_gpu)
+    # stagger the first net build so get_network()'s time-based seed (ms
+    # resolution) differs across GPUs -> distinct net initialisations
+    time.sleep(0.07 * gpu_rank)
+    device = 'cuda' if torch.cuda.is_available() else 'cpu'
+    poisoned  = poisoned_cpu.to(device)
+    labels    = labels_cpu.to(device)
+    test_imgs = test_imgs_cpu.to(device)
+    test_labs = test_labs_cpu.to(device)
+    x_t       = x_t_cpu.to(device)
+    m = torch.tensor(mean, device=device).view(1, channel, 1, 1)
+    s = torch.tensor(std, device=device).view(1, channel, 1, 1)
+    for vi in victim_idxs:
+        net = get_network(model_name, channel, num_classes, im_size)
+        net = train_victim(net, poisoned, labels, cfg, args, m, s, device,
+                           dsa_param=dsa_param)
+        pred = predict_target(net, x_t)
+        cta = test_acc(net, test_imgs, test_labs, device)
+        ret_q.put((vi, pred, cta))
+        del net
+        if device == 'cuda':
+            torch.cuda.empty_cache()
+
+
+def train_victims_parallel(gpu_pool, num_victims, model_name, channel, num_classes,
+                           im_size, poisoned_cpu, labels_cpu, x_t_cpu,
+                           test_imgs_cpu, test_labs_cpu, mean, std, cfg, args,
+                           dsa_param):
+    """Train num_victims victims spread across gpu_pool in parallel (one process
+    per GPU). Returns (preds, ctas) ordered by victim index."""
+    ret_q, procs = _start_workers(
+        gpu_pool, num_victims, _victim_worker,
+        (model_name, channel, num_classes, im_size, poisoned_cpu, labels_cpu,
+         x_t_cpu, test_imgs_cpu, test_labs_cpu, mean, std, cfg, args, dsa_param))
+    results = _drain_and_join(ret_q, procs, num_victims, 'parallel victims')
+    preds = [r[1] for r in results]
+    ctas  = [r[2] for r in results]
+    return preds, ctas
+
+
+# ---- surrogates ------------------------------------------------------------- #
+def _surrogate_worker_full(phys_gpu, gpu_rank, sur_idxs, model_name, channel,
+                           num_classes, im_size, train_imgs_cpu, train_labs_cpu,
+                           test_imgs_cpu, test_labs_cpu, args, ret_q):
+    os.environ['CUDA_VISIBLE_DEVICES'] = str(phys_gpu)
+    _set_proc_name('main_IF.sur.g%s' % phys_gpu)
+    time.sleep(0.07 * gpu_rank)
+    device = 'cuda' if torch.cuda.is_available() else 'cpu'
+    train_imgs = train_imgs_cpu.to(device)
+    train_labs = train_labs_cpu.to(device)
+    test_imgs  = test_imgs_cpu.to(device)
+    test_labs  = test_labs_cpu.to(device)
+    crit = nn.CrossEntropyLoss().to(device)
+    for i in sur_idxs:
+        net = get_network(model_name, channel, num_classes, im_size)
+        t0 = time.time()
+        net = train_from_scratch(net, train_imgs, train_labs, args.surrogate_epochs,
+                                 args.surrogate_lr, args.surrogate_bs, [],
+                                 device, weight_decay=0.0)
+        t_train = int(time.time() - t0)
+        net.eval()
+        loss_sum, acc_sum, n = 0.0, 0, 0
+        with torch.no_grad():
+            for j in range(0, len(train_imgs), 512):
+                out = net(train_imgs[j:j + 512])
+                loss_sum += crit(out, train_labs[j:j + 512]).item() * out.shape[0]
+                acc_sum += (out.argmax(1) == train_labs[j:j + 512]).sum().item()
+                n += out.shape[0]
+        test_acc_val = test_acc(net, test_imgs, test_labs, device)
+        # return weights as numpy (pickled by value through the queue) so the
+        # worker can exit without invalidating torch's shared-memory fds
+        sd = {k: v.detach().cpu().numpy() for k, v in net.state_dict().items()}
+        ret_q.put((i, sd, t_train, loss_sum / n, acc_sum / n, test_acc_val))
+        del net
+        if device == 'cuda':
+            torch.cuda.empty_cache()
+
+
+def _surrogate_worker_syn(phys_gpu, gpu_rank, sur_idxs, model_name, channel,
+                          num_classes, im_size, image_syn_cpu, label_syn_cpu,
+                          test_imgs_cpu, test_labs_cpu, args, dsa_param, ret_q):
+    os.environ['CUDA_VISIBLE_DEVICES'] = str(phys_gpu)
+    _set_proc_name('main_IF.sur.g%s' % phys_gpu)
+    time.sleep(0.07 * gpu_rank)
+    device = 'cuda' if torch.cuda.is_available() else 'cpu'
+    image_syn = image_syn_cpu.to(device)
+    label_syn = label_syn_cpu.to(device)
+    test_imgs = test_imgs_cpu.to(device)
+    test_labs = test_labs_cpu.to(device)
+    testloader = DataLoader(TensorDataset(test_imgs, test_labs),
+                            batch_size=512, shuffle=False, num_workers=0)
+    syn_args = SimpleNamespace(
+        device=device, lr_net=args.surrogate_lr,
+        epoch_eval_train=args.surrogate_epochs, batch_train=args.surrogate_bs,
+        dsa=True, dsa_strategy=args.dsa_strategy, dsa_param=dsa_param)
+    for i in sur_idxs:
+        net = get_network(model_name, channel, num_classes, im_size)
+        net, _, acc = evaluate_synset(i, net, image_syn.clone(), label_syn.clone(),
+                                      testloader, syn_args)
+        net.eval()
+        sd = {k: v.detach().cpu().numpy() for k, v in net.state_dict().items()}
+        ret_q.put((i, sd, float(acc)))
+        del net
+        if device == 'cuda':
+            torch.cuda.empty_cache()
+
+
+def _rebuild_surrogates(results, model_name, channel, num_classes, im_size,
+                        requires, device):
+    """Reload worker-trained state_dicts onto the parent's GPU, ordered by index."""
+    nets = []
+    for r in results:
+        i, sd = r[0], r[1]
+        net = get_network(model_name, channel, num_classes, im_size)
+        net.load_state_dict({k: torch.as_tensor(v) for k, v in sd.items()})
+        net = net.to(device).eval()
+        for p in net.parameters():
+            p.requires_grad_(requires)
+        nets.append(net)
+    return nets
+
+
+def train_surrogates_on_full_parallel(gpu_pool, train_imgs_cpu, train_labs_cpu,
+                                       test_imgs_cpu, test_labs_cpu, channel,
+                                       num_classes, im_size, args, device):
+    """Parallel version of train_surrogates_on_full: trains across gpu_pool, then
+    rebuilds every surrogate on the parent's GPU."""
+    ret_q, procs = _start_workers(
+        gpu_pool, args.num_surrogates, _surrogate_worker_full,
+        (args.surrogate_model, channel, num_classes, im_size, train_imgs_cpu,
+         train_labs_cpu, test_imgs_cpu, test_labs_cpu, args))
+    results = _drain_and_join(ret_q, procs, args.num_surrogates, 'parallel surrogates')
+    for (i, _sd, t_train, tl, ta, tea) in results:
+        print('%s Evaluate_%02d: epoch = %04d train time = %d s train loss = %.6f '
+              'train acc = %.4f, test acc = %.4f'
+              % (get_time(), i, args.surrogate_epochs, t_train, tl, ta, tea))
+    return _rebuild_surrogates(results, args.surrogate_model, channel, num_classes,
+                               im_size, (args.attack == 'gradmatch'), device)
+
+
+def train_surrogates_on_syn_parallel(gpu_pool, image_syn_cpu, label_syn_cpu,
+                                     test_imgs_cpu, test_labs_cpu, channel,
+                                     num_classes, im_size, args, dsa_param, device):
+    """Parallel version of train_surrogates_on_syn (trains on the distilled S)."""
+    ret_q, procs = _start_workers(
+        gpu_pool, args.num_surrogates, _surrogate_worker_syn,
+        (args.surrogate_model, channel, num_classes, im_size, image_syn_cpu,
+         label_syn_cpu, test_imgs_cpu, test_labs_cpu, args, dsa_param))
+    results = _drain_and_join(ret_q, procs, args.num_surrogates, 'parallel surrogates')
+    for (i, _sd, acc) in results:
+        print('%s surrogate %02d trained on S (test acc = %.4f)' % (get_time(), i, acc))
+    return _rebuild_surrogates(results, args.surrogate_model, channel, num_classes,
+                               im_size, (args.attack == 'gradmatch'), device)
+
+
+# --------------------------------------------------------------------------- #
 # main
 # --------------------------------------------------------------------------- #
 def main(args):
@@ -672,6 +1014,26 @@ def main(args):
         sys.stdout = tee
         sys.stderr = tee
         print('%s logging (line-buffered, no delay) -> %s' % (get_time(), args.log_file))
+
+    _set_proc_name('main_IF')
+
+    # ---- multi-GPU victim parallelism --------------------------------------
+    # Decide the GPU pool BEFORE any CUDA call (the device list is frozen once
+    # CUDA initializes). The pool is read from CUDA_VISIBLE_DEVICES; the parent
+    # is pinned to its first GPU so its own work (surrogates, crafting, clean
+    # victims) stays single-GPU and get_network() never wraps in DataParallel.
+    gpu_pool, use_parallel = [], False
+    if args.parallel_victims:
+        vis = os.environ.get('CUDA_VISIBLE_DEVICES', '').strip()
+        gpu_pool = [g.strip() for g in vis.split(',') if g.strip() != ''] if vis else []
+        if len(gpu_pool) > 1:
+            use_parallel = True
+            os.environ['CUDA_VISIBLE_DEVICES'] = gpu_pool[0]
+            print('%s parallel victims ON: GPU pool=%s, parent pinned to GPU %s'
+                  % (get_time(), gpu_pool, gpu_pool[0]))
+        else:
+            print('%s --parallel_victims set but <2 GPUs in CUDA_VISIBLE_DEVICES '
+                  '(%r); running victims sequentially' % (get_time(), vis))
 
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     print('%s device=%s' % (get_time(), device))
@@ -703,6 +1065,13 @@ def main(args):
     s = torch.tensor(std, device=device).view(1, channel, 1, 1)
     norm = lambda x01: (x01 - m) / s
     denorm = lambda xn: xn * s + m
+
+    # CPU copies shared (read-only) with the parallel workers; the train labels,
+    # clean train images and test set never change, so build them once here.
+    train_imgs_cpu = train_imgs.cpu() if use_parallel else None
+    train_labs_cpu = train_labs.cpu() if use_parallel else None
+    test_imgs_cpu = test_imgs.cpu() if use_parallel else None
+    test_labs_cpu = test_labs.cpu() if use_parallel else None
 
     N_p = int(round(args.budget * N_total))
     print('%s N_total=%d  budget=%.4f -> N_p=%d poisons (all in y_adv class)'
@@ -738,17 +1107,31 @@ def main(args):
             surrogates.append(net)
     else:
         if args.surrogate_on_full_data:
-            print('\n%s === training %d surrogates (%s) on FULL real data (%d ep each) ==='
-                  % (get_time(), args.num_surrogates, args.surrogate_model, args.surrogate_epochs))
-            surrogates = train_surrogates_on_full(train_imgs, train_labs,
-                                                  test_imgs, test_labs,
-                                                  channel, num_classes, im_size, args, device)
+            print('\n%s === training %d surrogates (%s) on FULL real data (%d ep each)%s ==='
+                  % (get_time(), args.num_surrogates, args.surrogate_model,
+                     args.surrogate_epochs,
+                     (' across GPUs %s' % gpu_pool) if use_parallel else ''))
+            if use_parallel:
+                surrogates = train_surrogates_on_full_parallel(
+                    gpu_pool, train_imgs_cpu, train_labs_cpu, test_imgs_cpu,
+                    test_labs_cpu, channel, num_classes, im_size, args, device)
+            else:
+                surrogates = train_surrogates_on_full(train_imgs, train_labs,
+                                                      test_imgs, test_labs,
+                                                      channel, num_classes, im_size, args, device)
         else:
-            print('\n%s === training %d surrogates (%s) on distilled S (%d ep each) ==='
-                  % (get_time(), args.num_surrogates, args.surrogate_model, args.surrogate_epochs))
-            surrogates = train_surrogates_on_syn(image_syn, label_syn, test_imgs, test_labs,
-                                                 channel, num_classes, im_size, args,
-                                                 dsa_param, device)
+            print('\n%s === training %d surrogates (%s) on distilled S (%d ep each)%s ==='
+                  % (get_time(), args.num_surrogates, args.surrogate_model,
+                     args.surrogate_epochs,
+                     (' across GPUs %s' % gpu_pool) if use_parallel else ''))
+            if use_parallel:
+                surrogates = train_surrogates_on_syn_parallel(
+                    gpu_pool, image_syn.cpu(), label_syn.cpu(), test_imgs_cpu,
+                    test_labs_cpu, channel, num_classes, im_size, args, dsa_param, device)
+            else:
+                surrogates = train_surrogates_on_syn(image_syn, label_syn, test_imgs, test_labs,
+                                                     channel, num_classes, im_size, args,
+                                                     dsa_param, device)
         if sur_cache:
             os.makedirs(sur_cache, exist_ok=True)
             for i, net in enumerate(surrogates):
@@ -831,7 +1214,9 @@ def main(args):
 
         # per-pipeline accumulators (each ablation reuses the same poisons);
         # keyed by full spec so repeated names with different knobs stay distinct
-        pstat = {c['spec']: {'asr': [], 'cta': [], 'clean': [],
+        # asr_each / cta_each hold ONE entry per (target, victim) vote so the
+        # summary mean/std span all target x victim outcomes, not per-target means
+        pstat = {c['spec']: {'asr_each': [], 'cta_each': [], 'clean': [],
                              'tally': np.zeros(num_classes, dtype=np.int64)}
                  for c in pipelines}
 
@@ -856,7 +1241,13 @@ def main(args):
                     base_idx = select_base(surrogates, train_imgs, train_labs, x_t_norm,
                                            y_adv, N_p, args.lambda_margin, device,
                                            base_dist=args.base_dist,
-                                           multilayer=args.multilayer)
+                                           multilayer=args.multilayer,
+                                           curv=args.curv_select,
+                                           lam_curv=args.lambda_curv,
+                                           curv_damping=args.curv_damping,
+                                           curv_cg_iters=args.curv_cg_iters,
+                                           curv_hessian_bs=args.curv_hessian_bs,
+                                           curv_cand_bs=args.curv_cand_bs)
                 # 2) craft on the same surrogates
                 base01 = denorm(train_imgs[base_idx]).clamp(0.0, 1.0).detach()
                 if args.attack == 'gradmatch':
@@ -882,6 +1273,9 @@ def main(args):
             #    one poisoned tensor is shared by every pipeline (none mutate it).
             poisoned = train_imgs.clone()
             poisoned[base_idx] = norm(x_adv01)
+            # CPU copies handed to the parallel victim workers (per target)
+            poisoned_cpu = poisoned.cpu() if use_parallel else None
+            x_t_cpu = x_t_norm.cpu() if use_parallel else None
 
             # 4) for each ABLATION pipeline: train victims, measure ASR/CTA
             for cfg in pipelines:
@@ -895,26 +1289,41 @@ def main(args):
                 else:
                     clean_asr, clean_cta_m = float('nan'), float('nan')
                 victim_preds, victim_ctas = [], []
-                print('    [%s] victims: ' % cfg['spec'], end='', flush=True)
-                for vi in range(args.num_victims):
-                    net = get_network(args.model, channel, num_classes, im_size)
-                    net = train_victim(net, poisoned, train_labs, cfg, args,
-                                       m, s, device, dsa_param=dsa_param)
-                    pred = predict_target(net, x_t_norm)
-                    cta = test_acc(net, test_imgs, test_labs, device)
-                    victim_preds.append(pred)
-                    victim_ctas.append(cta)
-                    pstat[pkey_stat]['tally'][pred] += 1
-                    del net
-                    if device == 'cuda':
-                        torch.cuda.empty_cache()
-                    sep = ', ' if vi < args.num_victims - 1 else '\n'
-                    print(f'v{vi+1} done', end=sep, flush=True)
+                if use_parallel:
+                    print('    [%s] victims: %d across GPUs %s ... '
+                          % (cfg['spec'], args.num_victims, gpu_pool),
+                          end='', flush=True)
+                    victim_preds, victim_ctas = train_victims_parallel(
+                        gpu_pool, args.num_victims, args.model, channel, num_classes,
+                        im_size, poisoned_cpu, train_labs_cpu, x_t_cpu,
+                        test_imgs_cpu, test_labs_cpu, mean, std, cfg, args, dsa_param)
+                    for pred in victim_preds:
+                        pstat[pkey_stat]['tally'][pred] += 1
+                    print('done')
+                else:
+                    print('    [%s] victims: ' % cfg['spec'], end='', flush=True)
+                    for vi in range(args.num_victims):
+                        net = get_network(args.model, channel, num_classes, im_size)
+                        net = train_victim(net, poisoned, train_labs, cfg, args,
+                                           m, s, device, dsa_param=dsa_param)
+                        pred = predict_target(net, x_t_norm)
+                        cta = test_acc(net, test_imgs, test_labs, device)
+                        victim_preds.append(pred)
+                        victim_ctas.append(cta)
+                        pstat[pkey_stat]['tally'][pred] += 1
+                        del net
+                        if device == 'cuda':
+                            torch.cuda.empty_cache()
+                        sep = ', ' if vi < args.num_victims - 1 else '\n'
+                        print(f'v{vi+1} done', end=sep, flush=True)
 
                 poison_asr = 100.0 * sum(p == y_adv for p in victim_preds) / args.num_victims
                 poison_cta = float(np.mean(victim_ctas))
-                pstat[pkey_stat]['asr'].append(poison_asr)
-                pstat[pkey_stat]['cta'].append(poison_cta)
+                # record every victim individually (0/100 success, per-victim CTA)
+                # so std is taken over target x victims, not over targets alone
+                pstat[pkey_stat]['asr_each'].extend(
+                    100.0 if p == y_adv else 0.0 for p in victim_preds)
+                pstat[pkey_stat]['cta_each'].extend(float(c) for c in victim_ctas)
                 pstat[pkey_stat]['clean'].append(clean_asr)
 
                 print('    [%s | %s t%d/%d idx=%d] poison_CTA=%.4f poison_ASR=%.0f%%%s'
@@ -938,7 +1347,8 @@ def main(args):
                  len(chosen) * args.num_victims))
         for cfg in pipelines:
             st = pstat[cfg['spec']]
-            pa, ct = np.array(st['asr']), np.array(st['cta'])
+            # mean/std over every target x victim vote (std no longer per-target)
+            pa, ct = np.array(st['asr_each']), np.array(st['cta_each'])
             line = ('    [%-28s] poison CTA = %.4f +/- %.4f   poison ASR = %.1f%% +/- %.1f%%'
                     % (cfg['spec'], ct.mean(), ct.std(), pa.mean(), pa.std()))
             if args.clean_baseline:
@@ -1013,6 +1423,12 @@ if __name__ == '__main__':
                         'pick the targets EASIEST to attack: candidates are all test '
                         'images whose label != y_adv (any other class), ranked by the '
                         'surrogate ensemble probability on y_adv (closest to flipping first)')
+    p.add_argument('--parallel_victims', action='store_true', default=False,
+                   help='train the surrogates AND the per-target victims IN PARALLEL '
+                        'across the GPUs listed in CUDA_VISIBLE_DEVICES (e.g. =6,7), '
+                        'split round-robin (4 nets on 2 GPUs -> 2 per GPU). Needs '
+                        '>=2 visible GPUs; the parent is pinned to the first GPU and '
+                        'reloads the trained surrogates onto it for selection/crafting.')
     p.add_argument('--victim_epochs', type=int, default=200)
     p.add_argument('--victim_lr', type=float, default=0.1)
     p.add_argument('--victim_bs', type=int, default=125)
@@ -1034,6 +1450,25 @@ if __name__ == '__main__':
     p.add_argument('--multilayer', action='store_true', default=False,
                    help='use features from all intermediate stages (not just the last layer) '
                         'for base selection distance; recommended for deep nets like VGG/ResNet')
+    # third base-selection signal: inverse-Hessian curvature leverage
+    #   curv(x) = || C_x^T (H + lambda I)^{-1} g_t ||_1   (matrix-free: HVP + CG)
+    p.add_argument('--curv_select', action='store_true', default=False,
+                   help='add inverse-Hessian curvature-leverage as a 3rd base-selection '
+                        'score on top of feature distance + margin; ranks base points by '
+                        '|| C_x^T (H+lambda I)^-1 g_t ||_1 (matrix-free via HVP + conj. grad)')
+    p.add_argument('--lambda_curv', type=float, default=1.0,
+                   help='weight of the standardized curvature-leverage term (higher leverage '
+                        'is preferred); only used with --curv_select')
+    p.add_argument('--curv_damping', type=float, default=1.0,
+                   help='Tikhonov damping lambda in (H + lambda I) for the inverse-HVP; larger '
+                        'is better-conditioned / more PD for conjugate gradient')
+    p.add_argument('--curv_cg_iters', type=int, default=10,
+                   help='conjugate-gradient iterations for solving (H + lambda I) v_t = g_t')
+    p.add_argument('--curv_hessian_bs', type=int, default=512,
+                   help='# training samples used to estimate the Hessian-vector products')
+    p.add_argument('--curv_cand_bs', type=int, default=128,
+                   help='candidate batch size for the double-backward curvature pass '
+                        '(lower if it OOMs; the per-sample scores are batch-size invariant)')
     p.add_argument('--single_surrogate', action='store_true', default=False,
                    help='use only the first surrogate for crafting instead of the ensemble')
     p.add_argument('--fast_gradmatch', action='store_true', default=False,
