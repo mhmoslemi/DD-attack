@@ -1,0 +1,27 @@
+{
+  "surrogate_model": "ResNet20BN",
+  "pair": "dog-bird",
+  "y_adv": 5,
+  "num_targets": 8,
+  "seed": 0,
+  "indices": [
+    3561,
+    1803,
+    2543,
+    6973,
+    6298,
+    5532,
+    3923,
+    2612
+  ],
+  "true_labels": [
+    7,
+    2,
+    3,
+    3,
+    3,
+    3,
+    3,
+    3
+  ]
+}

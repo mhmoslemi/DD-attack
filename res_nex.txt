@@ -1,0 +1,310 @@
+ 'pgd_steps': 800, 
+'easy_targets': True, 
+'random_select': False, 
+'multilayer': True, 
+'curv_select': False, 
+'exact_select': True, 
+'if_max_surrogates': 4, 
+'single_surrogate': True, 
+'surrogate_on_full_data': True,
+num_surrogates 4 
+surrogate_epochs 40 
+budget=0.0100
+
+
+  [dog-bird t1/8 idx=3561] fc craft_obj=0.0406 linf=0.0314
+    [standard | dog-bird t1/8 idx=3561] poison_CTA=0.8268 poison_ASR=40%
+
+  [dog-bird t2/8 idx=1803] fc craft_obj=0.0362 linf=0.0314
+    [standard | dog-bird t2/8 idx=1803] poison_CTA=0.8328 poison_ASR=0%
+
+  [dog-bird t3/8 idx=2543] fc craft_obj=0.0397 linf=0.0314
+    [standard | dog-bird t3/8 idx=2543] poison_CTA=0.8304 poison_ASR=40%
+
+  [dog-bird t4/8 idx=6973] fc craft_obj=0.0395 linf=0.0314
+    [standard | dog-bird t4/8 idx=6973] poison_CTA=0.8310 poison_ASR=80%
+
+  [dog-bird t5/8 idx=6298] fc craft_obj=0.0370 linf=0.0314
+    [standard | dog-bird t5/8 idx=6298] poison_CTA=0.8298 poison_ASR=60%
+
+  [dog-bird t6/8 idx=5532] fc craft_obj=0.0324 linf=0.0314
+    [standard | dog-bird t6/8 idx=5532] poison_CTA=0.8303 poison_ASR=20%
+
+  [dog-bird t7/8 idx=3923] fc craft_obj=0.0356 linf=0.0314
+    [standard | dog-bird t7/8 idx=3923] poison_CTA=0.8316 poison_ASR=40%
+
+  [dog-bird t8/8 idx=2612] fc craft_obj=0.0362 linf=0.0314
+    [standard | dog-bird t8/8 idx=2612] poison_CTA=0.8293 poison_ASR=0%
+
+poison CTA = 0.8302 +/- 0.0046  
+poison ASR = 35.0% +/- 47.7%
+
+
+--------------------------
+
+'pgd_steps': 250, 
+'easy_targets': True, 
+'random_select': False, 
+'multilayer': True, 
+'curv_select': False, 
+'exact_select': True, 
+'if_max_surrogates': 4, 
+'single_surrogate': True, 
+'surrogate_on_full_data': True, 
+num_surrogates 4 
+surrogate_epochs 40 
+budget=0.0100
+
+
+      
+  [dog-bird t1/8 idx=3561] fc craft_obj=0.0626 linf=0.0314
+    [standard | dog-bird t1/8 idx=3561] poison_CTA=0.8317 poison_ASR=20%
+      
+  [dog-bird t2/8 idx=1803] fc craft_obj=0.0453 linf=0.0314
+    [standard | dog-bird t2/8 idx=1803] poison_CTA=0.8307 poison_ASR=20%
+      
+  [dog-bird t3/8 idx=2543] fc craft_obj=0.0504 linf=0.0314
+    [standard | dog-bird t3/8 idx=2543] poison_CTA=0.8309 poison_ASR=40%
+      
+  [dog-bird t4/8 idx=6973] fc craft_obj=0.0407 linf=0.0314
+    [standard | dog-bird t4/8 idx=6973] poison_CTA=0.8321 poison_ASR=80%
+      
+  [dog-bird t5/8 idx=6298] fc craft_obj=0.0531 linf=0.0314
+    [standard | dog-bird t5/8 idx=6298] poison_CTA=0.8288 poison_ASR=40%
+      
+  [dog-bird t6/8 idx=5532] fc craft_obj=0.0505 linf=0.0314
+    [standard | dog-bird t6/8 idx=5532] poison_CTA=0.8315 poison_ASR=0%
+      
+  [dog-bird t7/8 idx=3923] fc craft_obj=0.0511 linf=0.0314
+    [standard | dog-bird t7/8 idx=3923] poison_CTA=0.8311 poison_ASR=60%
+      
+  [dog-bird t8/8 idx=2612] fc craft_obj=0.0407 linf=0.0314
+    [standard | dog-bird t8/8 idx=2612] poison_CTA=0.8285 poison_ASR=40%
+
+  poison CTA = 0.8307 +/- 0.0034   
+  poison ASR = 37.5% +/- 48.4%
+
+
+
+-----------------------
+
+'pgd_steps': 250, 
+'easy_targets': True, 
+'random_select': False, 
+'multilayer': True, 
+'curv_select': False, 
+'exact_select': True, 
+'if_max_surrogates': 1, 
+'single_surrogate': True, 
+'surrogate_on_full_data': True, 
+num_surrogates 4 
+surrogate_epochs 40 
+budget=0.0100
+
+      
+  [dog-bird t1/8 idx=3561] fc craft_obj=0.0361 linf=0.0314
+    [standard | dog-bird t1/8 idx=3561] poison_CTA=0.8307 poison_ASR=20%
+      
+  [dog-bird t2/8 idx=1803] fc craft_obj=0.0355 linf=0.0314
+    [standard | dog-bird t2/8 idx=1803] poison_CTA=0.8329 poison_ASR=20%
+      
+  [dog-bird t3/8 idx=2543] fc craft_obj=0.0462 linf=0.0314
+    [standard | dog-bird t3/8 idx=2543] poison_CTA=0.8294 poison_ASR=40%
+      
+  [dog-bird t4/8 idx=6973] fc craft_obj=0.0386 linf=0.0314
+    [standard | dog-bird t4/8 idx=6973] poison_CTA=0.8321 poison_ASR=60%
+      
+  [dog-bird t5/8 idx=6298] fc craft_obj=0.0336 linf=0.0314
+    [standard | dog-bird t5/8 idx=6298] poison_CTA=0.8291 poison_ASR=40%
+      
+  [dog-bird t6/8 idx=5532] fc craft_obj=0.0424 linf=0.0314
+    [standard | dog-bird t6/8 idx=5532] poison_CTA=0.8292 poison_ASR=0%
+      
+  [dog-bird t7/8 idx=3923] fc craft_obj=0.0429 linf=0.0314
+    [standard | dog-bird t7/8 idx=3923] poison_CTA=0.8287 poison_ASR=40%
+      
+  [dog-bird t8/8 idx=2612] fc craft_obj=0.0380 linf=0.0314
+    [standard | dog-bird t8/8 idx=2612] poison_CTA=0.8284 poison_ASR=60%
+
+    poison CTA = 0.8301 +/- 0.0037
+    poison ASR = 35.0% +/- 47.7%
+
+
+
+
+--------------------------
+
+
+'pgd_steps': 100, 
+'easy_targets': True, 
+'random_select': False, 
+'multilayer': True, 
+'curv_select': False, 
+'exact_select': True, 
+'if_max_surrogates': 1, 
+'single_surrogate': True, 
+'surrogate_on_full_data': True, 
+num_surrogates 4 
+surrogate_epochs 40 
+budget=0.0100
+
+
+
+  [dog-bird t1/8 idx=3561] fc craft_obj=0.0544 linf=0.0314
+    
+    [standard | dog-bird t1/8 idx=3561] poison_CTA=0.8334 poison_ASR=80%
+      
+  [dog-bird t2/8 idx=1803] fc craft_obj=0.0522 linf=0.0314
+    
+    [standard | dog-bird t2/8 idx=1803] poison_CTA=0.8302 poison_ASR=40%
+      
+  [dog-bird t3/8 idx=2543] fc craft_obj=0.0510 linf=0.0314
+    
+    [standard | dog-bird t3/8 idx=2543] poison_CTA=0.8317 poison_ASR=40%
+      
+  [dog-bird t4/8 idx=6973] fc craft_obj=0.0514 linf=0.0314
+    
+    [standard | dog-bird t4/8 idx=6973] poison_CTA=0.8320 poison_ASR=60%
+      
+  [dog-bird t5/8 idx=6298] fc craft_obj=0.0553 linf=0.0314
+    
+    [standard | dog-bird t5/8 idx=6298] poison_CTA=0.8314 poison_ASR=40%
+      
+  [dog-bird t6/8 idx=5532] fc craft_obj=0.0574 linf=0.0314
+    
+    [standard | dog-bird t6/8 idx=5532] poison_CTA=0.8323 poison_ASR=40%
+      
+  [dog-bird t7/8 idx=3923] fc craft_obj=0.0583 linf=0.0314
+    
+    [standard | dog-bird t7/8 idx=3923] poison_CTA=0.8289 poison_ASR=40%
+      
+  [dog-bird t8/8 idx=2612] fc craft_obj=0.0460 linf=0.0314
+    
+    [standard | dog-bird t8/8 idx=2612] poison_CTA=0.8295 poison_ASR=20%
+
+  
+
+poison CTA = 0.8312 +/- 0.0033  
+poison ASR = 45.0% +/- 49.7%
+      
+
+
+--------------------------
+
+
+'pgd_steps': 100, 
+'easy_targets': True, 
+'random_select': False, 
+'multilayer': True, 
+'curv_select': False, 
+'exact_select': True, 
+'if_max_surrogates': 1, 
+'single_surrogate': True, 
+'surrogate_on_full_data': True, 
+num_surrogates 4 
+surrogate_epochs 80 
+budget=0.0100
+
+
+  [dog-bird t1/8 idx=3561] fc craft_obj=0.0606 linf=0.0314
+    [standard | dog-bird t1/8 idx=3561] poison_CTA=0.8338 poison_ASR=20%
+      
+  [dog-bird t2/8 idx=1803] fc craft_obj=0.0756 linf=0.0314
+    [standard | dog-bird t2/8 idx=1803] poison_CTA=0.8295 poison_ASR=20%
+      
+  [dog-bird t3/8 idx=2543] fc craft_obj=0.0758 linf=0.0314
+    [standard | dog-bird t3/8 idx=2543] poison_CTA=0.8315 poison_ASR=80%
+      
+  [dog-bird t4/8 idx=6973] fc craft_obj=0.0595 linf=0.0314
+    [standard | dog-bird t4/8 idx=6973] poison_CTA=0.8323 poison_ASR=60%
+      
+  [dog-bird t5/8 idx=6298] fc craft_obj=0.0580 linf=0.0314
+    [standard | dog-bird t5/8 idx=6298] poison_CTA=0.8312 poison_ASR=60%
+      
+  [dog-bird t6/8 idx=5532] fc craft_obj=0.0654 linf=0.0314
+    [standard | dog-bird t6/8 idx=5532] poison_CTA=0.8312 poison_ASR=40%
+      
+  [dog-bird t7/8 idx=3923] fc craft_obj=0.0610 linf=0.0314
+    [standard | dog-bird t7/8 idx=3923] poison_CTA=0.8309 poison_ASR=40%
+      
+  [dog-bird t8/8 idx=2612] fc craft_obj=0.0632 linf=0.0314
+    [standard | dog-bird t8/8 idx=2612] poison_CTA=0.8316 poison_ASR=60%
+
+poison CTA = 0.8315 +/- 0.0035
+poison ASR = 47.5% +/- 49.9%
+
+
+
+
+--------------------------
+
+ 'random_select': True
+ 'pgd_steps': 250
+  budget=0.0100   
+
+
+  [dog-bird t1/8 idx=3561] fc craft_obj=0.0498 linf=0.0314
+    
+    [standard | dog-bird t1/8 idx=3561] poison_CTA=0.8314 poison_ASR=60%
+  [dog-bird t2/8 idx=1803] fc craft_obj=0.0465 linf=0.0314
+    
+    [standard | dog-bird t2/8 idx=1803] poison_CTA=0.8321 poison_ASR=20%
+  [dog-bird t3/8 idx=2543] fc craft_obj=0.0437 linf=0.0314
+    
+    [standard | dog-bird t3/8 idx=2543] poison_CTA=0.8286 poison_ASR=20%
+  [dog-bird t4/8 idx=6973] fc craft_obj=0.0369 linf=0.0314
+    
+    [standard | dog-bird t4/8 idx=6973] poison_CTA=0.8317 poison_ASR=40%
+  [dog-bird t5/8 idx=6298] fc craft_obj=0.0403 linf=0.0314
+    
+    [standard | dog-bird t5/8 idx=6298] poison_CTA=0.8304 poison_ASR=60%
+  [dog-bird t6/8 idx=5532] fc craft_obj=0.0421 linf=0.0314
+    
+    [standard | dog-bird t6/8 idx=5532] poison_CTA=0.8290 poison_ASR=0%
+  [dog-bird t7/8 idx=3923] fc craft_obj=0.0315 linf=0.0314
+    
+    [standard | dog-bird t7/8 idx=3923] poison_CTA=0.8298 poison_ASR=20%
+  [dog-bird t8/8 idx=2612] fc craft_obj=0.0435 linf=0.0314
+    
+    [standard | dog-bird t8/8 idx=2612] poison_CTA=0.8320 poison_ASR=20%
+
+
+  poison CTA = 0.8306 +/- 0.0034   
+  poison ASR = 30.0% +/- 45.8%
+
+
+
+--------------------------
+
+ 'random_select': True
+ 'pgd_steps': 100
+  budget=0.0100   
+
+
+  [dog-bird t1/8 idx=3561] fc craft_obj=0.0590 linf=0.0314
+    
+    [standard | dog-bird t1/8 idx=3561] poison_CTA=0.8302 poison_ASR=20%
+  [dog-bird t2/8 idx=1803] fc craft_obj=0.0615 linf=0.0314
+    
+    [standard | dog-bird t2/8 idx=1803] poison_CTA=0.8307 poison_ASR=20%
+  [dog-bird t3/8 idx=2543] fc craft_obj=0.0566 linf=0.0314
+    
+    [standard | dog-bird t3/8 idx=2543] poison_CTA=0.8289 poison_ASR=60%
+  [dog-bird t4/8 idx=6973] fc craft_obj=0.0535 linf=0.0314
+    
+    [standard | dog-bird t4/8 idx=6973] poison_CTA=0.8307 poison_ASR=20%
+  [dog-bird t5/8 idx=6298] fc craft_obj=0.0599 linf=0.0314
+    
+    [standard | dog-bird t5/8 idx=6298] poison_CTA=0.8296 poison_ASR=60%
+  [dog-bird t6/8 idx=5532] fc craft_obj=0.0598 linf=0.0314
+    
+    [standard | dog-bird t6/8 idx=5532] poison_CTA=0.8329 poison_ASR=0%
+  [dog-bird t7/8 idx=3923] fc craft_obj=0.0568 linf=0.0314
+    
+    [standard | dog-bird t7/8 idx=3923] poison_CTA=0.8272 poison_ASR=80%
+  [dog-bird t8/8 idx=2612] fc craft_obj=0.0443 linf=0.0314
+    
+    [standard | dog-bird t8/8 idx=2612] poison_CTA=0.8303 poison_ASR=40%
+
+    poison CTA = 0.8301 +/- 0.0036
+    poison ASR = 37.5% +/- 48.4%

@@ -267,6 +267,25 @@ def _conj_grad(matvec, b, iters, tol=1e-8):
     return x
 
 
+def _inverse_hvp(net, g_t, params, train_imgs, train_labs, damping, cg_iters,
+                 hessian_bs, device):
+    """v_t = (H + damping I)^{-1} g_t, matrix-free: the training-loss Hessian H is
+    accessed only through Hessian-vector products on a FIXED random minibatch
+    (so CG sees a constant operator), and the system is solved by conjugate grad.
+    Requires grad enabled and net params with requires_grad=True (caller's job)."""
+    crit_mean = nn.CrossEntropyLoss().to(device)
+    n_tr = train_imgs.shape[0]
+    hidx = torch.randperm(n_tr, device=device)[:min(hessian_bs, n_tr)]
+    g_train = _flat_params_grad(crit_mean(net(train_imgs[hidx]), train_labs[hidx]),
+                                params, create_graph=True)
+
+    def hvp(v):                                      # (H + damping I) v, matrix-free
+        Hv = torch.autograd.grad(g_train, params, grad_outputs=v, retain_graph=True)
+        return torch.cat([h.reshape(-1) for h in Hv]) + damping * v
+
+    return _conj_grad(hvp, g_t, cg_iters).detach()
+
+
 def curvature_leverage_scores(net, cand, y_base, x_t_norm, y_adv,
                               train_imgs, train_labs, damping, cg_iters,
                               hessian_bs, cand_bs, device):
@@ -280,7 +299,9 @@ def curvature_leverage_scores(net, cand, y_base, x_t_norm, y_adv,
 
     A batch's SUMMED loss lets one input-gradient pass recover every sample's
     C_x^T v_t at once (cross terms vanish), so curvature for cand_bs candidates
-    costs a single double-backward."""
+    costs a single double-backward. Note eps*||C_x^T v_t||_1 is exactly the best
+    influence achievable by an L_inf-eps perturbation, so this score ranks base
+    points by their best-case poison."""
     crit_mean = nn.CrossEntropyLoss().to(device)
     crit_sum = nn.CrossEntropyLoss(reduction='sum').to(device)
     params = [p for p in net.parameters()]
@@ -294,20 +315,9 @@ def curvature_leverage_scores(net, cand, y_base, x_t_norm, y_adv,
             g_t = _flat_params_grad(crit_mean(net(x_t_norm.unsqueeze(0)), y_t),
                                     params).detach()
 
-            # fixed Hessian minibatch: keep g_train(theta) differentiable for HVPs
-            n_tr = train_imgs.shape[0]
-            hidx = torch.randperm(n_tr, device=device)[:min(hessian_bs, n_tr)]
-            g_train = _flat_params_grad(crit_mean(net(train_imgs[hidx]),
-                                                  train_labs[hidx]),
-                                        params, create_graph=True)
-
-            def hvp(v):                                  # (H + lambda I) v, matrix-free
-                Hv = torch.autograd.grad(g_train, params, grad_outputs=v,
-                                         retain_graph=True)
-                return torch.cat([h.reshape(-1) for h in Hv]) + damping * v
-
             # inverse-Hessian-vector product  v_t = (H + lambda I)^{-1} g_t
-            v_t = _conj_grad(hvp, g_t, cg_iters).detach()
+            v_t = _inverse_hvp(net, g_t, params, train_imgs, train_labs,
+                               damping, cg_iters, hessian_bs, device)
 
             # per-candidate  || C_x^T v_t ||_1
             scores = torch.empty(len(cand), device=device)
@@ -386,6 +396,128 @@ def select_base_random(labels, y_adv, N_p, device):
         raise ValueError('class %d has %d images < N_p=%d' % (y_adv, len(cls_idx), N_p))
     perm = torch.randperm(len(cls_idx), device=device)
     return cls_idx[perm[:N_p]]
+
+
+# --------------------------------------------------------------------------- #
+# EXACT influence-function base selection (ported from main_IF_exact.py)
+#   score(z) = grad_theta l(z_t)^T (H + damping I)^{-1} grad_theta l(z)
+# i.e. the curvature-aware influence of upweighting the CLEAN base point z on the
+# target loss -- the same derivation as smart-select but KEEPING the inverse
+# Hessian. H is the surrogate's empirical-risk Hessian (never formed: CG over
+# HVPs), and <s, grad l(z)> is read off for every candidate at once via a central
+# finite difference of the per-sample loss along s (two forward passes, no
+# per-sample param gradients). Largest score = best base to poison.
+# --------------------------------------------------------------------------- #
+def _select_params(net, last_layer):
+    m = net.module if isinstance(net, nn.DataParallel) else net
+    ps = [p for p in m.parameters()]
+    return ps[-2:] if last_layer else ps        # last linear (w,b) heuristic
+
+
+@torch.no_grad()
+def _per_sample_ce(net, imgs, y_const, device, bs=512):
+    """Per-sample CE of `imgs` against the constant label y_const (no reduction)."""
+    net.eval()
+    out = []
+    for i in range(0, len(imgs), bs):
+        b = imgs[i:i + bs]
+        yb = torch.full((len(b),), y_const, dtype=torch.long, device=device)
+        out.append(F.cross_entropy(net(b), yb, reduction='none'))
+    return torch.cat(out)
+
+
+def _cg_inverse_hvp(net, params, g, hess_imgs, hess_labs, device,
+                    damping, iters, tol, hess_bs):
+    """Solve (H + damping*I) s = g with conjugate gradients, where H is the
+    Hessian of the mean CE on (hess_imgs, hess_labs) w.r.t. `params`. Returns
+    (s ~ (H+damping I)^{-1} g, cg_iters_used). HVPs reuse one retained double-
+    backward graph. params/g/s are lists of per-parameter tensors."""
+    net.eval()
+    n = len(hess_imgs)
+    idx = torch.arange(n, device=device)
+    if hess_bs and hess_bs < n:
+        idx = idx[torch.randperm(n, device=device)[:hess_bs]]
+    xb, yb = hess_imgs[idx], hess_labs[idx]
+    loss = F.cross_entropy(net(xb), yb)
+    grads = torch.autograd.grad(loss, params, create_graph=True)
+
+    def hvp(vec):
+        dot = sum((gg * vv).sum() for gg, vv in zip(grads, vec))
+        hv = torch.autograd.grad(dot, params, retain_graph=True)
+        return [h + damping * vv for h, vv in zip(hv, vec)]
+
+    x = [torch.zeros_like(gi) for gi in g]
+    r = [gi.clone() for gi in g]
+    p = [gi.clone() for gi in g]
+    rs_old = sum((ri * ri).sum() for ri in r)
+    g_norm = torch.sqrt(rs_old).clamp_min(1e-12)
+    used = iters
+    for it in range(iters):
+        Ap = hvp(p)
+        pAp = sum((pi * Api).sum() for pi, Api in zip(p, Ap))
+        alpha = rs_old / (pAp + 1e-12)
+        x = [xi + alpha * pi for xi, pi in zip(x, p)]
+        r = [ri - alpha * Api for ri, Api in zip(r, Ap)]
+        rs_new = sum((ri * ri).sum() for ri in r)
+        if torch.sqrt(rs_new) <= tol * g_norm:
+            used = it + 1
+            break
+        beta = rs_new / (rs_old + 1e-12)
+        p = [ri + beta * pi for ri, pi in zip(r, p)]
+        rs_old = rs_new
+    return [xi.detach() for xi in x], used
+
+
+def select_base_influence(surrogates, images_norm, labels, x_t_norm, y_adv, N_p,
+                          hess_imgs, hess_labs, device,
+                          damping=0.01, cg_iters=100, cg_tol=1e-4, fd_h=1e-2,
+                          last_layer=False, hess_bs=0, max_surrogates=0, verbose=False):
+    """Rank candidates of class y_adv by the EXACT (curvature-aware) influence on
+    the target loss, score(z) = grad l(z_t)^T H^{-1} grad l(z), averaged over the
+    surrogate ensemble. Returns indices into the full training set (largest score
+    = most negative target-loss change = best base to poison)."""
+    cls_idx = (labels == y_adv).nonzero(as_tuple=True)[0]
+    if len(cls_idx) < N_p:
+        raise ValueError('class %d has %d images < N_p=%d' % (y_adv, len(cls_idx), N_p))
+    cand = images_norm[cls_idx]
+    nets = surrogates if not max_surrogates else surrogates[:max_surrogates]
+    total = torch.zeros(len(cls_idx), device=device)
+    cg_used = []
+    for net in nets:
+        params = _select_params(net, last_layer)
+        orig_req = [p.requires_grad for p in params]
+        for p in params:
+            p.requires_grad_(True)
+        net.eval()
+        # target gradient g = grad_th CE(net(x_t), y_adv)
+        y_t = torch.tensor([y_adv], dtype=torch.long, device=device)
+        loss_t = F.cross_entropy(net(x_t_norm.unsqueeze(0)), y_t)
+        g = [gi.detach() for gi in torch.autograd.grad(loss_t, params)]
+        # s = (H + damping I)^{-1} g  via CG over HVPs
+        s, used = _cg_inverse_hvp(net, params, g, hess_imgs, hess_labs, device,
+                                  damping, cg_iters, cg_tol, hess_bs)
+        cg_used.append(used)
+        # per-candidate score <s, grad_th l(z)> by central finite difference
+        snorm = torch.sqrt(sum((si * si).sum() for si in s)).clamp_min(1e-12)
+        shat = [si / snorm for si in s]
+        orig = [p.detach().clone() for p in params]
+        with torch.no_grad():
+            for p, o, sh in zip(params, orig, shat):
+                p.copy_(o + fd_h * sh)
+            lp = _per_sample_ce(net, cand, y_adv, device)
+            for p, o, sh in zip(params, orig, shat):
+                p.copy_(o - fd_h * sh)
+            lm = _per_sample_ce(net, cand, y_adv, device)
+            for p, o in zip(params, orig):
+                p.copy_(o)
+        total += snorm * (lp - lm) / (2.0 * fd_h)
+        for p, req in zip(params, orig_req):
+            p.requires_grad_(req)
+    total /= len(nets)
+    if verbose:
+        print('      [exact] CG iters used per surrogate: %s' % cg_used)
+    sel = torch.topk(total, k=N_p, largest=True).indices
+    return cls_idx[sel]
 
 
 @torch.no_grad()
@@ -552,6 +684,66 @@ def craft_gradmatch(surrogates, base01, x_t_norm, y_adv, norm, eps, step, iters,
                 delta.data = torch.clamp(base01 + delta, 0.0, 1.0) - base01
             if obj_val < best_obj:
                 best_obj = obj_val
+                best_delta = delta.detach().clone()
+
+    return torch.clamp(base01 + best_delta, 0.0, 1.0), best_obj
+
+
+# --------------------------------------------------------------------------- #
+# influence crafting: directly drive the deployed-poison target-loss influence
+#   I(delta) = - < v_t , grad_theta CE(net(base+delta), y_adv) > ,
+#   v_t = (H + lambda I)^{-1} grad_theta CE(net(x_target), y_adv)
+# as negative as possible (i.e. MAXIMIZE the alignment after the minus sign).
+# The L_inf one-step optimum is delta* = eps * sign(C_x^T v_t); we run signed PGD
+# so the cross-derivative C_x is re-evaluated at base+delta and the [0,1] box and
+# eps-ball are respected. Reuses the matrix-free inverse-HVP (HVP + CG).
+# --------------------------------------------------------------------------- #
+def craft_influence(surrogates, base01, x_t_norm, y_adv, norm, eps, step, iters,
+                    restarts, device, train_imgs, train_labs, damping, cg_iters,
+                    hessian_bs, single_surrogate=False):
+    nets = [surrogates[0]] if single_surrogate else surrogates
+    for net in nets:                       # need d/d theta and d/d delta
+        for p in net.parameters():
+            p.requires_grad_(True)
+    crit = nn.CrossEntropyLoss().to(device)
+    crit_sum = nn.CrossEntropyLoss(reduction='sum').to(device)
+    y_t = torch.full((1,), y_adv, dtype=torch.long, device=device)
+    y_p = torch.full((base01.shape[0],), y_adv, dtype=torch.long, device=device)
+
+    # v_t = (H + lambda I)^{-1} g_t per net (constant in delta) -> precompute, detach
+    v_ts = []
+    for net in nets:
+        params = [p for p in net.parameters()]
+        g_t = _flat_params_grad(crit(net(x_t_norm.unsqueeze(0)), y_t), params).detach()
+        v_ts.append(_inverse_hvp(net, g_t, params, train_imgs, train_labs,
+                                 damping, cg_iters, hessian_bs, device))
+
+    base01 = base01.detach()
+    best_delta, best_obj = None, float('inf')
+    for r in range(restarts):
+        delta = torch.empty_like(base01).uniform_(-eps, eps)
+        delta = (torch.clamp(base01 + delta, 0.0, 1.0) - base01).detach().requires_grad_(True)
+        opt = torch.optim.Adam([delta], lr=step)
+        for t in range(iters):
+            x_adv_norm = norm(torch.clamp(base01 + delta, 0.0, 1.0))
+            # minimize I = -alignment  (== maximize the post-minus influence term);
+            # summed loss over poisons so each delta_i gets its own C_{x_i}^T v_t
+            obj = 0.0
+            for net, v_t in zip(nets, v_ts):
+                params = [p for p in net.parameters()]
+                g_b = _flat_params_grad(crit_sum(net(x_adv_norm), y_p), params,
+                                        create_graph=True)
+                obj = obj - torch.dot(g_b, v_t)
+            obj = obj / len(nets)
+            grad = torch.autograd.grad(obj, delta)[0]
+            opt.zero_grad()
+            delta.grad = grad.sign()                   # signed Adam (== eps*sign step)
+            opt.step()
+            with torch.no_grad():
+                delta.clamp_(-eps, eps)
+                delta.data = torch.clamp(base01 + delta, 0.0, 1.0) - base01
+            if obj.item() < best_obj:
+                best_obj = obj.item()
                 best_delta = delta.detach().clone()
 
     return torch.clamp(base01 + best_delta, 0.0, 1.0), best_obj
@@ -1185,6 +1377,22 @@ def main(args):
         print('%s precompute_only: done, exiting.' % get_time())
         return
 
+    # ---- Hessian set for EXACT influence-function selection ----------------
+    # = the dataset the surrogate's empirical risk is defined on (real data when
+    # surrogates were trained on full data, else the distilled S). Built once.
+    hess_imgs = hess_labs = None
+    hess_bs = 0
+    if args.exact_select:
+        if args.if_hess_source == 'full' or args.surrogate_on_full_data:
+            hsize = args.if_hess_size if args.if_hess_size > 0 else 2000
+            perm = torch.randperm(N_total, device=device)[:hsize]
+            hess_imgs, hess_labs = train_imgs[perm], train_labs[perm]
+            print('%s exact-IF Hessian set = %d real train images' % (get_time(), len(hess_imgs)))
+        else:
+            hess_imgs, hess_labs = image_syn, label_syn
+            print('%s exact-IF Hessian set = distilled S (%d images)' % (get_time(), len(hess_imgs)))
+        hess_bs = args.if_hess_size if (args.if_hess_size > 0 and args.if_hess_source != 'full') else 0
+
     # ---- per class pair / target ------------------------------------------
     g = torch.Generator(device='cpu').manual_seed(args.seed)
     all_rows = []
@@ -1199,11 +1407,36 @@ def main(args):
             chosen = preselected[pair]['indices'][:args.num_targets]
             print('  targets (preselected): %s' % chosen)
         elif args.easy_targets:
-            chosen = select_easy_targets(surrogates, test_imgs, test_labs, y_adv,
-                                         args.num_targets, device)
-            print('  targets (easy, label!=%s): %s'
-                  % (class_names[y_adv], [(int(i), class_names[int(test_labs[i])])
-                                          for i in chosen]))
+            # easy-target ranking depends on the (re-trained) surrogates, so it
+            # drifts run-to-run. Cache the chosen indices per (surrogate_model,
+            # pair, num_targets, seed) so repeat runs attack the SAME targets.
+            tcache = (os.path.join(args.target_cache_dir,
+                      'easy_targets_%s_%s_n%d_seed%d.json'
+                      % (args.surrogate_model, pair, args.num_targets, args.seed))
+                      if args.target_cache_dir else '')
+            if tcache and os.path.exists(tcache):
+                with open(tcache) as _f:
+                    chosen = json.load(_f)['indices'][:args.num_targets]
+                print('  targets (easy, loaded cache %s): %s'
+                      % (tcache, [(int(i), class_names[int(test_labs[i])]) for i in chosen]))
+            else:
+                chosen = select_easy_targets(surrogates, test_imgs, test_labs, y_adv,
+                                             args.num_targets, device)
+                if tcache:
+                    os.makedirs(args.target_cache_dir, exist_ok=True)
+                    with open(tcache, 'w') as _f:
+                        json.dump({'surrogate_model': args.surrogate_model, 'pair': pair,
+                                   'y_adv': y_adv, 'num_targets': args.num_targets,
+                                   'seed': args.seed, 'indices': [int(i) for i in chosen],
+                                   'true_labels': [int(test_labs[i]) for i in chosen]},
+                                  _f, indent=2)
+                    print('  targets (easy, label!=%s, saved cache %s): %s'
+                          % (class_names[y_adv], tcache,
+                             [(int(i), class_names[int(test_labs[i])]) for i in chosen]))
+                else:
+                    print('  targets (easy, label!=%s): %s'
+                          % (class_names[y_adv], [(int(i), class_names[int(test_labs[i])])
+                                                  for i in chosen]))
         elif args.target_select == 'random':
             perm = torch.randperm(len(t_idx_all), generator=g)[:args.num_targets]
             chosen = t_idx_all[perm].tolist()
@@ -1237,6 +1470,14 @@ def main(args):
                 # 1) selection on the S-trained surrogates (or random ablation)
                 if args.random_select:
                     base_idx = select_base_random(train_labs, y_adv, N_p, device)
+                elif args.exact_select:
+                    base_idx = select_base_influence(
+                        surrogates, train_imgs, train_labs, x_t_norm, y_adv, N_p,
+                        hess_imgs, hess_labs, device,
+                        damping=args.if_damping, cg_iters=args.if_cg_iters,
+                        cg_tol=args.if_cg_tol, fd_h=args.if_fd_h,
+                        last_layer=args.if_last_layer, hess_bs=hess_bs,
+                        max_surrogates=args.if_max_surrogates, verbose=args.verbose)
                 else:
                     base_idx = select_base(surrogates, train_imgs, train_labs, x_t_norm,
                                            y_adv, N_p, args.lambda_margin, device,
@@ -1257,6 +1498,12 @@ def main(args):
                         dsa_strategy=args.dsa_strategy, dsa_param=dsa_param,
                         single_surrogate=args.single_surrogate,
                         fast=args.fast_gradmatch)
+                elif args.attack == 'influence':
+                    x_adv01, obj = craft_influence(
+                        surrogates, base01, x_t_norm, y_adv, norm, args.epsilon,
+                        args.pgd_alpha, args.pgd_steps, args.restarts, device,
+                        train_imgs, train_labs, args.curv_damping, args.curv_cg_iters,
+                        args.curv_hessian_bs, single_surrogate=args.single_surrogate)
                 else:  # 'fc'
                     x_adv01, obj = craft_fc(
                         surrogates, base01, x_t_norm, norm, args.epsilon, args.pgd_steps,
@@ -1398,9 +1645,13 @@ if __name__ == '__main__':
     p.add_argument('--surrogate_lr', type=float, default=0.01)
     p.add_argument('--surrogate_bs', type=int, default=256)
     # attack
-    p.add_argument('--attack', type=str, default='fc', choices=['fc', 'gradmatch'],
+    p.add_argument('--attack', type=str, default='fc',
+                   choices=['fc', 'gradmatch', 'influence'],
                    help="fc = feature collision (Eq.2); gradmatch = Witches'-Brew "
-                        "gradient matching (Geiping et al. 2020)")
+                        "gradient matching (Geiping et al. 2020); influence = directly "
+                        "drive the inverse-Hessian target-loss influence as negative as "
+                        "possible, delta -> eps*sign(C_x^T (H+lambda I)^-1 g_t) (uses the "
+                        "--curv_damping/--curv_cg_iters/--curv_hessian_bs knobs)")
     p.add_argument('--class_pairs', nargs='+', default=['dog-bird', 'frog-airplane'],
                    help="MetaPoison naming 'poison-target', e.g. dog-bird frog-airplane")
     p.add_argument('--budget', type=float, default=0.01,
@@ -1423,6 +1674,11 @@ if __name__ == '__main__':
                         'pick the targets EASIEST to attack: candidates are all test '
                         'images whose label != y_adv (any other class), ranked by the '
                         'surrogate ensemble probability on y_adv (closest to flipping first)')
+    p.add_argument('--target_cache_dir', type=str, default='',
+                   help='dir to save/load the --easy_targets selection (keyed by '
+                        'surrogate_model/pair/num_targets/seed). First run saves the '
+                        'chosen target indices; later runs reuse them verbatim so the '
+                        'attack hits the SAME targets despite surrogate re-training.')
     p.add_argument('--parallel_victims', action='store_true', default=False,
                    help='train the surrogates AND the per-target victims IN PARALLEL '
                         'across the GPUs listed in CUDA_VISIBLE_DEVICES (e.g. =6,7), '
@@ -1469,6 +1725,35 @@ if __name__ == '__main__':
     p.add_argument('--curv_cand_bs', type=int, default=128,
                    help='candidate batch size for the double-backward curvature pass '
                         '(lower if it OOMs; the per-sample scores are batch-size invariant)')
+    # EXACT influence-function base selection (curvature-aware, ported from
+    #   main_IF_exact.py):  score(z) = grad l(z_t)^T (H + damping I)^-1 grad l(z)
+    p.add_argument('--exact_select', action='store_true', default=False,
+                   help='replace scored/curv selection with EXACT influence-function '
+                        'base selection: rank class-y_adv candidates by grad l(z_t)^T '
+                        'H^-1 grad l(z) (matrix-free: CG over HVPs + finite-diff directional '
+                        'derivative). Mutually exclusive with --random_select.')
+    p.add_argument('--if_damping', type=float, default=0.01,
+                   help='Hessian damping (H + damping*I) for CG stability / non-PD nets')
+    p.add_argument('--if_cg_iters', type=int, default=100,
+                   help='max conjugate-gradient iterations for the inverse-HVP')
+    p.add_argument('--if_cg_tol', type=float, default=1e-4,
+                   help='CG relative residual tolerance (stop when ||r|| <= tol*||g||)')
+    p.add_argument('--if_fd_h', type=float, default=1e-2,
+                   help='central finite-difference step for the directional derivative '
+                        '<s, grad l(z)> over the surrogate parameters')
+    p.add_argument('--if_last_layer', action='store_true', default=False,
+                   help='restrict the influence Hessian/gradients to the final linear '
+                        'layer (much cheaper; the classic last-layer influence function)')
+    p.add_argument('--if_hess_source', type=str, default='syn', choices=['syn', 'full'],
+                   help="dataset for the Hessian: 'syn' = distilled S (matches syn "
+                        "surrogates), 'full' = a random real-data subsample (auto-forced "
+                        "to real data when --surrogate_on_full_data)")
+    p.add_argument('--if_hess_size', type=int, default=0,
+                   help='subsample size for the Hessian set (0 = all of S, or 2000 if full)')
+    p.add_argument('--if_max_surrogates', type=int, default=0,
+                   help='cap how many surrogates EXACT-IF averages over (0 = all)')
+    p.add_argument('--verbose', action='store_true', default=False,
+                   help='extra logging (e.g. exact-IF conjugate-gradient iters used)')
     p.add_argument('--single_surrogate', action='store_true', default=False,
                    help='use only the first surrogate for crafting instead of the ensemble')
     p.add_argument('--fast_gradmatch', action='store_true', default=False,
