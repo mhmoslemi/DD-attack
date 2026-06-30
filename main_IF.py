@@ -316,6 +316,36 @@ def filter_correct_targets(surrogates, test_imgs, t_idx_all, target_class, devic
     return t_idx_all[correct_local.cpu()]
 
 
+@torch.no_grad()
+def select_easy_targets(surrogates, test_imgs, test_labs, y_adv, n_targets, device):
+    """Pick the test samples that are *easiest* to flip toward y_adv.
+
+    Unlike the random/first selection (which only draws from the pair's
+    target_class), the candidate pool here is EVERY test image whose true label
+    is not y_adv -- any other class is allowed. Each candidate is scored by the
+    surrogate ensemble's softmax probability on y_adv: a high score means the
+    model is already close to calling it y_adv, i.e. it is easy to attack.
+    Samples the clean ensemble already classifies as y_adv are dropped (there is
+    nothing left to flip). Returns a list of test indices, easiest first.
+    """
+    pool = (test_labs != y_adv).nonzero(as_tuple=True)[0]        # label != y_adv
+    if len(pool) == 0:
+        return []
+    cands = test_imgs[pool]
+    sum_logits = None
+    for net in surrogates:
+        logits = net(cands)
+        sum_logits = logits if sum_logits is None else sum_logits + logits
+    avg_probs = F.softmax(sum_logits / len(surrogates), dim=1)   # (N, C)
+    p_adv = avg_probs[:, y_adv]                                  # easiness score
+    keep = (avg_probs.argmax(1) != y_adv).nonzero(as_tuple=True)[0]   # not yet flipped
+    if len(keep) == 0:                                          # degenerate: keep all
+        keep = torch.arange(len(pool), device=pool.device)
+    order = p_adv[keep].argsort(descending=True)                # easiest first
+    chosen_local = keep[order][:n_targets]
+    return pool[chosen_local].cpu().tolist()
+
+
 # --------------------------------------------------------------------------- #
 # crafting (fc): per-sample L_inf PGD feature collision over the ensemble
 # --------------------------------------------------------------------------- #
@@ -785,6 +815,12 @@ def main(args):
         if pair in preselected:
             chosen = preselected[pair]['indices'][:args.num_targets]
             print('  targets (preselected): %s' % chosen)
+        elif args.easy_targets:
+            chosen = select_easy_targets(surrogates, test_imgs, test_labs, y_adv,
+                                         args.num_targets, device)
+            print('  targets (easy, label!=%s): %s'
+                  % (class_names[y_adv], [(int(i), class_names[int(test_labs[i])])
+                                          for i in chosen]))
         elif args.target_select == 'random':
             perm = torch.randperm(len(t_idx_all), generator=g)[:args.num_targets]
             chosen = t_idx_all[perm].tolist()
@@ -890,6 +926,7 @@ def main(args):
                 all_rows.append({
                     'pair': pair, 'attack': args.attack, 'pipeline': cfg['spec'],
                     'y_adv': y_adv, 'target_class': target_class, 'target_idx': tidx,
+                    'target_true_label': int(test_labs[tidx]),
                     'clean_cta': clean_cta_m, 'clean_asr': clean_asr,
                     'poison_cta': poison_cta, 'poison_asr': poison_asr,
                     'craft_obj': obj, 'realized_linf': linf, 'N_p': N_p,
@@ -971,6 +1008,11 @@ if __name__ == '__main__':
     p.add_argument('--num_victims', type=int, default=6)
     p.add_argument('--target_select', type=str, default='random',
                    choices=['random', 'first'])
+    p.add_argument('--easy_targets', action='store_true', default=False,
+                   help='instead of random/first selection from the pair target_class, '
+                        'pick the targets EASIEST to attack: candidates are all test '
+                        'images whose label != y_adv (any other class), ranked by the '
+                        'surrogate ensemble probability on y_adv (closest to flipping first)')
     p.add_argument('--victim_epochs', type=int, default=200)
     p.add_argument('--victim_lr', type=float, default=0.1)
     p.add_argument('--victim_bs', type=int, default=125)
