@@ -1,0 +1,272 @@
+=== main_FC.sh started 2026-07-01 00:48:01 — logging to logs/main_FC_20260701_004801.log ===
+=== [2026-07-01 00:48:01] budget=0.1 ===
+[2026-07-01 00:48:03] parallel victims ON: GPU pool=['0', '1', '2', '3'], parent pinned to GPU 0
+[2026-07-01 00:48:03] device=cuda
+[2026-07-01 00:48:03] hyperparams: {'dataset': 'CIFAR10', 'data_path': 'data', 'model': 'ResNet20BN', 'out_dir': 'result/standard_nodistill', 'seed': 0, 'target_idx_file': None, 'dsa_strategy': 'color_crop_cutout_flip_scale_rotate', 'syn_data_path': 'result/res_DM_CIFAR10_ConvNet_50ipc.pt', 'surrogate_model': 'ResNet20BN', 'num_surrogates': 4, 'surrogate_epochs': 80, 'surrogate_lr': 0.01, 'surrogate_bs': 256, 'attack': 'fc', 'class_pairs': ['dog-bird'], 'budget': 0.1, 'epsilon': 0.0313725, 'pgd_steps': 100, 'pgd_alpha': 0.0039216, 'restarts': 1, 'lambda_margin': 1.0, 'num_targets': 10, 'num_victims': 5, 'target_select': 'random', 'easy_targets': True, 'target_cache_dir': 'result/target_cache', 'parallel_victims': True, 'victim_epochs': 40, 'victim_lr': 0.1, 'victim_bs': 256, 'victim_decay': [35], 'victim_aug': False, 'clean_baseline': False, 'num_clean_victims': None, 'cache_dir': '', 'precompute_only': False, 'base_dist': 'l2', 'random_select': False, 'multilayer': True, 'curv_select': False, 'lambda_curv': 1.0, 'curv_damping': 1.0, 'curv_cg_iters': 10, 'curv_hessian_bs': 512, 'curv_cand_bs': 128, 'exact_select': True, 'if_damping': 0.01, 'if_cg_iters': 100, 'if_cg_tol': 0.0001, 'if_fd_h': 0.01, 'if_last_layer': False, 'if_hess_source': 'syn', 'if_hess_size': 512, 'if_max_surrogates': 1, 'verbose': True, 'single_surrogate': True, 'fast_gradmatch': False, 'surrogate_on_full_data': True, 'victim_pipelines': ['standard'], 'poison_cache_dir': '', 'log_file': ''}
+[2026-07-01 00:48:03] victim pipelines (ablations): ['standard']
+[2026-07-01 00:48:13] N_total=50000  budget=0.1000 -> N_p=5000 poisons (all in y_adv class)
+
+[2026-07-01 00:48:14] === training 4 surrogates (ResNet20BN) on FULL real data (80 ep each) across GPUs ['0', '1', '2', '3'] ===
+[2026-07-01 00:51:07] Evaluate_00: epoch = 0080 train time = 167 s train loss = 0.041558 train acc = 0.9856, test acc = 0.7811
+[2026-07-01 00:51:07] Evaluate_01: epoch = 0080 train time = 165 s train loss = 0.000092 train acc = 1.0000, test acc = 0.8052
+[2026-07-01 00:51:07] Evaluate_02: epoch = 0080 train time = 165 s train loss = 0.000083 train acc = 1.0000, test acc = 0.8100
+[2026-07-01 00:51:07] Evaluate_03: epoch = 0080 train time = 165 s train loss = 0.000088 train acc = 1.0000, test acc = 0.8076
+[2026-07-01 00:51:07] exact-IF Hessian set = 512 real train images
+
+[2026-07-01 00:51:07] ################ pair dog-bird : y_adv=5(dog)  target_class=2(bird) ################
+  targets (easy, label!=dog, saved cache result/target_cache/easy_targets_ResNet20BN_dog-bird_n10_seed0.json): [(1503, 'deer'), (4421, 'bird'), (2391, 'bird'), (1163, 'cat'), (9778, 'cat'), (6202, 'cat'), (3135, 'horse'), (8746, 'cat'), (3491, 'cat'), (4563, 'horse')]
+      [exact] CG iters used per surrogate: [100]
+  [dog-bird t1/10 idx=1503] fc craft_obj=0.0524 linf=0.0314
+    [standard] victims: 5 across GPUs ['0', '1', '2', '3'] ... done
+    [standard | dog-bird t1/10 idx=1503] poison_CTA=0.7701 poison_ASR=0%
+      [exact] CG iters used per surrogate: [100]
+  [dog-bird t2/10 idx=4421] fc craft_obj=0.0640 linf=0.0314
+    [standard] victims: 5 across GPUs ['0', '1', '2', '3'] ... done
+    [standard | dog-bird t2/10 idx=4421] poison_CTA=0.7717 poison_ASR=0%
+      [exact] CG iters used per surrogate: [100]
+  [dog-bird t3/10 idx=2391] fc craft_obj=0.0466 linf=0.0314
+    [standard] victims: 5 across GPUs ['0', '1', '2', '3'] ... done
+    [standard | dog-bird t3/10 idx=2391] poison_CTA=0.7740 poison_ASR=0%
+      [exact] CG iters used per surrogate: [100]
+  [dog-bird t4/10 idx=1163] fc craft_obj=0.0556 linf=0.0314
+    [standard] victims: 5 across GPUs ['0', '1', '2', '3'] ... done
+    [standard | dog-bird t4/10 idx=1163] poison_CTA=0.7753 poison_ASR=20%
+      [exact] CG iters used per surrogate: [100]
+  [dog-bird t5/10 idx=9778] fc craft_obj=0.0706 linf=0.0314
+    [standard] victims: 5 across GPUs ['0', '1', '2', '3'] ... done
+    [standard | dog-bird t5/10 idx=9778] poison_CTA=0.7702 poison_ASR=0%
+      [exact] CG iters used per surrogate: [100]
+  [dog-bird t6/10 idx=6202] fc craft_obj=0.0552 linf=0.0314
+    [standard] victims: 5 across GPUs ['0', '1', '2', '3'] ... done
+    [standard | dog-bird t6/10 idx=6202] poison_CTA=0.7740 poison_ASR=0%
+      [exact] CG iters used per surrogate: [100]
+  [dog-bird t7/10 idx=3135] fc craft_obj=0.0728 linf=0.0314
+    [standard] victims: 5 across GPUs ['0', '1', '2', '3'] ... done
+    [standard | dog-bird t7/10 idx=3135] poison_CTA=0.7717 poison_ASR=0%
+      [exact] CG iters used per surrogate: [100]
+  [dog-bird t8/10 idx=8746] fc craft_obj=0.0565 linf=0.0314
+    [standard] victims: 5 across GPUs ['0', '1', '2', '3'] ... done
+    [standard | dog-bird t8/10 idx=8746] poison_CTA=0.7723 poison_ASR=0%
+      [exact] CG iters used per surrogate: [100]
+  [dog-bird t9/10 idx=3491] fc craft_obj=0.0588 linf=0.0314
+    [standard] victims: 5 across GPUs ['0', '1', '2', '3'] ... done
+    [standard | dog-bird t9/10 idx=3491] poison_CTA=0.7737 poison_ASR=0%
+      [exact] CG iters used per surrogate: [100]
+  [dog-bird t10/10 idx=4563] fc craft_obj=0.0458 linf=0.0314
+    [standard] victims: 5 across GPUs ['0', '1', '2', '3'] ... done
+    [standard | dog-bird t10/10 idx=4563] poison_CTA=0.7682 poison_ASR=0%
+
+  ==== pair dog-bird (fc) summary over 10 targets x 5 victims = 50 votes ====
+    [standard                    ] poison CTA = 0.7721 +/- 0.0037   poison ASR = 2.0% +/- 14.0%
+      tally (['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']): [0, 0, 12, 24, 3, 1, 1, 9, 0, 0]
+
+[2026-07-01 01:22:31] wrote results_standard_nodistill_fc_ResNet20BN_b1000_eps8.{json,csv} to result/standard_nodistill
+[2026-07-01 01:22:34] parallel victims ON: GPU pool=['0', '1', '2', '3'], parent pinned to GPU 0
+[2026-07-01 01:22:35] device=cuda
+[2026-07-01 01:22:35] hyperparams: {'dataset': 'CIFAR10', 'data_path': 'data', 'model': 'ResNet20BN', 'out_dir': 'result/standard_nodistill', 'seed': 0, 'target_idx_file': None, 'dsa_strategy': 'color_crop_cutout_flip_scale_rotate', 'syn_data_path': 'result/res_DM_CIFAR10_ConvNet_50ipc.pt', 'surrogate_model': 'ResNet20BN', 'num_surrogates': 4, 'surrogate_epochs': 80, 'surrogate_lr': 0.01, 'surrogate_bs': 256, 'attack': 'fc', 'class_pairs': ['dog-bird'], 'budget': 0.1, 'epsilon': 0.0313725, 'pgd_steps': 100, 'pgd_alpha': 0.0039216, 'restarts': 1, 'lambda_margin': 1.0, 'num_targets': 10, 'num_victims': 5, 'target_select': 'random', 'easy_targets': True, 'target_cache_dir': 'result/target_cache', 'parallel_victims': True, 'victim_epochs': 40, 'victim_lr': 0.1, 'victim_bs': 256, 'victim_decay': [35], 'victim_aug': False, 'clean_baseline': False, 'num_clean_victims': None, 'cache_dir': '', 'precompute_only': False, 'base_dist': 'l2', 'random_select': True, 'multilayer': True, 'curv_select': False, 'lambda_curv': 1.0, 'curv_damping': 1.0, 'curv_cg_iters': 10, 'curv_hessian_bs': 512, 'curv_cand_bs': 128, 'exact_select': False, 'if_damping': 0.01, 'if_cg_iters': 100, 'if_cg_tol': 0.0001, 'if_fd_h': 0.01, 'if_last_layer': False, 'if_hess_source': 'syn', 'if_hess_size': 0, 'if_max_surrogates': 0, 'verbose': False, 'single_surrogate': True, 'fast_gradmatch': False, 'surrogate_on_full_data': True, 'victim_pipelines': ['standard'], 'poison_cache_dir': '', 'log_file': ''}
+[2026-07-01 01:22:35] victim pipelines (ablations): ['standard']
+[2026-07-01 01:22:45] N_total=50000  budget=0.1000 -> N_p=5000 poisons (all in y_adv class)
+
+[2026-07-01 01:22:46] === training 4 surrogates (ResNet20BN) on FULL real data (80 ep each) across GPUs ['0', '1', '2', '3'] ===
+[2026-07-01 01:25:39] Evaluate_00: epoch = 0080 train time = 165 s train loss = 0.000087 train acc = 1.0000, test acc = 0.8087
+[2026-07-01 01:25:39] Evaluate_01: epoch = 0080 train time = 166 s train loss = 0.000084 train acc = 1.0000, test acc = 0.8118
+[2026-07-01 01:25:39] Evaluate_02: epoch = 0080 train time = 166 s train loss = 0.000089 train acc = 1.0000, test acc = 0.8101
+[2026-07-01 01:25:39] Evaluate_03: epoch = 0080 train time = 167 s train loss = 0.000097 train acc = 1.0000, test acc = 0.8069
+
+[2026-07-01 01:25:39] ################ pair dog-bird : y_adv=5(dog)  target_class=2(bird) ################
+  targets (easy, loaded cache result/target_cache/easy_targets_ResNet20BN_dog-bird_n10_seed0.json): [(1503, 'deer'), (4421, 'bird'), (2391, 'bird'), (1163, 'cat'), (9778, 'cat'), (6202, 'cat'), (3135, 'horse'), (8746, 'cat'), (3491, 'cat'), (4563, 'horse')]
+  [dog-bird t1/10 idx=1503] fc craft_obj=0.0602 linf=0.0314
+    [standard] victims: 5 across GPUs ['0', '1', '2', '3'] ... done
+    [standard | dog-bird t1/10 idx=1503] poison_CTA=0.7698 poison_ASR=0%
+  [dog-bird t2/10 idx=4421] fc craft_obj=0.0617 linf=0.0314
+    [standard] victims: 5 across GPUs ['0', '1', '2', '3'] ... done
+    [standard | dog-bird t2/10 idx=4421] poison_CTA=0.7709 poison_ASR=0%
+  [dog-bird t3/10 idx=2391] fc craft_obj=0.0590 linf=0.0314
+    [standard] victims: 5 across GPUs ['0', '1', '2', '3'] ... done
+    [standard | dog-bird t3/10 idx=2391] poison_CTA=0.7727 poison_ASR=0%
+  [dog-bird t4/10 idx=1163] fc craft_obj=0.0643 linf=0.0314
+    [standard] victims: 5 across GPUs ['0', '1', '2', '3'] ... done
+    [standard | dog-bird t4/10 idx=1163] poison_CTA=0.7697 poison_ASR=0%
+  [dog-bird t5/10 idx=9778] fc craft_obj=0.0808 linf=0.0314
+    [standard] victims: 5 across GPUs ['0', '1', '2', '3'] ... done
+    [standard | dog-bird t5/10 idx=9778] poison_CTA=0.7690 poison_ASR=0%
+  [dog-bird t6/10 idx=6202] fc craft_obj=0.0548 linf=0.0314
+    [standard] victims: 5 across GPUs ['0', '1', '2', '3'] ... done
+    [standard | dog-bird t6/10 idx=6202] poison_CTA=0.7700 poison_ASR=0%
+  [dog-bird t7/10 idx=3135] fc craft_obj=0.0722 linf=0.0314
+    [standard] victims: 5 across GPUs ['0', '1', '2', '3'] ... done
+    [standard | dog-bird t7/10 idx=3135] poison_CTA=0.7729 poison_ASR=0%
+  [dog-bird t8/10 idx=8746] fc craft_obj=0.0539 linf=0.0314
+    [standard] victims: 5 across GPUs ['0', '1', '2', '3'] ... done
+    [standard | dog-bird t8/10 idx=8746] poison_CTA=0.7701 poison_ASR=0%
+  [dog-bird t9/10 idx=3491] fc craft_obj=0.0648 linf=0.0314
+    [standard] victims: 5 across GPUs ['0', '1', '2', '3'] ... done
+    [standard | dog-bird t9/10 idx=3491] poison_CTA=0.7739 poison_ASR=0%
+  [dog-bird t10/10 idx=4563] fc craft_obj=0.0475 linf=0.0314
+    [standard] victims: 5 across GPUs ['0', '1', '2', '3'] ... done
+    [standard | dog-bird t10/10 idx=4563] poison_CTA=0.7760 poison_ASR=0%
+
+  ==== pair dog-bird (fc) summary over 10 targets x 5 victims = 50 votes ====
+    [standard                    ] poison CTA = 0.7715 +/- 0.0046   poison ASR = 0.0% +/- 0.0%
+      tally (['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']): [1, 0, 13, 23, 3, 0, 1, 9, 0, 0]
+
+[2026-07-01 01:55:09] wrote results_standard_nodistill_fc_ResNet20BN_b1000_eps8.{json,csv} to result/standard_nodistill
+=== [2026-07-01 01:55:10] budget=0.05 ===
+[2026-07-01 01:55:12] parallel victims ON: GPU pool=['0', '1', '2', '3'], parent pinned to GPU 0
+[2026-07-01 01:55:12] device=cuda
+[2026-07-01 01:55:12] hyperparams: {'dataset': 'CIFAR10', 'data_path': 'data', 'model': 'ResNet20BN', 'out_dir': 'result/standard_nodistill', 'seed': 0, 'target_idx_file': None, 'dsa_strategy': 'color_crop_cutout_flip_scale_rotate', 'syn_data_path': 'result/res_DM_CIFAR10_ConvNet_50ipc.pt', 'surrogate_model': 'ResNet20BN', 'num_surrogates': 4, 'surrogate_epochs': 80, 'surrogate_lr': 0.01, 'surrogate_bs': 256, 'attack': 'fc', 'class_pairs': ['dog-bird'], 'budget': 0.05, 'epsilon': 0.0313725, 'pgd_steps': 100, 'pgd_alpha': 0.0039216, 'restarts': 1, 'lambda_margin': 1.0, 'num_targets': 10, 'num_victims': 5, 'target_select': 'random', 'easy_targets': True, 'target_cache_dir': 'result/target_cache', 'parallel_victims': True, 'victim_epochs': 40, 'victim_lr': 0.1, 'victim_bs': 256, 'victim_decay': [35], 'victim_aug': False, 'clean_baseline': False, 'num_clean_victims': None, 'cache_dir': '', 'precompute_only': False, 'base_dist': 'l2', 'random_select': False, 'multilayer': True, 'curv_select': False, 'lambda_curv': 1.0, 'curv_damping': 1.0, 'curv_cg_iters': 10, 'curv_hessian_bs': 512, 'curv_cand_bs': 128, 'exact_select': True, 'if_damping': 0.01, 'if_cg_iters': 100, 'if_cg_tol': 0.0001, 'if_fd_h': 0.01, 'if_last_layer': False, 'if_hess_source': 'syn', 'if_hess_size': 512, 'if_max_surrogates': 1, 'verbose': True, 'single_surrogate': True, 'fast_gradmatch': False, 'surrogate_on_full_data': True, 'victim_pipelines': ['standard'], 'poison_cache_dir': '', 'log_file': ''}
+[2026-07-01 01:55:12] victim pipelines (ablations): ['standard']
+[2026-07-01 01:55:22] N_total=50000  budget=0.0500 -> N_p=2500 poisons (all in y_adv class)
+
+[2026-07-01 01:55:23] === training 4 surrogates (ResNet20BN) on FULL real data (80 ep each) across GPUs ['0', '1', '2', '3'] ===
+[2026-07-01 01:58:16] Evaluate_00: epoch = 0080 train time = 166 s train loss = 0.000087 train acc = 1.0000, test acc = 0.8124
+[2026-07-01 01:58:16] Evaluate_01: epoch = 0080 train time = 164 s train loss = 0.000078 train acc = 1.0000, test acc = 0.8105
+[2026-07-01 01:58:16] Evaluate_02: epoch = 0080 train time = 164 s train loss = 0.000092 train acc = 1.0000, test acc = 0.8163
+[2026-07-01 01:58:16] Evaluate_03: epoch = 0080 train time = 166 s train loss = 0.000209 train acc = 1.0000, test acc = 0.8011
+[2026-07-01 01:58:16] exact-IF Hessian set = 512 real train images
+
+[2026-07-01 01:58:16] ################ pair dog-bird : y_adv=5(dog)  target_class=2(bird) ################
+  targets (easy, loaded cache result/target_cache/easy_targets_ResNet20BN_dog-bird_n10_seed0.json): [(1503, 'deer'), (4421, 'bird'), (2391, 'bird'), (1163, 'cat'), (9778, 'cat'), (6202, 'cat'), (3135, 'horse'), (8746, 'cat'), (3491, 'cat'), (4563, 'horse')]
+      [exact] CG iters used per surrogate: [100]
+  [dog-bird t1/10 idx=1503] fc craft_obj=0.0540 linf=0.0314
+    [standard] victims: 5 across GPUs ['0', '1', '2', '3'] ... done
+    [standard | dog-bird t1/10 idx=1503] poison_CTA=0.8204 poison_ASR=0%
+      [exact] CG iters used per surrogate: [100]
+  [dog-bird t2/10 idx=4421] fc craft_obj=0.0546 linf=0.0314
+    [standard] victims: 5 across GPUs ['0', '1', '2', '3'] ... done
+    [standard | dog-bird t2/10 idx=4421] poison_CTA=0.8233 poison_ASR=0%
+      [exact] CG iters used per surrogate: [100]
+  [dog-bird t3/10 idx=2391] fc craft_obj=0.0472 linf=0.0314
+    [standard] victims: 5 across GPUs ['0', '1', '2', '3'] ... done
+    [standard | dog-bird t3/10 idx=2391] poison_CTA=0.8289 poison_ASR=0%
+      [exact] CG iters used per surrogate: [100]
+  [dog-bird t4/10 idx=1163] fc craft_obj=0.0580 linf=0.0314
+    [standard] victims: 5 across GPUs ['0', '1', '2', '3'] ... done
+    [standard | dog-bird t4/10 idx=1163] poison_CTA=0.8275 poison_ASR=80%
+      [exact] CG iters used per surrogate: [100]
+  [dog-bird t5/10 idx=9778] fc craft_obj=0.0778 linf=0.0314
+    [standard] victims: 5 across GPUs ['0', '1', '2', '3'] ... done
+    [standard | dog-bird t5/10 idx=9778] poison_CTA=0.8278 poison_ASR=60%
+      [exact] CG iters used per surrogate: [100]
+  [dog-bird t6/10 idx=6202] fc craft_obj=0.0602 linf=0.0314
+    [standard] victims: 5 across GPUs ['0', '1', '2', '3'] ... done
+    [standard | dog-bird t6/10 idx=6202] poison_CTA=0.8286 poison_ASR=0%
+      [exact] CG iters used per surrogate: [100]
+  [dog-bird t7/10 idx=3135] fc craft_obj=0.0624 linf=0.0314
+    [standard] victims: 5 across GPUs ['0', '1', '2', '3'] ... done
+    [standard | dog-bird t7/10 idx=3135] poison_CTA=0.8267 poison_ASR=40%
+      [exact] CG iters used per surrogate: [100]
+  [dog-bird t8/10 idx=8746] fc craft_obj=0.0568 linf=0.0314
+    [standard] victims: 5 across GPUs ['0', '1', '2', '3'] ... done
+    [standard | dog-bird t8/10 idx=8746] poison_CTA=0.8217 poison_ASR=20%
+      [exact] CG iters used per surrogate: [100]
+  [dog-bird t9/10 idx=3491] fc craft_obj=0.0655 linf=0.0314
+    [standard] victims: 5 across GPUs ['0', '1', '2', '3'] ... done
+    [standard | dog-bird t9/10 idx=3491] poison_CTA=0.8278 poison_ASR=60%
+      [exact] CG iters used per surrogate: [100]
+  [dog-bird t10/10 idx=4563] fc craft_obj=0.0549 linf=0.0314
+    [standard] victims: 5 across GPUs ['0', '1', '2', '3'] ... done
+    [standard | dog-bird t10/10 idx=4563] poison_CTA=0.8260 poison_ASR=0%
+
+  ==== pair dog-bird (fc) summary over 10 targets x 5 victims = 50 votes ====
+    [standard                    ] poison CTA = 0.8259 +/- 0.0044   poison ASR = 26.0% +/- 43.9%
+      tally (['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']): [0, 0, 14, 12, 4, 13, 2, 5, 0, 0]
+
+[2026-07-01 02:29:19] wrote results_standard_nodistill_fc_ResNet20BN_b500_eps8.{json,csv} to result/standard_nodistill
+[2026-07-01 02:29:22] parallel victims ON: GPU pool=['0', '1', '2', '3'], parent pinned to GPU 0
+[2026-07-01 02:29:23] device=cuda
+[2026-07-01 02:29:23] hyperparams: {'dataset': 'CIFAR10', 'data_path': 'data', 'model': 'ResNet20BN', 'out_dir': 'result/standard_nodistill', 'seed': 0, 'target_idx_file': None, 'dsa_strategy': 'color_crop_cutout_flip_scale_rotate', 'syn_data_path': 'result/res_DM_CIFAR10_ConvNet_50ipc.pt', 'surrogate_model': 'ResNet20BN', 'num_surrogates': 4, 'surrogate_epochs': 80, 'surrogate_lr': 0.01, 'surrogate_bs': 256, 'attack': 'fc', 'class_pairs': ['dog-bird'], 'budget': 0.05, 'epsilon': 0.0313725, 'pgd_steps': 100, 'pgd_alpha': 0.0039216, 'restarts': 1, 'lambda_margin': 1.0, 'num_targets': 10, 'num_victims': 5, 'target_select': 'random', 'easy_targets': True, 'target_cache_dir': 'result/target_cache', 'parallel_victims': True, 'victim_epochs': 40, 'victim_lr': 0.1, 'victim_bs': 256, 'victim_decay': [35], 'victim_aug': False, 'clean_baseline': False, 'num_clean_victims': None, 'cache_dir': '', 'precompute_only': False, 'base_dist': 'l2', 'random_select': True, 'multilayer': True, 'curv_select': False, 'lambda_curv': 1.0, 'curv_damping': 1.0, 'curv_cg_iters': 10, 'curv_hessian_bs': 512, 'curv_cand_bs': 128, 'exact_select': False, 'if_damping': 0.01, 'if_cg_iters': 100, 'if_cg_tol': 0.0001, 'if_fd_h': 0.01, 'if_last_layer': False, 'if_hess_source': 'syn', 'if_hess_size': 0, 'if_max_surrogates': 0, 'verbose': False, 'single_surrogate': True, 'fast_gradmatch': False, 'surrogate_on_full_data': True, 'victim_pipelines': ['standard'], 'poison_cache_dir': '', 'log_file': ''}
+[2026-07-01 02:29:23] victim pipelines (ablations): ['standard']
+[2026-07-01 02:29:33] N_total=50000  budget=0.0500 -> N_p=2500 poisons (all in y_adv class)
+
+[2026-07-01 02:29:33] === training 4 surrogates (ResNet20BN) on FULL real data (80 ep each) across GPUs ['0', '1', '2', '3'] ===
+[2026-07-01 02:32:25] Evaluate_00: epoch = 0080 train time = 167 s train loss = 0.000094 train acc = 1.0000, test acc = 0.8042
+[2026-07-01 02:32:25] Evaluate_01: epoch = 0080 train time = 164 s train loss = 0.000082 train acc = 1.0000, test acc = 0.8117
+[2026-07-01 02:32:25] Evaluate_02: epoch = 0080 train time = 165 s train loss = 0.000086 train acc = 1.0000, test acc = 0.8119
+[2026-07-01 02:32:25] Evaluate_03: epoch = 0080 train time = 163 s train loss = 0.000091 train acc = 1.0000, test acc = 0.8079
+
+[2026-07-01 02:32:25] ################ pair dog-bird : y_adv=5(dog)  target_class=2(bird) ################
+  targets (easy, loaded cache result/target_cache/easy_targets_ResNet20BN_dog-bird_n10_seed0.json): [(1503, 'deer'), (4421, 'bird'), (2391, 'bird'), (1163, 'cat'), (9778, 'cat'), (6202, 'cat'), (3135, 'horse'), (8746, 'cat'), (3491, 'cat'), (4563, 'horse')]
+  [dog-bird t1/10 idx=1503] fc craft_obj=0.0473 linf=0.0314
+    [standard] victims: 5 across GPUs ['0', '1', '2', '3'] ... done
+    [standard | dog-bird t1/10 idx=1503] poison_CTA=0.8266 poison_ASR=0%
+  [dog-bird t2/10 idx=4421] fc craft_obj=0.0609 linf=0.0314
+    [standard] victims: 5 across GPUs ['0', '1', '2', '3'] ... done
+    [standard | dog-bird t2/10 idx=4421] poison_CTA=0.8286 poison_ASR=0%
+  [dog-bird t3/10 idx=2391] fc craft_obj=0.0487 linf=0.0314
+    [standard] victims: 5 across GPUs ['0', '1', '2', '3'] ... done
+    [standard | dog-bird t3/10 idx=2391] poison_CTA=0.8281 poison_ASR=0%
+  [dog-bird t4/10 idx=1163] fc craft_obj=0.0492 linf=0.0314
+    [standard] victims: 5 across GPUs ['0', '1', '2', '3'] ... done
+    [standard | dog-bird t4/10 idx=1163] poison_CTA=0.8317 poison_ASR=40%
+  [dog-bird t5/10 idx=9778] fc craft_obj=0.0614 linf=0.0314
+    [standard] victims: 5 across GPUs ['0', '1', '2', '3'] ... done
+    [standard | dog-bird t5/10 idx=9778] poison_CTA=0.8324 poison_ASR=40%
+  [dog-bird t6/10 idx=6202] fc craft_obj=0.0528 linf=0.0314
+    [standard] victims: 5 across GPUs ['0', '1', '2', '3'] ... done
+    [standard | dog-bird t6/10 idx=6202] poison_CTA=0.8265 poison_ASR=0%
+  [dog-bird t7/10 idx=3135] fc craft_obj=0.0637 linf=0.0314
+    [standard] victims: 5 across GPUs ['0', '1', '2', '3'] ... done
+    [standard | dog-bird t7/10 idx=3135] poison_CTA=0.8316 poison_ASR=60%
+  [dog-bird t8/10 idx=8746] fc craft_obj=0.0461 linf=0.0314
+    [standard] victims: 5 across GPUs ['0', '1', '2', '3'] ... done
+    [standard | dog-bird t8/10 idx=8746] poison_CTA=0.8270 poison_ASR=0%
+  [dog-bird t9/10 idx=3491] fc craft_obj=0.0654 linf=0.0314
+    [standard] victims: 5 across GPUs ['0', '1', '2', '3'] ... done
+    [standard | dog-bird t9/10 idx=3491] poison_CTA=0.8259 poison_ASR=20%
+  [dog-bird t10/10 idx=4563] fc craft_obj=0.0520 linf=0.0314
+    [standard] victims: 5 across GPUs ['0', '1', '2', '3'] ... done
+    [standard | dog-bird t10/10 idx=4563] poison_CTA=0.8294 poison_ASR=20%
+
+  ==== pair dog-bird (fc) summary over 10 targets x 5 victims = 50 votes ====
+    [standard                    ] poison CTA = 0.8288 +/- 0.0042   poison ASR = 18.0% +/- 38.4%
+      tally (['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']): [0, 0, 12, 13, 5, 9, 3, 7, 1, 0]
+
+[2026-07-01 03:01:10] wrote results_standard_nodistill_fc_ResNet20BN_b500_eps8.{json,csv} to result/standard_nodistill
+=== [2026-07-01 03:01:11] budget=0.02 ===
+[2026-07-01 03:01:13] parallel victims ON: GPU pool=['0', '1', '2', '3'], parent pinned to GPU 0
+[2026-07-01 03:01:13] device=cuda
+[2026-07-01 03:01:13] hyperparams: {'dataset': 'CIFAR10', 'data_path': 'data', 'model': 'ResNet20BN', 'out_dir': 'result/standard_nodistill', 'seed': 0, 'target_idx_file': None, 'dsa_strategy': 'color_crop_cutout_flip_scale_rotate', 'syn_data_path': 'result/res_DM_CIFAR10_ConvNet_50ipc.pt', 'surrogate_model': 'ResNet20BN', 'num_surrogates': 4, 'surrogate_epochs': 80, 'surrogate_lr': 0.01, 'surrogate_bs': 256, 'attack': 'fc', 'class_pairs': ['dog-bird'], 'budget': 0.02, 'epsilon': 0.0313725, 'pgd_steps': 100, 'pgd_alpha': 0.0039216, 'restarts': 1, 'lambda_margin': 1.0, 'num_targets': 10, 'num_victims': 5, 'target_select': 'random', 'easy_targets': True, 'target_cache_dir': 'result/target_cache', 'parallel_victims': True, 'victim_epochs': 40, 'victim_lr': 0.1, 'victim_bs': 256, 'victim_decay': [35], 'victim_aug': False, 'clean_baseline': False, 'num_clean_victims': None, 'cache_dir': '', 'precompute_only': False, 'base_dist': 'l2', 'random_select': False, 'multilayer': True, 'curv_select': False, 'lambda_curv': 1.0, 'curv_damping': 1.0, 'curv_cg_iters': 10, 'curv_hessian_bs': 512, 'curv_cand_bs': 128, 'exact_select': True, 'if_damping': 0.01, 'if_cg_iters': 100, 'if_cg_tol': 0.0001, 'if_fd_h': 0.01, 'if_last_layer': False, 'if_hess_source': 'syn', 'if_hess_size': 512, 'if_max_surrogates': 1, 'verbose': True, 'single_surrogate': True, 'fast_gradmatch': False, 'surrogate_on_full_data': True, 'victim_pipelines': ['standard'], 'poison_cache_dir': '', 'log_file': ''}
+[2026-07-01 03:01:13] victim pipelines (ablations): ['standard']
+[2026-07-01 03:01:22] N_total=50000  budget=0.0200 -> N_p=1000 poisons (all in y_adv class)
+
+[2026-07-01 03:01:22] === training 4 surrogates (ResNet20BN) on FULL real data (80 ep each) across GPUs ['0', '1', '2', '3'] ===
+[2026-07-01 03:04:13] Evaluate_00: epoch = 0080 train time = 165 s train loss = 0.000076 train acc = 1.0000, test acc = 0.8114
+[2026-07-01 03:04:13] Evaluate_01: epoch = 0080 train time = 163 s train loss = 0.000082 train acc = 1.0000, test acc = 0.8123
+[2026-07-01 03:04:13] Evaluate_02: epoch = 0080 train time = 164 s train loss = 0.000092 train acc = 1.0000, test acc = 0.8080
+[2026-07-01 03:04:13] Evaluate_03: epoch = 0080 train time = 164 s train loss = 0.000097 train acc = 1.0000, test acc = 0.8105
+[2026-07-01 03:04:13] exact-IF Hessian set = 512 real train images
+
+[2026-07-01 03:04:13] ################ pair dog-bird : y_adv=5(dog)  target_class=2(bird) ################
+  targets (easy, loaded cache result/target_cache/easy_targets_ResNet20BN_dog-bird_n10_seed0.json): [(1503, 'deer'), (4421, 'bird'), (2391, 'bird'), (1163, 'cat'), (9778, 'cat'), (6202, 'cat'), (3135, 'horse'), (8746, 'cat'), (3491, 'cat'), (4563, 'horse')]
+      [exact] CG iters used per surrogate: [100]
+  [dog-bird t1/10 idx=1503] fc craft_obj=0.0560 linf=0.0314
+    [standard] victims: 5 across GPUs ['0', '1', '2', '3'] ... done
+    [standard | dog-bird t1/10 idx=1503] poison_CTA=0.8276 poison_ASR=0%
+      [exact] CG iters used per surrogate: [100]
+  [dog-bird t2/10 idx=4421] fc craft_obj=0.0660 linf=0.0314
+    [standard] victims: 5 across GPUs ['0', '1', '2', '3'] ... done
+    [standard | dog-bird t2/10 idx=4421] poison_CTA=0.8332 poison_ASR=0%
+      [exact] CG iters used per surrogate: [100]
+  [dog-bird t3/10 idx=2391] fc craft_obj=0.0595 linf=0.0314
+    [standard] victims: 5 across GPUs ['0', '1', '2', '3'] ... done
+    [standard | dog-bird t3/10 idx=2391] poison_CTA=0.8302 poison_ASR=0%
+      [exact] CG iters used per surrogate: [100]
+  [dog-bird t4/10 idx=1163] fc craft_obj=0.0503 linf=0.0314
+    [standard] victims: 5 across GPUs ['0', '1', '2', '3'] ... done
+    [standard | dog-bird t4/10 idx=1163] poison_CTA=0.8306 poison_ASR=60%
+      [exact] CG iters used per surrogate: [100]
+  [dog-bird t5/10 idx=9778] fc craft_obj=0.0600 linf=0.0314
+    [standard] victims: 5 across GPUs ['0', '1', '2', '3'] ... done
+    [standard | dog-bird t5/10 idx=9778] poison_CTA=0.8303 poison_ASR=20%
+      [exact] CG iters used per surrogate: [100]
+  [dog-bird t6/10 idx=6202] fc craft_obj=0.0576 linf=0.0314
+    [standard] victims: 5 across GPUs ['0', '1', '2', '3'] ... done
+    [standard | dog-bird t6/10 idx=6202] poison_CTA=0.8300 poison_ASR=0%
+      [exact] CG iters used per surrogate: [100]
+  [dog-bird t7/10 idx=3135] fc craft_obj=0.0658 linf=0.0314
+    [standard] victims: 5 across GPUs ['0', '1', '2', '3'] ... done
+    [standard | dog-bird t7/10 idx=3135] poison_CTA=0.8278 poison_ASR=0%
+      [exact] CG iters used per surrogate: [100]
+  [dog-bird t8/10 idx=8746] fc craft_obj=0.0529 linf=0.0314
+    [standard] victims: 5 across GPUs ['0', '1', '2', '3'] ... 
