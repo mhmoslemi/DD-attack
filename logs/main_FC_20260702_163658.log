@@ -1,0 +1,64 @@
+=== main_FC.sh started 2026-07-02 16:36:58 — logging to logs/main_FC_20260702_163658.log ===
+=== [2026-07-02 16:36:58] budget=0.05 ===
+[2026-07-02 16:37:09] device=cuda
+[2026-07-02 16:37:09] hyperparams: {'dataset': 'CIFAR10', 'data_path': '/home/mmoslem3/scratch/data', 'model': 'ConvNetBN', 'out_dir': 'result/standard_nodistill', 'seed': 0, 'target_idx_file': None, 'dsa_strategy': 'color_crop_cutout_flip_scale_rotate', 'syn_data_path': 'result/res_DM_CIFAR10_ConvNet_50ipc.pt', 'surrogate_model': 'ConvNetBN', 'num_surrogates': 4, 'surrogate_epochs': 80, 'surrogate_lr': 0.01, 'surrogate_bs': 256, 'attack': 'gradmatch', 'class_pairs': ['frog-airplane'], 'budget': 0.05, 'epsilon': 0.0313725, 'pgd_steps': 100, 'pgd_alpha': 0.0039216, 'restarts': 4, 'lambda_margin': 1.0, 'num_targets': 10, 'num_victims': 5, 'target_select': 'random', 'easy_targets': 0.7, 'target_cache_dir': 'result/target_cache', 'parallel_victims': False, 'victim_epochs': 40, 'victim_lr': 0.1, 'victim_bs': 256, 'victim_decay': [35], 'victim_aug': False, 'clean_baseline': False, 'num_clean_victims': None, 'cache_dir': '', 'precompute_only': False, 'base_dist': 'l2', 'random_select': False, 'multilayer': True, 'curv_select': False, 'lambda_curv': 1.0, 'curv_damping': 1.0, 'curv_cg_iters': 10, 'curv_hessian_bs': 512, 'curv_cand_bs': 128, 'exact_select': True, 'if_damping': 0.01, 'if_cg_iters': 100, 'if_cg_tol': 0.0001, 'if_fd_h': 0.01, 'if_last_layer': False, 'if_hess_source': 'syn', 'if_hess_size': 512, 'if_max_surrogates': 1, 'verbose': True, 'single_surrogate': True, 'fast_gradmatch': False, 'surrogate_on_full_data': True, 'victim_pipelines': ['standard'], 'poison_cache_dir': '', 'log_file': ''}
+[2026-07-02 16:37:09] victim pipelines (ablations): ['standard']
+[2026-07-02 16:37:22] N_total=50000  budget=0.0500 -> N_p=2500 poisons (all in y_adv class)
+
+[2026-07-02 16:37:22] === training 4 surrogates (ConvNetBN) on FULL real data (80 ep each) ===
+[2026-07-02 16:39:06] Evaluate_00: epoch = 0080 train time = 102 s train loss = 0.002261 train acc = 1.0000, test acc = 0.8318
+[2026-07-02 16:40:48] Evaluate_01: epoch = 0080 train time = 101 s train loss = 0.002304 train acc = 1.0000, test acc = 0.8312
+[2026-07-02 16:42:30] Evaluate_02: epoch = 0080 train time = 101 s train loss = 0.002291 train acc = 1.0000, test acc = 0.8354
+[2026-07-02 16:44:12] Evaluate_03: epoch = 0080 train time = 101 s train loss = 0.002357 train acc = 1.0000, test acc = 0.8290
+[2026-07-02 16:44:12] exact-IF Hessian set = 512 real train images
+
+[2026-07-02 16:44:12] ################ pair frog-airplane : y_adv=6(frog)  target_class=0(airplane) ################
+  targets (easy, label!=frog, saved cache result/target_cache/easy_targets_ConvNetBN_frog-airplane_n10_seed0_e0.70.json): [(9613, 'deer'), (2159, 'ship'), (3706, 'deer'), (916, 'cat'), (3051, 'ship'), (5450, 'dog'), (8074, 'horse'), (3208, 'truck'), (3079, 'ship'), (4871, 'horse')]
+      [exact] CG iters used per surrogate: [100]
+  [frog-airplane t1/10 idx=9613] gradmatch craft_obj=0.1063 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t1/10 idx=9613] poison_CTA=0.8029 poison_ASR=100%
+      [exact] CG iters used per surrogate: [100]
+  [frog-airplane t2/10 idx=2159] gradmatch craft_obj=0.1569 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t2/10 idx=2159] poison_CTA=0.8092 poison_ASR=100%
+      [exact] CG iters used per surrogate: [100]
+  [frog-airplane t3/10 idx=3706] gradmatch craft_obj=0.0910 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t3/10 idx=3706] poison_CTA=0.8013 poison_ASR=100%
+      [exact] CG iters used per surrogate: [100]
+  [frog-airplane t4/10 idx=916] gradmatch craft_obj=0.1681 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t4/10 idx=916] poison_CTA=0.8054 poison_ASR=100%
+      [exact] CG iters used per surrogate: [100]
+  [frog-airplane t5/10 idx=3051] gradmatch craft_obj=0.1523 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t5/10 idx=3051] poison_CTA=0.8043 poison_ASR=80%
+      [exact] CG iters used per surrogate: [100]
+  [frog-airplane t6/10 idx=5450] gradmatch craft_obj=0.1994 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t6/10 idx=5450] poison_CTA=0.8107 poison_ASR=100%
+      [exact] CG iters used per surrogate: [100]
+  [frog-airplane t7/10 idx=8074] gradmatch craft_obj=0.2160 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t7/10 idx=8074] poison_CTA=0.8021 poison_ASR=20%
+      [exact] CG iters used per surrogate: [100]
+  [frog-airplane t8/10 idx=3208] gradmatch craft_obj=0.1031 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t8/10 idx=3208] poison_CTA=0.8057 poison_ASR=20%
+      [exact] CG iters used per surrogate: [100]
+  [frog-airplane t9/10 idx=3079] gradmatch craft_obj=0.1276 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t9/10 idx=3079] poison_CTA=0.8137 poison_ASR=80%
+      [exact] CG iters used per surrogate: [100]
+  [frog-airplane t10/10 idx=4871] gradmatch craft_obj=0.1616 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t10/10 idx=4871] poison_CTA=0.7993 poison_ASR=100%
+
+  ==== pair frog-airplane (gradmatch) summary over 10 targets x 5 victims = 50 votes ====
+    [standard                    ] poison CTA = 0.8055 +/- 0.0077   poison ASR = 80.0% +/- 40.0%
+      tally (['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']): [0, 0, 0, 1, 0, 0, 40, 3, 3, 3]
+
+[2026-07-02 17:46:36] wrote results_standard_nodistill_gradmatch_ConvNetBN_b500_eps8.{json,csv} to result/standard_nodistill
+main_FC.sh: line 78: syntax error near unexpected token `)'
+main_FC.sh: line 78: `erage)'

@@ -1,0 +1,21 @@
+=== main_FC.sh started 2026-07-01 23:14:27 — logging to logs/main_FC_20260701_231427.log ===
+=== [2026-07-01 23:14:27] budget=0.01 ===
+[2026-07-01 23:14:32] --parallel_victims set but <2 GPUs in CUDA_VISIBLE_DEVICES ('0'); running victims sequentially
+[2026-07-01 23:14:32] device=cuda
+[2026-07-01 23:14:32] hyperparams: {'dataset': 'CIFAR10', 'data_path': '/home/mmoslem3/scratch/data', 'model': 'VGG13BN', 'out_dir': 'result/standard_nodistill', 'seed': 0, 'target_idx_file': None, 'dsa_strategy': 'color_crop_cutout_flip_scale_rotate', 'syn_data_path': 'result/res_DM_CIFAR10_ConvNet_50ipc.pt', 'surrogate_model': 'VGG13BN', 'num_surrogates': 4, 'surrogate_epochs': 80, 'surrogate_lr': 0.01, 'surrogate_bs': 256, 'attack': 'gradmatch', 'class_pairs': ['dog-bird'], 'budget': 0.01, 'epsilon': 0.0313725, 'pgd_steps': 100, 'pgd_alpha': 0.0039216, 'restarts': 4, 'lambda_margin': 1.0, 'num_targets': 10, 'num_victims': 5, 'target_select': 'random', 'easy_targets': False, 'target_cache_dir': '', 'parallel_victims': True, 'victim_epochs': 40, 'victim_lr': 0.1, 'victim_bs': 256, 'victim_decay': [35], 'victim_aug': False, 'clean_baseline': False, 'num_clean_victims': None, 'cache_dir': '', 'precompute_only': False, 'base_dist': 'l2', 'random_select': True, 'multilayer': True, 'curv_select': False, 'lambda_curv': 1.0, 'curv_damping': 1.0, 'curv_cg_iters': 10, 'curv_hessian_bs': 512, 'curv_cand_bs': 128, 'exact_select': False, 'if_damping': 0.01, 'if_cg_iters': 100, 'if_cg_tol': 0.0001, 'if_fd_h': 0.01, 'if_last_layer': False, 'if_hess_source': 'syn', 'if_hess_size': 0, 'if_max_surrogates': 0, 'verbose': False, 'single_surrogate': True, 'fast_gradmatch': False, 'surrogate_on_full_data': True, 'victim_pipelines': ['standard'], 'poison_cache_dir': '', 'log_file': ''}
+[2026-07-01 23:14:32] victim pipelines (ablations): ['standard']
+[2026-07-01 23:14:44] N_total=50000  budget=0.0100 -> N_p=500 poisons (all in y_adv class)
+
+[2026-07-01 23:14:45] === training 4 surrogates (VGG13BN) on FULL real data (80 ep each) ===
+[2026-07-01 23:17:42] Evaluate_00: epoch = 0080 train time = 176 s train loss = 0.000005 train acc = 1.0000, test acc = 0.8586
+[2026-07-01 23:20:40] Evaluate_01: epoch = 0080 train time = 176 s train loss = 0.000005 train acc = 1.0000, test acc = 0.8604
+[2026-07-01 23:23:38] Evaluate_02: epoch = 0080 train time = 177 s train loss = 0.000005 train acc = 1.0000, test acc = 0.8557
+[2026-07-01 23:26:36] Evaluate_03: epoch = 0080 train time = 177 s train loss = 0.000005 train acc = 1.0000, test acc = 0.8597
+
+[2026-07-01 23:26:36] ################ pair dog-bird : y_adv=5(dog)  target_class=2(bird) ################
+  targets (random): [430, 387, 6715, 7670, 9467, 2100, 7171, 4833, 5599, 2544]
+  [dog-bird t1/10 idx=430] gradmatch craft_obj=0.2650 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | dog-bird t1/10 idx=430] poison_CTA=0.8563 poison_ASR=100%
+  [dog-bird t2/10 idx=387] gradmatch craft_obj=0.2777 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, 

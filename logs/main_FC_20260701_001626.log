@@ -1,0 +1,55 @@
+=== main_FC.sh started 2026-07-01 00:16:26 — logging to logs/main_FC_20260701_001626.log ===
+=== [2026-07-01 00:16:26] budget=0.005 ===
+[2026-07-01 00:16:29] --parallel_victims set but <2 GPUs in CUDA_VISIBLE_DEVICES ('0'); running victims sequentially
+[2026-07-01 00:16:29] device=cuda
+[2026-07-01 00:16:29] hyperparams: {'dataset': 'CIFAR10', 'data_path': '/home/mmoslem3/scratch/data', 'model': 'VGG13BN', 'out_dir': 'result/standard_nodistill', 'seed': 0, 'target_idx_file': None, 'dsa_strategy': 'color_crop_cutout_flip_scale_rotate', 'syn_data_path': 'result/res_DM_CIFAR10_ConvNet_50ipc.pt', 'surrogate_model': 'VGG13BN', 'num_surrogates': 4, 'surrogate_epochs': 80, 'surrogate_lr': 0.01, 'surrogate_bs': 256, 'attack': 'fc', 'class_pairs': ['dog-bird'], 'budget': 0.005, 'epsilon': 0.0313725, 'pgd_steps': 100, 'pgd_alpha': 0.0039216, 'restarts': 1, 'lambda_margin': 1.0, 'num_targets': 10, 'num_victims': 5, 'target_select': 'random', 'easy_targets': True, 'target_cache_dir': 'result/target_cache', 'parallel_victims': True, 'victim_epochs': 40, 'victim_lr': 0.1, 'victim_bs': 256, 'victim_decay': [35], 'victim_aug': False, 'clean_baseline': False, 'num_clean_victims': None, 'cache_dir': '', 'precompute_only': False, 'base_dist': 'l2', 'random_select': True, 'multilayer': True, 'curv_select': False, 'lambda_curv': 1.0, 'curv_damping': 1.0, 'curv_cg_iters': 10, 'curv_hessian_bs': 512, 'curv_cand_bs': 128, 'exact_select': False, 'if_damping': 0.01, 'if_cg_iters': 100, 'if_cg_tol': 0.0001, 'if_fd_h': 0.01, 'if_last_layer': False, 'if_hess_source': 'syn', 'if_hess_size': 0, 'if_max_surrogates': 0, 'verbose': False, 'single_surrogate': True, 'fast_gradmatch': False, 'surrogate_on_full_data': True, 'victim_pipelines': ['standard'], 'poison_cache_dir': '', 'log_file': ''}
+[2026-07-01 00:16:29] victim pipelines (ablations): ['standard']
+[2026-07-01 00:16:41] N_total=50000  budget=0.0050 -> N_p=250 poisons (all in y_adv class)
+
+[2026-07-01 00:16:41] === training 4 surrogates (VGG13BN) on FULL real data (80 ep each) ===
+[2026-07-01 00:19:41] Evaluate_00: epoch = 0080 train time = 178 s train loss = 0.000005 train acc = 1.0000, test acc = 0.8583
+[2026-07-01 00:22:41] Evaluate_01: epoch = 0080 train time = 178 s train loss = 0.000005 train acc = 1.0000, test acc = 0.8608
+[2026-07-01 00:25:41] Evaluate_02: epoch = 0080 train time = 179 s train loss = 0.000005 train acc = 1.0000, test acc = 0.8572
+[2026-07-01 00:28:42] Evaluate_03: epoch = 0080 train time = 179 s train loss = 0.000005 train acc = 1.0000, test acc = 0.8612
+
+[2026-07-01 00:28:42] ################ pair dog-bird : y_adv=5(dog)  target_class=2(bird) ################
+  targets (easy, loaded cache result/target_cache/easy_targets_VGG13BN_dog-bird_n10_seed0.json): [(2632, 'cat'), (2804, 'cat'), (740, 'bird'), (9375, 'cat'), (1723, 'bird'), (9035, 'deer'), (3387, 'cat'), (5290, 'cat'), (8219, 'cat'), (4547, 'cat')]
+  [dog-bird t1/10 idx=2632] fc craft_obj=0.0821 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | dog-bird t1/10 idx=2632] poison_CTA=0.8463 poison_ASR=80%
+  [dog-bird t2/10 idx=2804] fc craft_obj=0.0901 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | dog-bird t2/10 idx=2804] poison_CTA=0.8490 poison_ASR=40%
+  [dog-bird t3/10 idx=740] fc craft_obj=0.0875 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | dog-bird t3/10 idx=740] poison_CTA=0.8503 poison_ASR=0%
+  [dog-bird t4/10 idx=9375] fc craft_obj=0.0779 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | dog-bird t4/10 idx=9375] poison_CTA=0.8433 poison_ASR=60%
+  [dog-bird t5/10 idx=1723] fc craft_obj=0.0834 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | dog-bird t5/10 idx=1723] poison_CTA=0.8516 poison_ASR=60%
+  [dog-bird t6/10 idx=9035] fc craft_obj=0.0758 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | dog-bird t6/10 idx=9035] poison_CTA=0.8511 poison_ASR=80%
+  [dog-bird t7/10 idx=3387] fc craft_obj=0.0749 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | dog-bird t7/10 idx=3387] poison_CTA=0.8547 poison_ASR=60%
+  [dog-bird t8/10 idx=5290] fc craft_obj=0.0882 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | dog-bird t8/10 idx=5290] poison_CTA=0.8405 poison_ASR=80%
+  [dog-bird t9/10 idx=8219] fc craft_obj=0.0836 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | dog-bird t9/10 idx=8219] poison_CTA=0.8502 poison_ASR=60%
+  [dog-bird t10/10 idx=4547] fc craft_obj=0.0983 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | dog-bird t10/10 idx=4547] poison_CTA=0.8439 poison_ASR=20%
+
+  ==== pair dog-bird (fc) summary over 10 targets x 5 victims = 50 votes ====
+    [standard                    ] poison CTA = 0.8481 +/- 0.0086   poison ASR = 54.0% +/- 49.8%
+      tally (['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']): [0, 0, 7, 9, 3, 27, 1, 3, 0, 0]
+
+[2026-07-01 01:43:37] wrote results_standard_nodistill_fc_VGG13BN_b50_eps8.{json,csv} to result/standard_nodistill
+main_FC.sh: line 72: urv_select: command not found
+main_FC.sh: line 73: syntax error near unexpected token `done'
+main_FC.sh: line 73: `done'

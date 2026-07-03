@@ -1,0 +1,64 @@
+=== main_FC.sh started 2026-07-01 23:21:43 — logging to logs/main_FC_20260701_232143.log ===
+=== [2026-07-01 23:21:43] budget=0.02 ===
+[2026-07-01 23:21:46] device=cuda
+[2026-07-01 23:21:46] hyperparams: {'dataset': 'CIFAR10', 'data_path': '/home/mmoslem3/scratch/data', 'model': 'ConvNetBN', 'out_dir': 'result/standard_nodistill', 'seed': 0, 'target_idx_file': None, 'dsa_strategy': 'color_crop_cutout_flip_scale_rotate', 'syn_data_path': 'result/res_DM_CIFAR10_ConvNet_50ipc.pt', 'surrogate_model': 'ConvNetBN', 'num_surrogates': 4, 'surrogate_epochs': 80, 'surrogate_lr': 0.01, 'surrogate_bs': 256, 'attack': 'fc', 'class_pairs': ['frog-airplane'], 'budget': 0.02, 'epsilon': 0.0313725, 'pgd_steps': 100, 'pgd_alpha': 0.0039216, 'restarts': 1, 'lambda_margin': 1.0, 'num_targets': 10, 'num_victims': 5, 'target_select': 'random', 'easy_targets': True, 'target_cache_dir': 'result/target_cache', 'parallel_victims': False, 'victim_epochs': 40, 'victim_lr': 0.1, 'victim_bs': 256, 'victim_decay': [35], 'victim_aug': False, 'clean_baseline': False, 'num_clean_victims': None, 'cache_dir': '', 'precompute_only': False, 'base_dist': 'l2', 'random_select': False, 'multilayer': True, 'curv_select': False, 'lambda_curv': 1.0, 'curv_damping': 1.0, 'curv_cg_iters': 10, 'curv_hessian_bs': 512, 'curv_cand_bs': 128, 'exact_select': True, 'if_damping': 0.01, 'if_cg_iters': 100, 'if_cg_tol': 0.0001, 'if_fd_h': 0.01, 'if_last_layer': False, 'if_hess_source': 'syn', 'if_hess_size': 512, 'if_max_surrogates': 1, 'verbose': True, 'single_surrogate': True, 'fast_gradmatch': False, 'surrogate_on_full_data': True, 'victim_pipelines': ['standard'], 'poison_cache_dir': '', 'log_file': ''}
+[2026-07-01 23:21:46] victim pipelines (ablations): ['standard']
+[2026-07-01 23:21:59] N_total=50000  budget=0.0200 -> N_p=1000 poisons (all in y_adv class)
+
+[2026-07-01 23:21:59] === training 4 surrogates (ConvNetBN) on FULL real data (80 ep each) ===
+[2026-07-01 23:23:41] Evaluate_00: epoch = 0080 train time = 101 s train loss = 0.002303 train acc = 1.0000, test acc = 0.8333
+[2026-07-01 23:25:23] Evaluate_01: epoch = 0080 train time = 101 s train loss = 0.002244 train acc = 1.0000, test acc = 0.8312
+[2026-07-01 23:27:04] Evaluate_02: epoch = 0080 train time = 101 s train loss = 0.002315 train acc = 1.0000, test acc = 0.8316
+[2026-07-01 23:28:46] Evaluate_03: epoch = 0080 train time = 101 s train loss = 0.002251 train acc = 1.0000, test acc = 0.8298
+[2026-07-01 23:28:46] exact-IF Hessian set = 512 real train images
+
+[2026-07-01 23:28:46] ################ pair frog-airplane : y_adv=6(frog)  target_class=0(airplane) ################
+  targets (easy, label!=frog, saved cache result/target_cache/easy_targets_ConvNetBN_frog-airplane_n10_seed0.json): [(2442, 'deer'), (4903, 'bird'), (2533, 'ship'), (2130, 'airplane'), (5458, 'cat'), (1644, 'bird'), (7344, 'deer'), (7446, 'dog'), (5411, 'bird'), (8542, 'bird')]
+      [exact] CG iters used per surrogate: [100]
+  [frog-airplane t1/10 idx=2442] fc craft_obj=0.3448 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t1/10 idx=2442] poison_CTA=0.8102 poison_ASR=100%
+      [exact] CG iters used per surrogate: [100]
+  [frog-airplane t2/10 idx=4903] fc craft_obj=0.3346 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t2/10 idx=4903] poison_CTA=0.8085 poison_ASR=100%
+      [exact] CG iters used per surrogate: [100]
+  [frog-airplane t3/10 idx=2533] fc craft_obj=0.3402 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t3/10 idx=2533] poison_CTA=0.8091 poison_ASR=100%
+      [exact] CG iters used per surrogate: [100]
+  [frog-airplane t4/10 idx=2130] fc craft_obj=0.6342 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t4/10 idx=2130] poison_CTA=0.8059 poison_ASR=100%
+      [exact] CG iters used per surrogate: [100]
+  [frog-airplane t5/10 idx=5458] fc craft_obj=0.3565 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t5/10 idx=5458] poison_CTA=0.8038 poison_ASR=100%
+      [exact] CG iters used per surrogate: [100]
+  [frog-airplane t6/10 idx=1644] fc craft_obj=0.3755 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t6/10 idx=1644] poison_CTA=0.8055 poison_ASR=100%
+      [exact] CG iters used per surrogate: [100]
+  [frog-airplane t7/10 idx=7344] fc craft_obj=0.3142 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t7/10 idx=7344] poison_CTA=0.8063 poison_ASR=100%
+      [exact] CG iters used per surrogate: [100]
+  [frog-airplane t8/10 idx=7446] fc craft_obj=0.4264 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t8/10 idx=7446] poison_CTA=0.8083 poison_ASR=80%
+      [exact] CG iters used per surrogate: [100]
+  [frog-airplane t9/10 idx=5411] fc craft_obj=0.3470 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t9/10 idx=5411] poison_CTA=0.8097 poison_ASR=100%
+      [exact] CG iters used per surrogate: [100]
+  [frog-airplane t10/10 idx=8542] fc craft_obj=0.3449 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | frog-airplane t10/10 idx=8542] poison_CTA=0.6707 poison_ASR=80%
+
+  ==== pair frog-airplane (fc) summary over 10 targets x 5 victims = 50 votes ====
+    [standard                    ] poison CTA = 0.7938 +/- 0.0994   poison ASR = 96.0% +/- 19.6%
+      tally (['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']): [0, 0, 0, 0, 0, 1, 48, 1, 0, 0]
+
+[2026-07-02 00:11:26] wrote results_standard_nodistill_fc_ConvNetBN_b200_eps8.{json,csv} to result/standard_nodistill
+main_FC.sh: line 77: syntax error near unexpected token `)'
+main_FC.sh: line 77: `-1 g_t ||_1 leverage)'

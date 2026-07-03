@@ -1,0 +1,53 @@
+=== main_FC.sh started 2026-07-01 01:44:16 — logging to logs/main_FC_20260701_014416.log ===
+=== [2026-07-01 01:44:16] budget=0.005 ===
+[2026-07-01 01:44:20] --parallel_victims set but <2 GPUs in CUDA_VISIBLE_DEVICES ('0'); running victims sequentially
+[2026-07-01 01:44:20] device=cuda
+[2026-07-01 01:44:20] hyperparams: {'dataset': 'CIFAR10', 'data_path': '/home/mmoslem3/scratch/data', 'model': 'ResNet20BN', 'out_dir': 'result/standard_nodistill', 'seed': 0, 'target_idx_file': None, 'dsa_strategy': 'color_crop_cutout_flip_scale_rotate', 'syn_data_path': 'result/res_DM_CIFAR10_ConvNet_50ipc.pt', 'surrogate_model': 'ResNet20BN', 'num_surrogates': 4, 'surrogate_epochs': 80, 'surrogate_lr': 0.01, 'surrogate_bs': 256, 'attack': 'fc', 'class_pairs': ['dog-bird'], 'budget': 0.005, 'epsilon': 0.0313725, 'pgd_steps': 100, 'pgd_alpha': 0.0039216, 'restarts': 1, 'lambda_margin': 1.0, 'num_targets': 10, 'num_victims': 5, 'target_select': 'random', 'easy_targets': True, 'target_cache_dir': 'result/target_cache', 'parallel_victims': True, 'victim_epochs': 40, 'victim_lr': 0.1, 'victim_bs': 256, 'victim_decay': [35], 'victim_aug': False, 'clean_baseline': False, 'num_clean_victims': None, 'cache_dir': '', 'precompute_only': False, 'base_dist': 'l2', 'random_select': True, 'multilayer': True, 'curv_select': False, 'lambda_curv': 1.0, 'curv_damping': 1.0, 'curv_cg_iters': 10, 'curv_hessian_bs': 512, 'curv_cand_bs': 128, 'exact_select': False, 'if_damping': 0.01, 'if_cg_iters': 100, 'if_cg_tol': 0.0001, 'if_fd_h': 0.01, 'if_last_layer': False, 'if_hess_source': 'syn', 'if_hess_size': 0, 'if_max_surrogates': 0, 'verbose': False, 'single_surrogate': True, 'fast_gradmatch': False, 'surrogate_on_full_data': True, 'victim_pipelines': ['standard'], 'poison_cache_dir': '', 'log_file': ''}
+[2026-07-01 01:44:20] victim pipelines (ablations): ['standard']
+[2026-07-01 01:44:33] N_total=50000  budget=0.0050 -> N_p=250 poisons (all in y_adv class)
+
+[2026-07-01 01:44:33] === training 4 surrogates (ResNet20BN) on FULL real data (80 ep each) ===
+[2026-07-01 01:46:27] Evaluate_00: epoch = 0080 train time = 113 s train loss = 0.000112 train acc = 1.0000, test acc = 0.8100
+[2026-07-01 01:48:21] Evaluate_01: epoch = 0080 train time = 113 s train loss = 0.000099 train acc = 1.0000, test acc = 0.8051
+[2026-07-01 01:50:15] Evaluate_02: epoch = 0080 train time = 113 s train loss = 0.000079 train acc = 1.0000, test acc = 0.8118
+[2026-07-01 01:52:09] Evaluate_03: epoch = 0080 train time = 113 s train loss = 0.000099 train acc = 1.0000, test acc = 0.8045
+
+[2026-07-01 01:52:09] ################ pair dog-bird : y_adv=5(dog)  target_class=2(bird) ################
+  targets (easy, loaded cache result/target_cache/easy_targets_ResNet20BN_dog-bird_n10_seed0.json): [(1503, 'deer'), (4421, 'bird'), (2391, 'bird'), (1163, 'cat'), (9778, 'cat'), (6202, 'cat'), (3135, 'horse'), (8746, 'cat'), (3491, 'cat'), (4563, 'horse')]
+  [dog-bird t1/10 idx=1503] fc craft_obj=0.0617 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | dog-bird t1/10 idx=1503] poison_CTA=0.8330 poison_ASR=40%
+  [dog-bird t2/10 idx=4421] fc craft_obj=0.0633 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | dog-bird t2/10 idx=4421] poison_CTA=0.8319 poison_ASR=20%
+  [dog-bird t3/10 idx=2391] fc craft_obj=0.0539 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | dog-bird t3/10 idx=2391] poison_CTA=0.8287 poison_ASR=0%
+  [dog-bird t4/10 idx=1163] fc craft_obj=0.0551 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | dog-bird t4/10 idx=1163] poison_CTA=0.8313 poison_ASR=80%
+  [dog-bird t5/10 idx=9778] fc craft_obj=0.0547 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | dog-bird t5/10 idx=9778] poison_CTA=0.8305 poison_ASR=20%
+  [dog-bird t6/10 idx=6202] fc craft_obj=0.0628 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | dog-bird t6/10 idx=6202] poison_CTA=0.8305 poison_ASR=0%
+  [dog-bird t7/10 idx=3135] fc craft_obj=0.0646 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | dog-bird t7/10 idx=3135] poison_CTA=0.8307 poison_ASR=80%
+  [dog-bird t8/10 idx=8746] fc craft_obj=0.0523 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | dog-bird t8/10 idx=8746] poison_CTA=0.8306 poison_ASR=0%
+  [dog-bird t9/10 idx=3491] fc craft_obj=0.0668 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | dog-bird t9/10 idx=3491] poison_CTA=0.8271 poison_ASR=20%
+  [dog-bird t10/10 idx=4563] fc craft_obj=0.0496 linf=0.0314
+    [standard] victims: v1 done, v2 done, v3 done, v4 done, v5 done
+    [standard | dog-bird t10/10 idx=4563] poison_CTA=0.8309 poison_ASR=0%
+
+  ==== pair dog-bird (fc) summary over 10 targets x 5 victims = 50 votes ====
+    [standard                    ] poison CTA = 0.8305 +/- 0.0038   poison ASR = 26.0% +/- 43.9%
+      tally (['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']): [0, 0, 12, 19, 2, 13, 1, 3, 0, 0]
+
+[2026-07-01 02:39:40] wrote results_standard_nodistill_fc_ResNet20BN_b50_eps8.{json,csv} to result/standard_nodistill
+=== main_FC.sh finished 2026-07-01 02:39:41 — log: logs/main_FC_20260701_014416.log ===

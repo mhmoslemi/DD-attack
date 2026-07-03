@@ -1,0 +1,32 @@
+{
+  "surrogate_model": "ConvNetBN",
+  "pair": "frog-airplane",
+  "y_adv": 6,
+  "num_targets": 10,
+  "seed": 0,
+  "easiness": 0.7,
+  "indices": [
+    9613,
+    2159,
+    3706,
+    916,
+    3051,
+    5450,
+    8074,
+    3208,
+    3079,
+    4871
+  ],
+  "true_labels": [
+    4,
+    8,
+    4,
+    3,
+    8,
+    5,
+    7,
+    9,
+    8,
+    7
+  ]
+}

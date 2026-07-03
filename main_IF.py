@@ -551,8 +551,9 @@ def filter_correct_targets(surrogates, test_imgs, t_idx_all, target_class, devic
 
 
 @torch.no_grad()
-def select_easy_targets(surrogates, test_imgs, test_labs, y_adv, n_targets, device):
-    """Pick the test samples that are *easiest* to flip toward y_adv.
+def select_easy_targets(surrogates, test_imgs, test_labs, y_adv, n_targets, device,
+                        easiness=1.0):
+    """Pick test samples along an easy<->hard spectrum for flipping toward y_adv.
 
     Unlike the random/first selection (which only draws from the pair's
     target_class), the candidate pool here is EVERY test image whose true label
@@ -560,7 +561,11 @@ def select_easy_targets(surrogates, test_imgs, test_labs, y_adv, n_targets, devi
     surrogate ensemble's softmax probability on y_adv: a high score means the
     model is already close to calling it y_adv, i.e. it is easy to attack.
     Samples the clean ensemble already classifies as y_adv are dropped (there is
-    nothing left to flip). Returns a list of test indices, easiest first.
+    nothing left to flip).
+
+    ``easiness`` in [0, 1] slides an n_targets-wide window over the full ranking
+    (easiest first): 1.0 returns the n EASIEST candidates, 0.0 the n HARDEST,
+    0.5 the middle band. Returns the chosen test indices, easiest first.
     """
     pool = (test_labs != y_adv).nonzero(as_tuple=True)[0]        # label != y_adv
     if len(pool) == 0:
@@ -575,8 +580,12 @@ def select_easy_targets(surrogates, test_imgs, test_labs, y_adv, n_targets, devi
     keep = (avg_probs.argmax(1) != y_adv).nonzero(as_tuple=True)[0]   # not yet flipped
     if len(keep) == 0:                                          # degenerate: keep all
         keep = torch.arange(len(pool), device=pool.device)
-    order = p_adv[keep].argsort(descending=True)                # easiest first
-    chosen_local = keep[order][:n_targets]
+    ranked = keep[p_adv[keep].argsort(descending=True)]         # local idx, easiest first
+    M = len(ranked)
+    n = min(n_targets, M)
+    e = min(max(float(easiness), 0.0), 1.0)
+    start = int(round((1.0 - e) * (M - n)))                     # 1->easiest, 0->hardest
+    chosen_local = ranked[start:start + n]
     return pool[chosen_local].cpu().tolist()
 
 
@@ -1406,13 +1415,14 @@ def main(args):
         if pair in preselected:
             chosen = preselected[pair]['indices'][:args.num_targets]
             print('  targets (preselected): %s' % chosen)
-        elif args.easy_targets:
+        elif args.easy_targets is not None:
             # easy-target ranking depends on the (re-trained) surrogates, so it
             # drifts run-to-run. Cache the chosen indices per (surrogate_model,
-            # pair, num_targets, seed) so repeat runs attack the SAME targets.
+            # pair, num_targets, seed, easiness) so repeat runs attack the SAME targets.
             tcache = (os.path.join(args.target_cache_dir,
-                      'easy_targets_%s_%s_n%d_seed%d.json'
-                      % (args.surrogate_model, pair, args.num_targets, args.seed))
+                      'easy_targets_%s_%s_n%d_seed%d_e%.2f.json'
+                      % (args.surrogate_model, pair, args.num_targets, args.seed,
+                         args.easy_targets))
                       if args.target_cache_dir else '')
             if tcache and os.path.exists(tcache):
                 with open(tcache) as _f:
@@ -1421,13 +1431,15 @@ def main(args):
                       % (tcache, [(int(i), class_names[int(test_labs[i])]) for i in chosen]))
             else:
                 chosen = select_easy_targets(surrogates, test_imgs, test_labs, y_adv,
-                                             args.num_targets, device)
+                                             args.num_targets, device,
+                                             easiness=args.easy_targets)
                 if tcache:
                     os.makedirs(args.target_cache_dir, exist_ok=True)
                     with open(tcache, 'w') as _f:
                         json.dump({'surrogate_model': args.surrogate_model, 'pair': pair,
                                    'y_adv': y_adv, 'num_targets': args.num_targets,
-                                   'seed': args.seed, 'indices': [int(i) for i in chosen],
+                                   'seed': args.seed, 'easiness': args.easy_targets,
+                                   'indices': [int(i) for i in chosen],
                                    'true_labels': [int(test_labs[i]) for i in chosen]},
                                   _f, indent=2)
                     print('  targets (easy, label!=%s, saved cache %s): %s'
@@ -1624,7 +1636,7 @@ if __name__ == '__main__':
                     'trained on the distilled S; --attack fc | gradmatch.')
     # data / model
     p.add_argument('--dataset', type=str, default='CIFAR10')
-    p.add_argument('--data_path', type=str, default='data')
+    p.add_argument('--data_path', type=str, default='/home/mmoslem3/scratch/data')
     p.add_argument('--model', type=str, default='ConvNetBN',
                    help="VICTIM arch (ConvNetBN to match MetaPoison; this repo's "
                         "ConvNetBN is depth-3, not the 6-layer Finn net)")
@@ -1669,11 +1681,14 @@ if __name__ == '__main__':
     p.add_argument('--num_victims', type=int, default=6)
     p.add_argument('--target_select', type=str, default='random',
                    choices=['random', 'first'])
-    p.add_argument('--easy_targets', action='store_true', default=False,
+    p.add_argument('--easy_targets', type=float, nargs='?', const=1.0, default=None,
+                   metavar='EASINESS',
                    help='instead of random/first selection from the pair target_class, '
-                        'pick the targets EASIEST to attack: candidates are all test '
-                        'images whose label != y_adv (any other class), ranked by the '
-                        'surrogate ensemble probability on y_adv (closest to flipping first)')
+                        'pick targets along an easy<->hard spectrum: candidates are all '
+                        'test images whose label != y_adv (any other class), ranked by the '
+                        'surrogate ensemble probability on y_adv (closest to flipping '
+                        'first). Takes a float in [0,1]: 1=easiest targets (default when '
+                        'the flag is given with no value), 0=hardest, 0.5=middle band.')
     p.add_argument('--target_cache_dir', type=str, default='',
                    help='dir to save/load the --easy_targets selection (keyed by '
                         'surrogate_model/pair/num_targets/seed). First run saves the '

@@ -1,0 +1,40 @@
+=== clean_baseline.sh started 2026-07-01 20:24:39 — logging to logs/clean_baseline_20260701_202439.log ===
+
+=== [2026-07-01 20:24:39] clean baseline: ConvNetBN (5 runs) ===
+[2026-07-01 20:24:43] device=cuda  model=ConvNetBN  runs=5
+[2026-07-01 20:24:43] hyperparams: {'dataset': 'CIFAR10', 'data_path': '/home/mmoslem3/scratch/data', 'model': 'ConvNetBN', 'runs': 5, 'seed': 0, 'victim_epochs': 40, 'victim_lr': 0.1, 'victim_bs': 256, 'victim_decay': [35]}
+[2026-07-01 20:25:46] [ConvNetBN] run 1/5 (seed 0): ACC = 0.8186
+[2026-07-01 20:26:37] [ConvNetBN] run 2/5 (seed 1): ACC = 0.8144
+[2026-07-01 20:27:27] [ConvNetBN] run 3/5 (seed 2): ACC = 0.8050
+[2026-07-01 20:28:18] [ConvNetBN] run 4/5 (seed 3): ACC = 0.8136
+[2026-07-01 20:29:08] [ConvNetBN] run 5/5 (seed 4): ACC = 0.8190
+[2026-07-01 20:29:08] [ConvNetBN] ACCs: 0.8186 0.8144 0.8050 0.8136 0.8190
+[2026-07-01 20:29:08] [ConvNetBN] ACC mean = 0.8141  var = 0.000025  std = 0.0050
+
+=== [2026-07-01 20:29:09] clean baseline: VGG13BN (5 runs) ===
+[2026-07-01 20:29:12] device=cuda  model=VGG13BN  runs=5
+[2026-07-01 20:29:12] hyperparams: {'dataset': 'CIFAR10', 'data_path': '/home/mmoslem3/scratch/data', 'model': 'VGG13BN', 'runs': 5, 'seed': 0, 'victim_epochs': 40, 'victim_lr': 0.1, 'victim_bs': 256, 'victim_decay': [35]}
+[2026-07-01 20:30:51] [VGG13BN] run 1/5 (seed 0): ACC = 0.8279
+[2026-07-01 20:32:18] [VGG13BN] run 2/5 (seed 1): ACC = 0.8420
+[2026-07-01 20:33:45] [VGG13BN] run 3/5 (seed 2): ACC = 0.8409
+[2026-07-01 20:35:12] [VGG13BN] run 4/5 (seed 3): ACC = 0.8414
+[2026-07-01 20:36:40] [VGG13BN] run 5/5 (seed 4): ACC = 0.8567
+[2026-07-01 20:36:40] [VGG13BN] ACCs: 0.8279 0.8420 0.8409 0.8414 0.8567
+[2026-07-01 20:36:40] [VGG13BN] ACC mean = 0.8418  var = 0.000083  std = 0.0091
+
+=== [2026-07-01 20:36:40] clean baseline: ResNet20BN (5 runs) ===
+[2026-07-01 20:36:43] device=cuda  model=ResNet20BN  runs=5
+[2026-07-01 20:36:43] hyperparams: {'dataset': 'CIFAR10', 'data_path': '/home/mmoslem3/scratch/data', 'model': 'ResNet20BN', 'runs': 5, 'seed': 0, 'victim_epochs': 40, 'victim_lr': 0.1, 'victim_bs': 256, 'victim_decay': [35]}
+[2026-07-01 20:37:52] [ResNet20BN] run 1/5 (seed 0): ACC = 0.8294
+[2026-07-01 20:38:49] [ResNet20BN] run 2/5 (seed 1): ACC = 0.8356
+[2026-07-01 20:39:46] [ResNet20BN] run 3/5 (seed 2): ACC = 0.8356
+[2026-07-01 20:40:43] [ResNet20BN] run 4/5 (seed 3): ACC = 0.8326
+[2026-07-01 20:41:40] [ResNet20BN] run 5/5 (seed 4): ACC = 0.8335
+[2026-07-01 20:41:40] [ResNet20BN] ACCs: 0.8294 0.8356 0.8356 0.8326 0.8335
+[2026-07-01 20:41:40] [ResNet20BN] ACC mean = 0.8333  var = 0.000005  std = 0.0023
+
+=== summary ===
+[2026-07-01 20:29:08] [ConvNetBN] ACC mean = 0.8141  var = 0.000025  std = 0.0050
+[2026-07-01 20:36:40] [VGG13BN] ACC mean = 0.8418  var = 0.000083  std = 0.0091
+[2026-07-01 20:41:40] [ResNet20BN] ACC mean = 0.8333  var = 0.000005  std = 0.0023
+=== clean_baseline.sh finished 2026-07-01 20:41:40 — log: logs/clean_baseline_20260701_202439.log ===
